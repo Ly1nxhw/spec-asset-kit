@@ -57,10 +57,10 @@ class IntegrationCatalog:
     """Manages integration catalog fetching, caching, and searching."""
 
     DEFAULT_CATALOG_URL = (
-        "https://raw.githubusercontent.com/github/spec-kit/main/integrations/catalog.json"
+        "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/integrations/catalog.json"
     )
     COMMUNITY_CATALOG_URL = (
-        "https://raw.githubusercontent.com/github/spec-kit/main/integrations/catalog.community.json"
+        "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/integrations/catalog.community.json"
     )
     CACHE_DURATION = 3600  # 1 hour
 

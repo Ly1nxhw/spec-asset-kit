@@ -26,7 +26,7 @@ concurrency:
 jobs:
   # Build job
   build:
-    if: github.repository == 'github/spec-kit'
+    if: github.repository == 'Ly1nxhw/spec-asset-kit'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -57,7 +57,7 @@ jobs:
 
   # Deploy job
   deploy:
-    if: github.repository == 'github/spec-kit'
+    if: github.repository == 'Ly1nxhw/spec-asset-kit'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -67,4 +67,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-

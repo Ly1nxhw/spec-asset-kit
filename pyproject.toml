@@ -1,6 +1,6 @@
 [project]
 name = "specify-cli"
-version = "0.7.5.dev0"
+version = "0.8.0"
 description = "Specify CLI, part of GitHub Spec Kit. A tool to bootstrap your projects for Spec-Driven Development (SDD)."
 requires-python = ">=3.11"
 dependencies = [
@@ -39,11 +39,18 @@ packages = ["src/specify_cli"]
 "scripts/bash" = "specify_cli/core_pack/scripts/bash"
 "scripts/powershell" = "specify_cli/core_pack/scripts/powershell"
 # Bundled extensions (installable via `specify extension add <name>`)
+"extensions/ai-assets" = "specify_cli/core_pack/extensions/ai-assets"
 "extensions/git" = "specify_cli/core_pack/extensions/git"
+"extensions/catalog.json" = "specify_cli/core_pack/extensions/catalog.json"
+"extensions/catalog.community.json" = "specify_cli/core_pack/extensions/catalog.community.json"
 # Bundled workflows (auto-installed during `specify init`)
 "workflows/speckit" = "specify_cli/core_pack/workflows/speckit"
+"workflows/catalog.json" = "specify_cli/core_pack/workflows/catalog.json"
+"workflows/catalog.community.json" = "specify_cli/core_pack/workflows/catalog.community.json"
 # Bundled presets (installable via `specify preset add <name>` or `specify init --preset <name>`)
 "presets/lean" = "specify_cli/core_pack/presets/lean"
+"presets/catalog.json" = "specify_cli/core_pack/presets/catalog.json"
+"presets/catalog.community.json" = "specify_cli/core_pack/presets/catalog.community.json"
 
 [project.optional-dependencies]
 test = [
@@ -70,4 +77,3 @@ omit = ["*/tests/*", "*/__pycache__/*"]
 precision = 2
 show_missing = true
 skip_covered = false
-

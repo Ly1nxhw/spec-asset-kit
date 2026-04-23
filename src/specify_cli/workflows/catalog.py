@@ -136,11 +136,11 @@ class WorkflowCatalog:
     """
 
     DEFAULT_CATALOG_URL = (
-        "https://raw.githubusercontent.com/github/spec-kit/main/"
+        "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/"
         "workflows/catalog.json"
     )
     COMMUNITY_CATALOG_URL = (
-        "https://raw.githubusercontent.com/github/spec-kit/main/"
+        "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/"
         "workflows/catalog.community.json"
     )
     CACHE_DURATION = 3600  # 1 hour

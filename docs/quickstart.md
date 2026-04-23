@@ -16,17 +16,17 @@ This guide will help you get started with Spec-Driven Development using Spec Kit
 
 ```bash
 # Create a new project directory
-uvx --from git+https://github.com/github/spec-kit.git specify init <PROJECT_NAME>
+uvx --from git+https://github.com/Ly1nxhw/spec-asset-kit.git specify init <PROJECT_NAME>
 
 # OR initialize in the current directory
-uvx --from git+https://github.com/github/spec-kit.git specify init .
+uvx --from git+https://github.com/Ly1nxhw/spec-asset-kit.git specify init .
 ```
 
 Pick script type explicitly (optional):
 
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <PROJECT_NAME> --script ps  # Force PowerShell
-uvx --from git+https://github.com/github/spec-kit.git specify init <PROJECT_NAME> --script sh  # Force POSIX shell
+uvx --from git+https://github.com/Ly1nxhw/spec-asset-kit.git specify init <PROJECT_NAME> --script ps  # Force PowerShell
+uvx --from git+https://github.com/Ly1nxhw/spec-asset-kit.git specify init <PROJECT_NAME> --script sh  # Force POSIX shell
 ```
 
 ### Step 2: Define Your Constitution
@@ -173,6 +173,6 @@ Finally, implement the solution:
 
 ## Next Steps
 
-- Read the [complete methodology](https://github.com/github/spec-kit/blob/main/spec-driven.md) for in-depth guidance
-- Check out [more examples](https://github.com/github/spec-kit/tree/main/templates) in the repository
-- Explore the [source code on GitHub](https://github.com/github/spec-kit)
+- Read the [complete methodology](https://github.com/Ly1nxhw/spec-asset-kit/blob/main/spec-driven.md) for in-depth guidance
+- Check out [more examples](https://github.com/Ly1nxhw/spec-asset-kit/tree/main/templates) in the repository
+- Explore the [source code on GitHub](https://github.com/Ly1nxhw/spec-asset-kit)

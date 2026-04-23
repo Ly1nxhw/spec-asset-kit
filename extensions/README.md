@@ -1,6 +1,6 @@
 # Spec Kit Extensions
 
-Extension system for [Spec Kit](https://github.com/github/spec-kit) - add new functionality without bloating the core framework.
+Extension system for [Spec Asset Kit](https://github.com/Ly1nxhw/spec-asset-kit) - add new functionality without bloating the core framework.
 
 ## Extension Catalogs
 

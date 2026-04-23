@@ -1,67 +1,79 @@
-# Spec Kit
+# Spec Asset Kit
 
-*Build high-quality software faster.*
+基于 `spec-kit` fork 的中文增强版 Spec-Driven Development 工具链。
 
-**An effort to allow organizations to focus on product scenarios rather than writing undifferentiated code with the help of Spec-Driven Development.**
+## 它的目标
 
-## What is Spec-Driven Development?
+这个 fork 关注三件事：
 
-Spec-Driven Development **flips the script** on traditional software development. For decades, code has been king — specifications were just scaffolding we built and discarded once the "real work" of coding began. Spec-Driven Development changes this: **specifications become executable**, directly generating working implementations rather than just guiding them.
+- 保留标准 SDD 主链：`constitution -> specify -> plan -> tasks -> implement`
+- 默认提供中文原生模板、提示词和产出体验
+- 通过 `ai-assets` 把“项目理解”显式纳入 AI 工作流
 
-## Getting Started
+## 它解决的问题
 
-- [Installation Guide](installation.md)
-- [Quick Start Guide](quickstart.md)
-- [Upgrade Guide](upgrade.md)
-- [Local Development](local-development.md)
+在真实项目里，AI 常见的失败模式通常不是“不会写代码”，而是：
 
-## Core Philosophy
+- 不了解项目结构
+- 不理解项目术语
+- 不知道团队隐性约定
+- 在 brownfield 仓库里做出脱离现实的规划
 
-Spec-Driven Development is a structured process that emphasizes:
+`Spec Asset Kit` 的核心思路是：
 
-- **Intent-driven development** where specifications define the "*what*" before the "*how*"
-- **Rich specification creation** using guardrails and organizational principles
-- **Multi-step refinement** rather than one-shot code generation from prompts
-- **Heavy reliance** on advanced AI model capabilities for specification interpretation
+- 用 SDD 文档稳定 feature 级上下文
+- 用 `ai-assets` 稳定项目级上下文
+- 让 `plan` 显式消费项目理解资产，而不是只依赖当前规格
 
-## Development Phases
+## 快速入口
 
-| Phase | Focus | Key Activities |
-|-------|-------|----------------|
-| **0-to-1 Development** ("Greenfield") | Generate from scratch | <ul><li>Start with high-level requirements</li><li>Generate specifications</li><li>Plan implementation steps</li><li>Build production-ready applications</li></ul> |
-| **Creative Exploration** | Parallel implementations | <ul><li>Explore diverse solutions</li><li>Support multiple technology stacks & architectures</li><li>Experiment with UX patterns</li></ul> |
-| **Iterative Enhancement** ("Brownfield") | Brownfield modernization | <ul><li>Add features iteratively</li><li>Modernize legacy systems</li><li>Adapt processes</li></ul> |
+- [安装说明](installation.md)
+- [快速开始](quickstart.md)
+- [详细使用说明书](user-manual.zh-CN.md)
+- [升级说明](upgrade.md)
+- [本地开发](local-development.md)
 
-## Experimental Goals
+## 核心能力
 
-Our research and experimentation focus on:
+### 中文原生工作流
 
-### Technology Independence
+默认命令模板、核心文档模板和工作流步骤说明已中文化，适合中文团队直接协作。
 
-- Create applications using diverse technology stacks
-- Validate the hypothesis that Spec-Driven Development is a process not tied to specific technologies, programming languages, or frameworks
+### 内置 `ai-assets` 扩展
 
-### Enterprise Constraints
+初始化项目后会自动安装 bundled `ai-assets` 扩展，提供：
 
-- Demonstrate mission-critical application development
-- Incorporate organizational constraints (cloud providers, tech stacks, engineering practices)
-- Support enterprise design systems and compliance requirements
+- `speckit.ai-assets.extract`
+- `speckit.assets.extract`
+- `before_plan` 强制钩子
+- `plan` 对 `ai-assets` 的显式消费
 
-### User-Centric Development
+### 最小侵入增强
 
-- Build applications for different user cohorts and preferences
-- Support various development approaches (from vibe-coding to AI-native development)
+优先通过：
 
-### Creative & Iterative Processes
+- 扩展机制
+- 模板覆盖
+- 工作流增强
 
-- Validate the concept of parallel implementation exploration
-- Provide robust iterative feature development workflows
-- Extend processes to handle upgrades and modernization tasks
+来实现能力，而不是大规模重写核心 CLI。
 
-## Contributing
+## 推荐阅读顺序
 
-Please see our [Contributing Guide](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md) for information on how to contribute to this project.
+如果你是第一次使用：
 
-## Support
+1. [quickstart.md](quickstart.md)
+2. [user-manual.zh-CN.md](user-manual.zh-CN.md)
+3. [reference/extensions.md](reference/extensions.md)
 
-For support, please check our [Support Guide](https://github.com/github/spec-kit/blob/main/SUPPORT.md) or open an issue on GitHub.
+如果你是维护者或二次开发者：
+
+1. [user-manual.zh-CN.md](user-manual.zh-CN.md)
+2. [reference/extensions.md](reference/extensions.md)
+3. [reference/workflows.md](reference/workflows.md)
+4. [../enhance/fork-enhancement-blueprint.zh-CN.md](../enhance/fork-enhancement-blueprint.zh-CN.md)
+
+## 支持与贡献
+
+- 上游协作规范仍参考项目根目录下的 `CONTRIBUTING.md`
+- 如需理解当前 fork 的产品方向，请优先阅读 `enhance/` 下的改造蓝图与实施计划

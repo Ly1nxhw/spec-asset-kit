@@ -188,7 +188,7 @@ class CopilotIntegration(IntegrationBase):
                 f"project_root ({project_root_resolved})"
             )
 
-        templates = self.list_command_templates()
+        templates = self._list_command_templates_for_project(project_root)
         if not templates:
             return []
 

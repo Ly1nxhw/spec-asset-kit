@@ -50,3 +50,7 @@ docs/dev
 .specify/extensions/.cache/
 .specify/extensions/.backup/
 .specify/extensions/*/local-config.yml
+
+# Local runtime artifacts from testing initialized projects in-repo
+.agents/
+.specify/

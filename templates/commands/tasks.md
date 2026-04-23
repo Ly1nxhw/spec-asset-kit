@@ -1,39 +1,39 @@
 ---
-description: Generate an actionable, dependency-ordered tasks.md for the feature based on available design artifacts.
-handoffs: 
-  - label: Analyze For Consistency
+description: 基于已有设计文档生成按依赖排序、可执行的 tasks.md。
+handoffs:
+  - label: 进行一致性分析
     agent: speckit.analyze
-    prompt: Run a project analysis for consistency
+    prompt: 请对当前项目文档做一致性分析
     send: true
-  - label: Implement Project
+  - label: 开始实现
     agent: speckit.implement
-    prompt: Start the implementation in phases
+    prompt: 请按阶段开始实施
     send: true
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json
   ps: scripts/powershell/check-prerequisites.ps1 -Json
 ---
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+如果用户输入非空，你**必须**先纳入考虑再继续。
 
-## Pre-Execution Checks
+## 执行前检查
 
-**Check for extension hooks (before tasks generation)**:
-- Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.before_tasks` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**检查扩展钩子（生成任务之前）**：
+- 检查项目根目录下是否存在 `.specify/extensions.yml`
+- 如果存在，读取 `hooks.before_tasks` 下的条目
+- 如果 YAML 无法解析或无效，静默跳过钩子检查并正常继续
+- 过滤掉 `enabled` 明确为 `false` 的钩子；未声明 `enabled` 视为启用
+- 对其余钩子，不要解释或求值 `condition`
+  - 没有 `condition`，或其值为 null/空字符串时，视为可执行
+  - 若存在非空 `condition`，跳过该钩子，把条件判断交给 HookExecutor
+- 对每个可执行钩子，按 `optional` 输出：
+  - **可选钩子**（`optional: true`）：
     ```
     ## Extension Hooks
 
@@ -44,68 +44,63 @@ You **MUST** consider the user input before proceeding (if not empty).
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
+  - **强制钩子**（`optional: false`）：
     ```
     ## Extension Hooks
 
     **Automatic Pre-Hook**: {extension}
     Executing: `/{command}`
     EXECUTE_COMMAND: {command}
-    
+
     Wait for the result of the hook command before proceeding to the Outline.
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过
 
-## Outline
+## 执行纲要
 
-1. **Setup**: Run `{SCRIPT}` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+1. **初始化**：在仓库根目录运行 `{SCRIPT}`，解析 `FEATURE_DIR` 与 `AVAILABLE_DOCS`。所有路径必须使用绝对路径。若参数中包含单引号，请使用正确转义。
 
-2. **Load design documents**: Read from FEATURE_DIR:
-   - **Required**: plan.md (tech stack, libraries, structure), spec.md (user stories with priorities)
-   - **Optional**: data-model.md (entities), contracts/ (interface contracts), research.md (decisions), quickstart.md (test scenarios)
-   - Note: Not all projects have all documents. Generate tasks based on what's available.
+2. **加载设计文档**：从 `FEATURE_DIR` 读取：
+   - **必需**：`plan.md`（技术栈、依赖、结构）、`spec.md`（用户故事与优先级）
+   - **可选**：`data-model.md`、`contracts/`、`research.md`、`quickstart.md`
+   - 注意：并非所有项目都会包含全部文档，应基于现有资料生成任务
 
-3. **Execute task generation workflow**:
-   - Load plan.md and extract tech stack, libraries, project structure
-   - Load spec.md and extract user stories with their priorities (P1, P2, P3, etc.)
-   - If data-model.md exists: Extract entities and map to user stories
-   - If contracts/ exists: Map interface contracts to user stories
-   - If research.md exists: Extract decisions for setup tasks
-   - Generate tasks organized by user story (see Task Generation Rules below)
-   - Generate dependency graph showing user story completion order
-   - Create parallel execution examples per user story
-   - Validate task completeness (each user story has all needed tasks, independently testable)
+3. **执行任务生成流程**：
+   - 读取 `plan.md`，提取技术栈、依赖与目录结构
+   - 读取 `spec.md`，提取用户故事与优先级（P1、P2、P3...）
+   - 如有 `data-model.md`：提取实体并映射到用户故事
+   - 如有 `contracts/`：将接口契约映射到用户故事
+   - 如有 `research.md`：提取关键决策，转化为初始化或基础任务
+   - 按用户故事组织任务（详见下文“任务生成规则”）
+   - 生成依赖图，明确用户故事完成顺序
+   - 为每个故事生成并行执行示例
+   - 校验任务完整性，确保每个用户故事都可独立测试
 
-4. **Generate tasks.md**: Use `templates/tasks-template.md` as structure, fill with:
-   - Correct feature name from plan.md
-   - Phase 1: Setup tasks (project initialization)
-   - Phase 2: Foundational tasks (blocking prerequisites for all user stories)
-   - Phase 3+: One phase per user story (in priority order from spec.md)
-   - Each phase includes: story goal, independent test criteria, tests (if requested), implementation tasks
-   - Final Phase: Polish & cross-cutting concerns
-   - All tasks must follow the strict checklist format (see Task Generation Rules below)
-   - Clear file paths for each task
-   - Dependencies section showing story completion order
-   - Parallel execution examples per story
-   - Implementation strategy section (MVP first, incremental delivery)
+4. **生成 `tasks.md`**：基于 `templates/tasks-template.md` 填充：
+   - 从 `plan.md` 填入正确的功能名
+   - Phase 1：初始化任务
+   - Phase 2：基础能力任务
+   - Phase 3+：按优先级为每个用户故事生成独立阶段
+   - 每个阶段包含：故事目标、独立测试方式、测试任务（如需要）、实现任务
+   - 末尾补上打磨与横切任务
+   - 所有任务必须严格满足清单格式
+   - 每条任务都要写明精确文件路径
 
-5. **Report**: Output path to generated tasks.md and summary:
-   - Total task count
-   - Task count per user story
-   - Parallel opportunities identified
-   - Independent test criteria for each story
-   - Suggested MVP scope (typically just User Story 1)
-   - Format validation: Confirm ALL tasks follow the checklist format (checkbox, ID, labels, file paths)
+5. **结果汇报**：输出 `tasks.md` 路径及摘要：
+   - 总任务数
+   - 每个用户故事的任务数
+   - 识别到的并行机会
+   - 每个故事的独立测试标准
+   - 建议 MVP 范围（通常为用户故事 1）
+   - 格式验证结果：确认所有任务都满足清单格式
 
-6. **Check for extension hooks**: After tasks.md is generated, check if `.specify/extensions.yml` exists in the project root.
-   - If it exists, read it and look for entries under the `hooks.after_tasks` key
-   - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-   - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-   - For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-     - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-     - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-   - For each executable hook, output the following based on its `optional` flag:
-     - **Optional hook** (`optional: true`):
+6. **检查扩展钩子（生成任务之后）**：
+   - 如果 `.specify/extensions.yml` 存在，读取 `hooks.after_tasks`
+   - YAML 无法解析时静默跳过
+   - 过滤 `enabled: false`
+   - 不要解释或求值 `condition`
+   - 对每个可执行钩子，按 `optional` 输出：
+     - **可选钩子**：
        ```
        ## Extension Hooks
 
@@ -116,7 +111,7 @@ You **MUST** consider the user input before proceeding (if not empty).
        Prompt: {prompt}
        To execute: `/{command}`
        ```
-     - **Mandatory hook** (`optional: false`):
+     - **强制钩子**：
        ```
        ## Extension Hooks
 
@@ -124,80 +119,69 @@ You **MUST** consider the user input before proceeding (if not empty).
        Executing: `/{command}`
        EXECUTE_COMMAND: {command}
        ```
-   - If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+   - 如果没有钩子或文件不存在，则静默跳过
 
-Context for task generation: {ARGS}
+任务生成上下文：{ARGS}
 
-The tasks.md should be immediately executable - each task must be specific enough that an LLM can complete it without additional context.
+生成出的 `tasks.md` 必须可以被 LLM 直接执行，不应依赖额外补充说明。
 
-## Task Generation Rules
+## 任务生成规则
 
-**CRITICAL**: Tasks MUST be organized by user story to enable independent implementation and testing.
+**关键要求**：任务必须按用户故事组织，以保证每个故事都能独立实现与独立测试。
 
-**Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature specification or if user requests TDD approach.
+**测试是可选项**：只有在功能规格明确要求测试，或用户指定采用 TDD 时，才生成测试任务。
 
-### Checklist Format (REQUIRED)
+### 清单格式（强制）
 
-Every task MUST strictly follow this format:
+每条任务都必须严格遵循：
 
 ```text
 - [ ] [TaskID] [P?] [Story?] Description with file path
 ```
 
-**Format Components**:
+组成说明：
 
-1. **Checkbox**: ALWAYS start with `- [ ]` (markdown checkbox)
-2. **Task ID**: Sequential number (T001, T002, T003...) in execution order
-3. **[P] marker**: Include ONLY if task is parallelizable (different files, no dependencies on incomplete tasks)
-4. **[Story] label**: REQUIRED for user story phase tasks only
-   - Format: [US1], [US2], [US3], etc. (maps to user stories from spec.md)
-   - Setup phase: NO story label
-   - Foundational phase: NO story label  
-   - User Story phases: MUST have story label
-   - Polish phase: NO story label
-5. **Description**: Clear action with exact file path
+1. **复选框**：必须以 `- [ ]` 开头
+2. **任务 ID**：按执行顺序递增，例如 `T001`、`T002`
+3. **[P] 标记**：仅当任务可并行时出现
+4. **[Story] 标签**：只在用户故事阶段任务中出现，格式固定为 `[US1]`、`[US2]`...
+5. **描述**：必须明确动作，并带精确文件路径
 
-**Examples**:
+**示例**：
 
-- ✅ CORRECT: `- [ ] T001 Create project structure per implementation plan`
-- ✅ CORRECT: `- [ ] T005 [P] Implement authentication middleware in src/middleware/auth.py`
-- ✅ CORRECT: `- [ ] T012 [P] [US1] Create User model in src/models/user.py`
-- ✅ CORRECT: `- [ ] T014 [US1] Implement UserService in src/services/user_service.py`
-- ❌ WRONG: `- [ ] Create User model` (missing ID and Story label)
-- ❌ WRONG: `T001 [US1] Create model` (missing checkbox)
-- ❌ WRONG: `- [ ] [US1] Create User model` (missing Task ID)
-- ❌ WRONG: `- [ ] T001 [US1] Create model` (missing file path)
+- 正确：`- [ ] T001 Create project structure per implementation plan`
+- 正确：`- [ ] T005 [P] Implement authentication middleware in src/middleware/auth.py`
+- 正确：`- [ ] T012 [P] [US1] Create User model in src/models/user.py`
+- 正确：`- [ ] T014 [US1] Implement UserService in src/services/user_service.py`
+- 错误：`- [ ] Create User model`
+- 错误：`T001 [US1] Create model`
+- 错误：`- [ ] [US1] Create User model`
+- 错误：`- [ ] T001 [US1] Create model`
 
-### Task Organization
+### 任务组织原则
 
-1. **From User Stories (spec.md)** - PRIMARY ORGANIZATION:
-   - Each user story (P1, P2, P3...) gets its own phase
-   - Map all related components to their story:
-     - Models needed for that story
-     - Services needed for that story
-     - Interfaces/UI needed for that story
-     - If tests requested: Tests specific to that story
-   - Mark story dependencies (most stories should be independent)
+1. **来自用户故事（spec.md）**：
+   - 每个用户故事对应一个独立阶段
+   - 该故事需要的模型、服务、接口、测试都归入同一阶段
+   - 大多数故事应保持独立，避免无必要依赖
 
-2. **From Contracts**:
-   - Map each interface contract → to the user story it serves
-   - If tests requested: Each interface contract → contract test task [P] before implementation in that story's phase
+2. **来自契约（contracts/）**：
+   - 每个接口契约都映射到其服务的用户故事
+   - 若要求测试，则在该故事中先生成契约测试任务，再生成实现任务
 
-3. **From Data Model**:
-   - Map each entity to the user story(ies) that need it
-   - If entity serves multiple stories: Put in earliest story or Setup phase
-   - Relationships → service layer tasks in appropriate story phase
+3. **来自数据模型（data-model.md）**：
+   - 把每个实体映射到最早需要它的用户故事
+   - 若实体被多个故事共享，放入最早阶段或基础能力阶段
 
-4. **From Setup/Infrastructure**:
-   - Shared infrastructure → Setup phase (Phase 1)
-   - Foundational/blocking tasks → Foundational phase (Phase 2)
-   - Story-specific setup → within that story's phase
+4. **来自基础设施与共享能力**：
+   - 通用初始化 -> Phase 1
+   - 阻塞所有故事的前置能力 -> Phase 2
+   - 仅服务某一故事的准备工作 -> 归入该故事阶段
 
-### Phase Structure
+### 阶段结构
 
-- **Phase 1**: Setup (project initialization)
-- **Phase 2**: Foundational (blocking prerequisites - MUST complete before user stories)
-- **Phase 3+**: User Stories in priority order (P1, P2, P3...)
-  - Within each story: Tests (if requested) → Models → Services → Endpoints → Integration
-  - Each phase should be a complete, independently testable increment
-- **Final Phase**: Polish & Cross-Cutting Concerns
+- **Phase 1**：初始化
+- **Phase 2**：基础能力（阻塞所有用户故事）
+- **Phase 3+**：按优先级展开各用户故事
+  - 每个故事内部遵循：测试（如有）-> 模型 -> 服务 -> 接口 -> 集成
+- **最终阶段**：打磨与横切关注点

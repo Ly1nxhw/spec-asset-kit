@@ -5,7 +5,7 @@ extension:
   version: 1.0.0
   description: Verifies catalog extensions by programmatically walking through the discovery, installation, and registration lifecycle.
   author: spec-kit-core
-  repository: https://github.com/github/spec-kit
+  repository: https://github.com/Ly1nxhw/spec-asset-kit
   license: MIT
 requires:
   speckit_version: ">=0.2.0"

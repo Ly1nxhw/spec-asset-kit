@@ -1843,3 +1843,30 @@ steps:
         assert state.status == RunStatus.COMPLETED
         assert "do-plan" in state.step_results
         assert "do-specify" not in state.step_results
+
+
+class TestBundledSpeckitWorkflow:
+    """Validate the bundled speckit workflow definition."""
+
+    def test_bundled_workflow_includes_constitution_first_and_chinese_copy(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        workflow_path = repo_root / "workflows" / "speckit" / "workflow.yml"
+
+        data = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
+        steps = data["steps"]
+        step_ids = [step["id"] for step in steps]
+
+        assert step_ids == [
+            "constitution",
+            "review-constitution",
+            "specify",
+            "review-spec",
+            "plan",
+            "review-plan",
+            "tasks",
+            "implement",
+        ]
+        assert data["workflow"]["name"] == "完整 SDD 工作流"
+        assert "constitution -> specify -> plan -> tasks -> implement" in data["workflow"]["description"]
+        assert data["inputs"]["spec"]["prompt"] == "请描述你要构建的内容"
+        assert steps[1]["message"] == "请先审阅更新后的项目宪章，再继续生成功能规格。"

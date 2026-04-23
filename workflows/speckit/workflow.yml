@@ -1,10 +1,10 @@
 schema_version: "1.0"
 workflow:
   id: "speckit"
-  name: "Full SDD Cycle"
-  version: "1.0.0"
+  name: "完整 SDD 工作流"
+  version: "1.1.0"
   author: "GitHub"
-  description: "Runs specify → plan → tasks → implement with review gates"
+  description: "以中文引导运行 constitution -> specify -> plan -> tasks -> implement，并在关键节点设置人工审阅门禁"
 
 requires:
   speckit_version: ">=0.7.2"
@@ -15,17 +15,29 @@ inputs:
   spec:
     type: string
     required: true
-    prompt: "Describe what you want to build"
+    prompt: "请描述你要构建的内容"
   integration:
     type: string
     default: "copilot"
-    prompt: "Integration to use (e.g. claude, copilot, gemini)"
+    prompt: "请选择要使用的集成（如 claude、copilot、gemini）"
   scope:
     type: string
     default: "full"
     enum: ["full", "backend-only", "frontend-only"]
 
 steps:
+  - id: constitution
+    command: speckit.constitution
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: review-constitution
+    type: gate
+    message: "请先审阅更新后的项目宪章，再继续生成功能规格。"
+    options: [approve, reject]
+    on_reject: abort
+
   - id: specify
     command: speckit.specify
     integration: "{{ inputs.integration }}"
@@ -34,7 +46,7 @@ steps:
 
   - id: review-spec
     type: gate
-    message: "Review the generated spec before planning."
+    message: "请先审阅生成的规格说明，再继续技术规划。"
     options: [approve, reject]
     on_reject: abort
 
@@ -46,7 +58,7 @@ steps:
 
   - id: review-plan
     type: gate
-    message: "Review the plan before generating tasks."
+    message: "请先审阅实现计划，再继续拆解任务。"
     options: [approve, reject]
     on_reject: abort
 

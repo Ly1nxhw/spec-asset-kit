@@ -163,7 +163,7 @@ Edit `workflows/catalog.community.json` and add your workflow.
 {
   "schema_version": "1.0",
   "updated_at": "2026-04-10T00:00:00Z",
-  "catalog_url": "https://raw.githubusercontent.com/github/spec-kit/main/workflows/catalog.community.json",
+  "catalog_url": "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/workflows/catalog.community.json",
   "workflows": {
     "your-workflow": {
       "id": "your-workflow",

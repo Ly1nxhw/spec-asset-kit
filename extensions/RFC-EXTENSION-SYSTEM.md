@@ -868,7 +868,7 @@ Spec Kit uses two catalog files with different purposes:
 
 #### User Catalog (`catalog.json`)
 
-**URL**: `https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.json`
+**URL**: `https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/extensions/catalog.json`
 
 - **Purpose**: Organization's curated catalog of approved extensions
 - **Default State**: Empty by design - users populate with extensions they trust
@@ -877,7 +877,7 @@ Spec Kit uses two catalog files with different purposes:
 
 #### Community Reference Catalog (`catalog.community.json`)
 
-**URL**: `https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.community.json`
+**URL**: `https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/extensions/catalog.community.json`
 
 - **Purpose**: Reference catalog of available community-contributed extensions
 - **Verification**: Community extensions may have `verified: false` initially
@@ -992,7 +992,7 @@ This means `specify extension search` surfaces community extensions out of the b
 ```yaml
 catalogs:
   - name: "default"
-    url: "https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.json"
+    url: "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/extensions/catalog.json"
     priority: 1          # Highest — only approved entries can be installed
     install_allowed: true
     description: "Built-in catalog of installable extensions"
@@ -1004,7 +1004,7 @@ catalogs:
     description: "Internal company extensions"
 
   - name: "community"
-    url: "https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.community.json"
+    url: "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/extensions/catalog.community.json"
     priority: 3          # Lowest — discovery only, not installable
     install_allowed: false
     description: "Community-contributed extensions (discovery only)"
@@ -1024,7 +1024,7 @@ specify extension catalog add --name "internal" --install-allowed \
 
 # Add a discovery-only catalog
 specify extension catalog add --name "community" \
-  https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.community.json
+  https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/extensions/catalog.community.json
 
 # Remove a catalog
 specify extension catalog remove internal

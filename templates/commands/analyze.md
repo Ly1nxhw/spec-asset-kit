@@ -1,30 +1,30 @@
 ---
-description: Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation.
+description: 在任务生成完成后，对 spec.md、plan.md、tasks.md 做只读的一致性与质量分析。
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
   ps: scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
 ---
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+如果用户输入非空，你**必须**先纳入考虑再继续。
 
-## Pre-Execution Checks
+## 执行前检查
 
-**Check for extension hooks (before analysis)**:
-- Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.before_analyze` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**检查扩展钩子（分析之前）**：
+- 检查项目根目录下是否存在 `.specify/extensions.yml`
+- 如果存在，读取 `hooks.before_analyze` 下的条目
+- 如果 YAML 无法解析或无效，静默跳过钩子检查并正常继续
+- 过滤掉 `enabled` 明确为 `false` 的钩子；未声明 `enabled` 视为启用
+- 对其余钩子，不要解释或求值 `condition`
+  - 没有 `condition`，或其值为 null/空字符串时，视为可执行
+  - 若存在非空 `condition`，跳过该钩子，把条件判断交给 HookExecutor
+- 对每个可执行钩子，按 `optional` 输出：
+  - **可选钩子**（`optional: true`）：
     ```
     ## Extension Hooks
 
@@ -35,7 +35,7 @@ You **MUST** consider the user input before proceeding (if not empty).
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
+  - **强制钩子**（`optional: false`）：
     ```
     ## Extension Hooks
 
@@ -45,171 +45,167 @@ You **MUST** consider the user input before proceeding (if not empty).
 
     Wait for the result of the hook command before proceeding to the Goal.
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过
 
-## Goal
+## 目标
 
-Identify inconsistencies, duplications, ambiguities, and underspecified items across the three core artifacts (`spec.md`, `plan.md`, `tasks.md`) before implementation. This command MUST run only after `/speckit.tasks` has successfully produced a complete `tasks.md`.
+在实现之前，识别三份核心产物 `spec.md`、`plan.md`、`tasks.md` 之间的一致性问题、重复、歧义和漏项。该命令只能在 `/speckit.tasks` 成功生成完整 `tasks.md` 之后运行。
 
-## Operating Constraints
+## 运行约束
 
-**STRICTLY READ-ONLY**: Do **not** modify any files. Output a structured analysis report. Offer an optional remediation plan (user must explicitly approve before any follow-up editing commands would be invoked manually).
+**严格只读**：不要修改任何文件。只输出结构化分析报告。如需修复建议，可在最后提供可选的 remediation plan，但必须由用户显式批准后再人工执行后续命令。
 
-**Constitution Authority**: The project constitution (`/memory/constitution.md`) is **non-negotiable** within this analysis scope. Constitution conflicts are automatically CRITICAL and require adjustment of the spec, plan, or tasks—not dilution, reinterpretation, or silent ignoring of the principle. If a principle itself needs to change, that must occur in a separate, explicit constitution update outside `/speckit.analyze`.
+**宪章优先**：项目宪章 `/memory/constitution.md` 在本分析中是不可协商的最高约束。任何与宪章冲突的内容都应直接视为 CRITICAL，并要求调整 spec、plan 或 tasks，而不是弱化宪章本身。
 
-## Execution Steps
+## 执行步骤
 
-### 1. Initialize Analysis Context
+### 1. 初始化分析上下文
 
-Run `{SCRIPT}` once from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS. Derive absolute paths:
+在仓库根目录运行 `{SCRIPT}` 一次，解析 `FEATURE_DIR` 与 `AVAILABLE_DOCS`，并推导：
 
-- SPEC = FEATURE_DIR/spec.md
-- PLAN = FEATURE_DIR/plan.md
-- TASKS = FEATURE_DIR/tasks.md
+- `SPEC = FEATURE_DIR/spec.md`
+- `PLAN = FEATURE_DIR/plan.md`
+- `TASKS = FEATURE_DIR/tasks.md`
 
-Abort with an error message if any required file is missing (instruct the user to run missing prerequisite command).
-For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+若任一必需文件缺失，则终止并提示用户运行前置命令。若参数包含单引号，请使用正确转义。
 
-### 2. Load Artifacts (Progressive Disclosure)
+### 2. 渐进式加载产物
 
-Load only the minimal necessary context from each artifact:
+只加载最低必要上下文：
 
-**From spec.md:**
+**从 spec.md 读取：**
+- 概览 / 背景
+- 功能需求
+- 成功标准
+- 用户故事
+- 边界情况（如果存在）
 
-- Overview/Context
-- Functional Requirements
-- Success Criteria (measurable outcomes — e.g., performance, security, availability, user success, business impact)
-- User Stories
-- Edge Cases (if present)
+**从 plan.md 读取：**
+- 架构与技术选择
+- 数据模型引用
+- 阶段划分
+- 技术约束
 
-**From plan.md:**
+**从 tasks.md 读取：**
+- 任务 ID
+- 任务描述
+- 阶段分组
+- 并行标记 `[P]`
+- 引用的文件路径
 
-- Architecture/stack choices
-- Data Model references
-- Phases
-- Technical constraints
+**从 constitution 读取：**
+- 加载 `/memory/constitution.md` 以执行原则校验
 
-**From tasks.md:**
+### 3. 构建语义模型
 
-- Task IDs
-- Descriptions
-- Phase grouping
-- Parallel markers [P]
-- Referenced file paths
+在内部构建以下表示（不要把原文整段输出给用户）：
 
-**From constitution:**
+- **需求清单**：记录每个 FR-### 与 SC-### 的稳定键
+- **用户故事 / 行动清单**：提取可执行的用户动作与验收标准
+- **任务覆盖映射**：把每个任务映射到需求或用户故事
+- **宪章规则集**：提取原则名称和其中的 MUST / SHOULD 约束
 
-- Load `/memory/constitution.md` for principle validation
+### 4. 侦测流程（高信号分析）
 
-### 3. Build Semantic Models
+最多输出 50 条发现，超出部分做汇总。
 
-Create internal representations (do not include raw artifacts in output):
+#### A. 重复检测
 
-- **Requirements inventory**: For each Functional Requirement (FR-###) and Success Criterion (SC-###), record a stable key. Use the explicit FR-/SC- identifier as the primary key when present, and optionally also derive an imperative-phrase slug for readability (e.g., "User can upload file" → `user-can-upload-file`). Include only Success Criteria items that require buildable work (e.g., load-testing infrastructure, security audit tooling), and exclude post-launch outcome metrics and business KPIs (e.g., "Reduce support tickets by 50%").
-- **User story/action inventory**: Discrete user actions with acceptance criteria
-- **Task coverage mapping**: Map each task to one or more requirements or stories (inference by keyword / explicit reference patterns like IDs or key phrases)
-- **Constitution rule set**: Extract principle names and MUST/SHOULD normative statements
+- 识别语义近似或重复的需求
+- 标记表述较差的一方，建议合并
 
-### 4. Detection Passes (Token-Efficient Analysis)
+#### B. 歧义检测
 
-Focus on high-signal findings. Limit to 50 findings total; aggregate remainder in overflow summary.
+- 标记缺乏量化的模糊形容词，如“快速”“安全”“稳健”“直观”
+- 标记未解决的占位符，如 TODO、TKTK、???、`<placeholder>`
 
-#### A. Duplication Detection
+#### C. 规格不充分
 
-- Identify near-duplicate requirements
-- Mark lower-quality phrasing for consolidation
+- 动词明确但对象或结果不明确的需求
+- 缺少验收标准映射的用户故事
+- 任务引用了规格或计划中未定义的文件 / 组件
 
-#### B. Ambiguity Detection
+#### D. 宪章一致性
 
-- Flag vague adjectives (fast, scalable, secure, intuitive, robust) lacking measurable criteria
-- Flag unresolved placeholders (TODO, TKTK, ???, `<placeholder>`, etc.)
+- 任何与宪章 MUST 原则冲突的需求或方案
+- 宪章要求但文档中缺失的质量门禁或章节
 
-#### C. Underspecification
+#### E. 覆盖缺口
 
-- Requirements with verbs but missing object or measurable outcome
-- User stories missing acceptance criteria alignment
-- Tasks referencing files or components not defined in spec/plan
+- 没有任何任务覆盖的需求
+- 无法映射到需求或用户故事的任务
+- 对性能、安全、可用性等可构建成功标准，没有对应任务支撑
 
-#### D. Constitution Alignment
+#### F. 不一致性
 
-- Any requirement or plan element conflicting with a MUST principle
-- Missing mandated sections or quality gates from constitution
+- 术语漂移
+- plan 中出现但 spec 中缺失的数据实体，或反之
+- 任务顺序矛盾
+- 相互冲突的约束或技术决策
 
-#### E. Coverage Gaps
+### 5. 严重级别判定
 
-- Requirements with zero associated tasks
-- Tasks with no mapped requirement/story
-- Success Criteria requiring buildable work (performance, security, availability) not reflected in tasks
+使用以下规则：
 
-#### F. Inconsistency
+- **CRITICAL**：违反宪章 MUST、缺失核心产物、或关键需求完全没有任务覆盖
+- **HIGH**：重复 / 冲突需求、关键安全或性能歧义、不可测试的验收标准
+- **MEDIUM**：术语漂移、非功能任务覆盖不足、边界情况不充分
+- **LOW**：样式、措辞或轻度冗余问题
 
-- Terminology drift (same concept named differently across files)
-- Data entities referenced in plan but absent in spec (or vice versa)
-- Task ordering contradictions (e.g., integration tasks before foundational setup tasks without dependency note)
-- Conflicting requirements (e.g., one requires Next.js while other specifies Vue)
+### 6. 输出紧凑分析报告
 
-### 5. Severity Assignment
-
-Use this heuristic to prioritize findings:
-
-- **CRITICAL**: Violates constitution MUST, missing core spec artifact, or requirement with zero coverage that blocks baseline functionality
-- **HIGH**: Duplicate or conflicting requirement, ambiguous security/performance attribute, untestable acceptance criterion
-- **MEDIUM**: Terminology drift, missing non-functional task coverage, underspecified edge case
-- **LOW**: Style/wording improvements, minor redundancy not affecting execution order
-
-### 6. Produce Compact Analysis Report
-
-Output a Markdown report (no file writes) with the following structure:
+输出 Markdown 报告，结构如下：
 
 ## Specification Analysis Report
 
 | ID | Category | Severity | Location(s) | Summary | Recommendation |
 |----|----------|----------|-------------|---------|----------------|
-| A1 | Duplication | HIGH | spec.md:L120-134 | Two similar requirements ... | Merge phrasing; keep clearer version |
+| A1 | Duplication | HIGH | spec.md:L120-134 | ... | ... |
 
-(Add one row per finding; generate stable IDs prefixed by category initial.)
+并附带：
 
-**Coverage Summary Table:**
+**Coverage Summary Table**
 
 | Requirement Key | Has Task? | Task IDs | Notes |
 |-----------------|-----------|----------|-------|
 
-**Constitution Alignment Issues:** (if any)
+**Constitution Alignment Issues**（如有）  
+**Unmapped Tasks**（如有）
 
-**Unmapped Tasks:** (if any)
-
-**Metrics:**
+**Metrics**
 
 - Total Requirements
 - Total Tasks
-- Coverage % (requirements with >=1 task)
+- Coverage %
 - Ambiguity Count
 - Duplication Count
 - Critical Issues Count
 
-### 7. Provide Next Actions
+### 7. 给出下一步建议
 
-At end of report, output a concise Next Actions block:
+在报告末尾输出简洁的 Next Actions：
 
-- If CRITICAL issues exist: Recommend resolving before `/speckit.implement`
-- If only LOW/MEDIUM: User may proceed, but provide improvement suggestions
-- Provide explicit command suggestions: e.g., "Run /speckit.specify with refinement", "Run /speckit.plan to adjust architecture", "Manually edit tasks.md to add coverage for 'performance-metrics'"
+- 如存在 CRITICAL 问题：建议先修复，再运行 `/speckit.implement`
+- 若只有 LOW / MEDIUM：可继续，但应给出改进建议
+- 提供明确命令建议，如：
+  - `Run /speckit.specify with refinement`
+  - `Run /speckit.plan to adjust architecture`
+  - `Manually edit tasks.md to add coverage for ...`
 
-### 8. Offer Remediation
+### 8. 提供修复协助
 
-Ask the user: "Would you like me to suggest concrete remediation edits for the top N issues?" (Do NOT apply them automatically.)
+询问用户：`Would you like me to suggest concrete remediation edits for the top N issues?`
+不要自动修改任何文件。
 
-### 9. Check for extension hooks
+### 9. 检查扩展钩子
 
-After reporting, check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.after_analyze` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+分析报告输出后：
+- 若 `.specify/extensions.yml` 存在，读取 `hooks.after_analyze`
+- YAML 无法解析时静默跳过
+- 过滤 `enabled: false`
+- 不要解释或求值 `condition`
+- 对每个可执行钩子，按 `optional` 输出：
+  - **可选钩子**：
     ```
     ## Extension Hooks
 
@@ -220,7 +216,7 @@ After reporting, check if `.specify/extensions.yml` exists in the project root.
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
+  - **强制钩子**：
     ```
     ## Extension Hooks
 
@@ -228,25 +224,25 @@ After reporting, check if `.specify/extensions.yml` exists in the project root.
     Executing: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过
 
-## Operating Principles
+## 分析原则
 
-### Context Efficiency
+### 上下文效率
 
-- **Minimal high-signal tokens**: Focus on actionable findings, not exhaustive documentation
-- **Progressive disclosure**: Load artifacts incrementally; don't dump all content into analysis
-- **Token-efficient output**: Limit findings table to 50 rows; summarize overflow
-- **Deterministic results**: Rerunning without changes should produce consistent IDs and counts
+- 只输出高信号、可行动发现
+- 渐进式加载文档，不要无差别转储全文
+- 报告最多 50 条发现，其余做统计汇总
+- 在未改动文件的前提下，多次运行应得到稳定结果
 
-### Analysis Guidelines
+### 分析准则
 
-- **NEVER modify files** (this is read-only analysis)
-- **NEVER hallucinate missing sections** (if absent, report them accurately)
-- **Prioritize constitution violations** (these are always CRITICAL)
-- **Use examples over exhaustive rules** (cite specific instances, not generic patterns)
-- **Report zero issues gracefully** (emit success report with coverage statistics)
+- **绝不修改文件**
+- **绝不臆造缺失章节**
+- **优先报告宪章冲突**
+- **优先用具体实例，而不是泛泛规则**
+- 若没有问题，也应输出通过报告与覆盖统计
 
-## Context
+## 上下文
 
 {ARGS}

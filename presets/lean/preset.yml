@@ -6,7 +6,7 @@ preset:
   version: "1.0.0"
   description: "Minimal core workflow commands - just the prompt, just the artifact"
   author: "github"
-  repository: "https://github.com/github/spec-kit"
+  repository: "https://github.com/Ly1nxhw/spec-asset-kit"
   license: "MIT"
 
 requires:

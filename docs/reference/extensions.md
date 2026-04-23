@@ -2,6 +2,37 @@
 
 Extensions add new capabilities to Spec Kit — domain-specific commands, external tool integrations, quality gates, and more. They introduce new commands and templates that go beyond the built-in Spec-Driven Development workflow.
 
+## Bundled Extension: `ai-assets`
+
+In this fork, `ai-assets` is bundled and installed by default during `specify init`.
+
+It provides:
+
+- `speckit.ai-assets.extract`
+- alias: `speckit.assets.extract`
+- a mandatory `before_plan` hook
+- template overrides for `plan` and `plan-template`
+
+Its responsibility is to initialize and refresh the root-level `ai-assets/` directory so planning can consume project-level understanding before implementation design starts.
+
+Default generated assets:
+
+```text
+ai-assets/
+|- project-overview.md
+|- glossary.md
+|- architecture.md
+|- repo-map.md
+|- conventions.md
+|- evolution-log.md
+`- extraction-report.md
+```
+
+Important rule:
+
+- `ai-assets` is an AI-facing summary layer
+- it does not replace code, configuration, contracts, or formal documentation as the source of truth
+
 ## Search Available Extensions
 
 ```bash

@@ -95,7 +95,7 @@ class GenericIntegration(MarkdownIntegration):
         """Install commands to the user-provided commands directory."""
         commands_dir = self._resolve_commands_dir(parsed_options, opts)
 
-        templates = self.list_command_templates()
+        templates = self._list_command_templates_for_project(project_root)
         if not templates:
             return []
 

@@ -38,7 +38,7 @@ _FALLBACK_CORE_COMMAND_NAMES = frozenset({
 })
 EXTENSION_COMMAND_NAME_PATTERN = re.compile(r"^speckit\.([a-z0-9-]+)\.([a-z0-9-]+)$")
 
-REINSTALL_COMMAND = "uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git"
+REINSTALL_COMMAND = "uv tool install specify-cli --force --from git+https://github.com/Ly1nxhw/spec-asset-kit.git"
 
 
 def _load_core_command_names() -> frozenset[str]:
@@ -1502,8 +1502,8 @@ class CommandRegistrar:
 class ExtensionCatalog:
     """Manages extension catalog fetching, caching, and searching."""
 
-    DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.json"
-    COMMUNITY_CATALOG_URL = "https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.community.json"
+    DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/extensions/catalog.json"
+    COMMUNITY_CATALOG_URL = "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/extensions/catalog.community.json"
     CACHE_DURATION = 3600  # 1 hour in seconds
 
     def __init__(self, project_root: Path):

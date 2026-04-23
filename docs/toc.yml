@@ -9,6 +9,8 @@
       href: installation.md
     - name: Quick Start
       href: quickstart.md
+    - name: User Manual (zh-CN)
+      href: user-manual.zh-CN.md
     - name: Upgrade
       href: upgrade.md
 

@@ -23,15 +23,15 @@ _HOOK_COMMAND_NOTE = (
 # Mapping of command template stem → argument-hint text shown inline
 # when a user invokes the slash command in Claude Code.
 ARGUMENT_HINTS: dict[str, str] = {
-    "specify": "Describe the feature you want to specify",
-    "plan": "Optional guidance for the planning phase",
-    "tasks": "Optional task generation constraints",
-    "implement": "Optional implementation guidance or task filter",
-    "analyze": "Optional focus areas for analysis",
-    "clarify": "Optional areas to clarify in the spec",
-    "constitution": "Principles or values for the project constitution",
-    "checklist": "Domain or focus area for the checklist",
-    "taskstoissues": "Optional filter or label for GitHub issues",
+    "specify": "请描述你要定义的功能",
+    "plan": "可选：补充本轮规划的约束或偏好",
+    "tasks": "可选：补充任务拆解约束",
+    "implement": "可选：补充实现约束或任务过滤条件",
+    "analyze": "可选：补充分析关注点",
+    "clarify": "可选：指出需要重点澄清的规格部分",
+    "constitution": "请提供项目宪章的原则或价值观",
+    "checklist": "请输入检查清单对应的领域或关注点",
+    "taskstoissues": "可选：补充 GitHub Issue 的过滤条件或标签",
 }
 
 
@@ -162,8 +162,8 @@ class ClaudeIntegration(SkillsIntegration):
     def _inject_hook_command_note(content: str) -> str:
         """Insert a dot-to-hyphen note before each hook output instruction.
 
-        Targets the line ``- For each executable hook, output the following``
-        and inserts the note on the line before it, matching its indentation.
+        Targets either the English or Chinese hook-output instruction line and
+        inserts the note on the line before it, matching its indentation.
         Skips if the note is already present.
         """
         if "replace dots" in content:
@@ -183,7 +183,7 @@ class ClaudeIntegration(SkillsIntegration):
             )
 
         return re.sub(
-            r"(?m)^(\s*)(- For each executable hook, output the following[^\r\n]*)(\r\n|\n|$)",
+            r"(?m)^(\s*)(- (?:For each executable hook, output the following[^\r\n]*|对每个可执行钩子，按 `optional` 输出：))(\r\n|\n|$)",
             repl,
             content,
         )

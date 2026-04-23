@@ -1501,8 +1501,8 @@ class PresetCatalog:
     mirroring the extension catalog system.
     """
 
-    DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/github/spec-kit/main/presets/catalog.json"
-    COMMUNITY_CATALOG_URL = "https://raw.githubusercontent.com/github/spec-kit/main/presets/catalog.community.json"
+    DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/presets/catalog.json"
+    COMMUNITY_CATALOG_URL = "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/presets/catalog.community.json"
     CACHE_DURATION = 3600  # 1 hour in seconds
 
     def __init__(self, project_root: Path):
@@ -2139,11 +2139,15 @@ class PresetResolver:
             ext_dir = self.extensions_dir / ext_id
             if not ext_dir.is_dir():
                 continue
+            candidates: list[Path] = []
             for subdir in subdirs:
                 if subdir:
-                    candidate = ext_dir / subdir / f"{template_name}{ext}"
+                    candidates.append(ext_dir / "templates" / subdir / f"{template_name}{ext}")
+                    candidates.append(ext_dir / subdir / f"{template_name}{ext}")
                 else:
-                    candidate = ext_dir / f"{template_name}{ext}"
+                    candidates.append(ext_dir / "templates" / f"{template_name}{ext}")
+                    candidates.append(ext_dir / f"{template_name}{ext}")
+            for candidate in candidates:
                 if candidate.exists():
                     return candidate
 

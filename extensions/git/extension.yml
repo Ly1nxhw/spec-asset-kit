@@ -6,7 +6,7 @@ extension:
   version: "1.0.0"
   description: "Feature branch creation, numbering (sequential/timestamp), validation, and Git remote detection"
   author: spec-kit-core
-  repository: https://github.com/github/spec-kit
+  repository: https://github.com/Ly1nxhw/spec-asset-kit
   license: MIT
 
 requires:

@@ -224,6 +224,32 @@ class MarkdownIntegrationTests:
         commands = sorted(cmd_dir.glob("speckit.*"))
         assert len(commands) > 0, f"No command files in {cmd_dir}"
 
+    def test_cli_init_installs_ai_assets_extension_commands(self, tmp_path):
+        from typer.testing import CliRunner
+        from specify_cli import app
+
+        project = tmp_path / f"assets-{self.KEY}"
+        project.mkdir()
+        old_cwd = os.getcwd()
+        try:
+            os.chdir(project)
+            runner = CliRunner()
+            result = runner.invoke(app, [
+                "init", "--here", "--integration", self.KEY, "--script", "sh", "--no-git",
+                "--ignore-agent-tools",
+            ], catch_exceptions=False)
+        finally:
+            os.chdir(old_cwd)
+        assert result.exit_code == 0, f"init failed: {result.output}"
+
+        i = get_integration(self.KEY)
+        cmd_dir = i.commands_dest(project)
+        plan_command = (cmd_dir / "speckit.plan.md").read_text(encoding="utf-8")
+
+        assert (cmd_dir / "speckit.ai-assets.extract.md").exists()
+        assert (cmd_dir / "speckit.assets.extract.md").exists()
+        assert "ai-assets/glossary.md" in plan_command
+
     def test_init_options_includes_context_file(self, tmp_path):
         """init-options.json must include context_file for the active integration."""
         import json
@@ -254,6 +280,10 @@ class MarkdownIntegrationTests:
         "analyze", "checklist", "clarify", "constitution",
         "implement", "plan", "specify", "tasks", "taskstoissues",
     ]
+    EXTENSION_COMMANDS = [
+        "speckit.ai-assets.extract.md",
+        "speckit.assets.extract.md",
+    ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
         """Build the expected file list for this integration + script variant."""
@@ -264,8 +294,20 @@ class MarkdownIntegrationTests:
         # Command files
         for stem in self.COMMAND_STEMS:
             files.append(f"{cmd_dir}/speckit.{stem}.md")
+        for name in self.EXTENSION_COMMANDS:
+            files.append(f"{cmd_dir}/{name}")
 
         # Framework files
+        files.append(".specify/extensions/.registry")
+        files.append(".specify/extensions/ai-assets/README.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md")
+        files.append(".specify/extensions/ai-assets/extension.yml")
+        files.append(".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh")
+        files.append(".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1")
+        files.append(".specify/extensions/ai-assets/scripts/scan_repo.py")
+        files.append(".specify/extensions/ai-assets/templates/commands/plan.md")
+        files.append(".specify/extensions/ai-assets/templates/plan-template.md")
+        files.append(".specify/extensions.yml")
         files.append(f".specify/integration.json")
         files.append(f".specify/init-options.json")
         files.append(f".specify/integrations/{self.KEY}.manifest.json")

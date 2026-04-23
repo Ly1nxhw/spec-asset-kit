@@ -137,7 +137,7 @@ BANNER = """
 ╚══════╝╚═╝     ╚══════╝ ╚═════╝╚═╝╚═╝        ╚═╝
 """
 
-TAGLINE = "GitHub Spec Kit - Spec-Driven Development Toolkit"
+TAGLINE = "Spec Asset Kit - Spec-Driven Development Toolkit"
 class StepTracker:
     """Track and render hierarchical steps without emojis, similar to Claude Code tree output.
     Supports live auto-refresh via an attached refresh callback.
@@ -396,8 +396,8 @@ def check_tool(tool: str, tracker: StepTracker = None) -> bool:
         True if tool is found, False otherwise
     """
     # Special handling for Claude CLI local installs
-    # See: https://github.com/github/spec-kit/issues/123
-    # See: https://github.com/github/spec-kit/issues/550
+    # Historical note: Claude CLI local-install detection exists for legacy
+    # installer layouts and previous field reports during upstream development.
     # Claude Code can be installed in two local paths:
     #   1. ~/.claude/local/claude          (after `claude migrate-installer`)
     #   2. ~/.claude/local/node_modules/.bin/claude  (npm-local install, e.g. via nvm)
@@ -765,6 +765,9 @@ def _install_shared_infra(
         templates_src = repo_root / "templates"
 
     if templates_src.is_dir():
+        from .presets import PresetResolver
+
+        resolver = PresetResolver(project_path)
         dest_templates = project_path / ".specify" / "templates"
         dest_templates.mkdir(parents=True, exist_ok=True)
         for f in templates_src.iterdir():
@@ -773,7 +776,8 @@ def _install_shared_infra(
                 if dst.exists():
                     skipped_files.append(str(dst.relative_to(project_path)))
                 else:
-                    shutil.copy2(f, dst)
+                    resolved = resolver.resolve(f.stem, "template") or f
+                    shutil.copy2(resolved, dst)
                     rel = dst.relative_to(project_path).as_posix()
                     manifest.record_existing(rel)
 
@@ -922,15 +926,15 @@ def _get_skills_dir(project_path: Path, selected_ai: str) -> Path:
 DEFAULT_SKILLS_DIR = ".agents/skills"
 NATIVE_SKILLS_AGENTS = {"codex", "kimi"}
 SKILL_DESCRIPTIONS = {
-    "specify": "Create or update feature specifications from natural language descriptions.",
-    "plan": "Generate technical implementation plans from feature specifications.",
-    "tasks": "Break down implementation plans into actionable task lists.",
-    "implement": "Execute all tasks from the task breakdown to build the feature.",
-    "analyze": "Perform cross-artifact consistency analysis across spec.md, plan.md, and tasks.md.",
-    "clarify": "Structured clarification workflow for underspecified requirements.",
-    "constitution": "Create or update project governing principles and development guidelines.",
-    "checklist": "Generate custom quality checklists for validating requirements completeness and clarity.",
-    "taskstoissues": "Convert tasks from tasks.md into GitHub issues.",
+    "specify": "根据自然语言需求创建或更新功能规格说明。",
+    "plan": "根据功能规格生成技术实现计划。",
+    "tasks": "把实现计划拆解为可执行任务清单。",
+    "implement": "按照任务拆解执行实现工作。",
+    "analyze": "对 spec.md、plan.md、tasks.md 执行一致性分析。",
+    "clarify": "对定义不充分的需求执行结构化澄清流程。",
+    "constitution": "创建或更新项目治理原则与研发准则。",
+    "checklist": "生成用于校验需求完整性与清晰度的质量检查清单。",
+    "taskstoissues": "把 tasks.md 中的任务转换为 GitHub Issues。",
 }
 
 
@@ -1225,6 +1229,7 @@ def init(
     tracker.add("shared-infra", "Install shared infrastructure")
 
     for key, label in [
+        ("ai-assets", "Install ai-assets extension"),
         ("chmod", "Ensure scripts executable"),
         ("constitution", "Constitution setup"),
         ("git", "Install git extension"),
@@ -1236,6 +1241,61 @@ def init(
     with Live(tracker.render(), console=console, refresh_per_second=8, transient=True) as live:
         tracker.attach_refresh(lambda: live.update(tracker.render()))
         try:
+            init_opts = {
+                "ai": selected_ai,
+                "integration": resolved_integration.key,
+                "branch_numbering": branch_numbering or "sequential",
+                "context_file": resolved_integration.context_file,
+                "here": here,
+                "script": selected_script,
+                "speckit_version": get_speckit_version(),
+            }
+            # Save options before bundled extension install so extension
+            # command registration can resolve the selected script variant.
+            from .integrations.base import SkillsIntegration as _SkillsPersist
+            if isinstance(resolved_integration, _SkillsPersist):
+                init_opts["ai_skills"] = True
+            save_init_options(project_path, init_opts)
+
+            registrar_dir = (
+                resolved_integration.registrar_config.get("dir")
+                if resolved_integration.registrar_config
+                else None
+            )
+            if registrar_dir:
+                (project_path / registrar_dir).mkdir(parents=True, exist_ok=True)
+
+            tracker.start("ai-assets")
+            assets_messages = []
+            assets_has_error = False
+            try:
+                from .extensions import ExtensionManager
+
+                bundled_assets = _locate_bundled_extension("ai-assets")
+                if bundled_assets:
+                    manager = ExtensionManager(project_path)
+                    if manager.registry.is_installed("ai-assets"):
+                        assets_messages.append("extension already installed")
+                    else:
+                        manager.install_from_directory(
+                            bundled_assets, get_speckit_version()
+                        )
+                        assets_messages.append("extension installed")
+                else:
+                    assets_has_error = True
+                    assets_messages.append("bundled extension not found")
+            except Exception as assets_err:
+                assets_has_error = True
+                sanitized_assets = str(assets_err).replace("\n", " ").strip()
+                assets_messages.append(
+                    f"extension install failed: {sanitized_assets[:120]}"
+                )
+            assets_summary = "; ".join(assets_messages)
+            if assets_has_error:
+                tracker.error("ai-assets", assets_summary)
+            else:
+                tracker.complete("ai-assets", assets_summary)
+
             # Integration-based scaffolding
             from .integrations.manifest import IntegrationManifest
             tracker.start("integration")

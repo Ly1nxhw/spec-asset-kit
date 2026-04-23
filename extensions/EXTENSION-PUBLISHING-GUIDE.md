@@ -139,7 +139,7 @@ Spec Kit uses a dual-catalog system. For details about how catalogs work, see th
 
 ```bash
 # Fork on GitHub
-# https://github.com/github/spec-kit/fork
+# https://github.com/Ly1nxhw/spec-asset-kit/fork
 
 # Clone your fork
 git clone https://github.com/YOUR-USERNAME/spec-kit.git
@@ -154,7 +154,7 @@ Edit `extensions/catalog.community.json` and add your extension:
 {
   "schema_version": "1.0",
   "updated_at": "2026-01-28T15:54:00Z",
-  "catalog_url": "https://raw.githubusercontent.com/github/spec-kit/main/extensions/catalog.community.json",
+  "catalog_url": "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/extensions/catalog.community.json",
   "extensions": {
     "your-extension": {
       "name": "Your Extension Name",
@@ -247,7 +247,7 @@ git commit -m "Add your-extension to community catalog
 git push origin add-your-extension
 
 # Create Pull Request on GitHub
-# https://github.com/github/spec-kit/compare
+# https://github.com/Ly1nxhw/spec-asset-kit/compare
 ```
 
 **Pull Request Template**:

@@ -6,7 +6,7 @@ preset:
   version: "1.0.0"
   description: "A preset that overrides all core templates for testing purposes"
   author: "github"
-  repository: "https://github.com/github/spec-kit"
+  repository: "https://github.com/Ly1nxhw/spec-asset-kit"
   license: "MIT"
 
 requires:

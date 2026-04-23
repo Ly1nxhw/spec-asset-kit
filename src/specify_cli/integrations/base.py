@@ -250,12 +250,37 @@ class IntegrationBase(ABC):
                 return candidate
         return None
 
-    def list_command_templates(self) -> list[Path]:
-        """Return sorted list of command template files from the shared directory."""
+    def list_command_templates(self, project_root: Path | None = None) -> list[Path]:
+        """Return sorted command templates, honoring installed overrides when available."""
         cmd_dir = self.shared_commands_dir()
         if not cmd_dir or not cmd_dir.is_dir():
             return []
-        return sorted(f for f in cmd_dir.iterdir() if f.is_file() and f.suffix == ".md")
+        templates = sorted(
+            f for f in cmd_dir.iterdir() if f.is_file() and f.suffix == ".md"
+        )
+        if project_root is None:
+            return templates
+
+        from specify_cli.presets import PresetResolver
+
+        resolver = PresetResolver(project_root)
+        return [
+            resolver.resolve(src_file.stem, "command") or src_file
+            for src_file in templates
+        ]
+
+    def _list_command_templates_for_project(self, project_root: Path) -> list[Path]:
+        """Resolve command templates while remaining compatible with patched tests."""
+        import inspect
+
+        try:
+            params = inspect.signature(self.list_command_templates).parameters
+        except (TypeError, ValueError):
+            params = {}
+
+        if len(params) == 0:
+            return self.list_command_templates()
+        return self.list_command_templates(project_root)
 
     def command_filename(self, template_name: str) -> str:
         """Return the destination filename for a command template.
@@ -701,7 +726,7 @@ class IntegrationBase(ABC):
         and call ``process_template()`` in their own loop — see
         ``CopilotIntegration`` for an example.
         """
-        templates = self.list_command_templates()
+        templates = self._list_command_templates_for_project(project_root)
         if not templates:
             return []
 
@@ -814,7 +839,7 @@ class MarkdownIntegration(IntegrationBase):
         parsed_options: dict[str, Any] | None = None,
         **opts: Any,
     ) -> list[Path]:
-        templates = self.list_command_templates()
+        templates = self._list_command_templates_for_project(project_root)
         if not templates:
             return []
 
@@ -1019,7 +1044,7 @@ class TomlIntegration(IntegrationBase):
         parsed_options: dict[str, Any] | None = None,
         **opts: Any,
     ) -> list[Path]:
-        templates = self.list_command_templates()
+        templates = self._list_command_templates_for_project(project_root)
         if not templates:
             return []
 
@@ -1193,7 +1218,7 @@ class YamlIntegration(IntegrationBase):
         parsed_options: dict[str, Any] | None = None,
         **opts: Any,
     ) -> list[Path]:
-        templates = self.list_command_templates()
+        templates = self._list_command_templates_for_project(project_root)
         if not templates:
             return []
 
@@ -1344,7 +1369,7 @@ class SkillsIntegration(IntegrationBase):
         """
         import yaml
 
-        templates = self.list_command_templates()
+        templates = self._list_command_templates_for_project(project_root)
         if not templates:
             return []
 

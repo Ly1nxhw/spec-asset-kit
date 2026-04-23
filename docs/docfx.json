@@ -58,16 +58,15 @@
     "cleanupCacheHistory": false,
     "disableGitFeatures": false,
     "globalMetadata": {
-      "_appTitle": "Spec Kit Documentation",
-      "_appName": "Spec Kit",
-      "_appFooter": "Spec Kit - A specification-driven development toolkit",
+      "_appTitle": "Spec Asset Kit Documentation",
+      "_appName": "Spec Asset Kit",
+      "_appFooter": "Spec Asset Kit - A specification-driven development toolkit",
       "_enableSearch": true,
       "_disableContribution": false,
       "_gitContribute": {
-        "repo": "https://github.com/github/spec-kit",
+        "repo": "https://github.com/Ly1nxhw/spec-asset-kit",
         "branch": "main"
       }
     }
   }
 }
-

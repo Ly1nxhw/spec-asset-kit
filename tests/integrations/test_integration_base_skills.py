@@ -173,6 +173,18 @@ class SkillsIntegrationTests:
             body = parts[2].strip() if len(parts) >= 3 else ""
             assert len(body) > 0, f"{f} has empty body"
 
+    def test_setup_uses_chinese_phase1_skill_content(self, tmp_path):
+        i = get_integration(self.KEY)
+        m = IntegrationManifest(self.KEY, tmp_path)
+        i.setup(tmp_path, m)
+
+        specify_skill = i.skills_dest(tmp_path) / "speckit-specify" / "SKILL.md"
+        assert specify_skill.exists()
+
+        content = specify_skill.read_text(encoding="utf-8")
+        assert "如果用户输入非空，你**必须**先纳入考虑再继续。" in content
+        assert "根据自然语言需求创建或更新功能规格说明。" in content
+
     def test_plan_references_correct_context_file(self, tmp_path):
         """The generated plan skill must reference this integration's context file."""
         i = get_integration(self.KEY)
@@ -307,6 +319,34 @@ class SkillsIntegrationTests:
         skills_dir = i.skills_dest(project)
         assert skills_dir.is_dir(), f"Skills directory {skills_dir} not created"
 
+    def test_cli_init_installs_ai_assets_extension_commands(self, tmp_path):
+        from typer.testing import CliRunner
+        from specify_cli import app
+
+        project = tmp_path / f"assets-{self.KEY}"
+        project.mkdir()
+        old_cwd = os.getcwd()
+        try:
+            os.chdir(project)
+            result = CliRunner().invoke(app, [
+                "init", "--here", "--integration", self.KEY,
+                "--script", "sh", "--no-git", "--ignore-agent-tools",
+            ], catch_exceptions=False)
+        finally:
+            os.chdir(old_cwd)
+
+        assert result.exit_code == 0, f"init failed: {result.output}"
+
+        i = get_integration(self.KEY)
+        skills_dir = i.skills_dest(project)
+        plan_skill = skills_dir / "speckit-plan" / "SKILL.md"
+        extract_skill = skills_dir / "speckit-ai-assets-extract" / "SKILL.md"
+        alias_skill = skills_dir / "speckit-assets-extract" / "SKILL.md"
+
+        assert extract_skill.exists()
+        assert alias_skill.exists()
+        assert "ai-assets/glossary.md" in plan_skill.read_text(encoding="utf-8")
+
     def test_init_options_includes_context_file(self, tmp_path):
         """init-options.json must include context_file for the active integration."""
         import json
@@ -346,6 +386,10 @@ class SkillsIntegrationTests:
         "analyze", "checklist", "clarify", "constitution",
         "implement", "plan", "specify", "tasks", "taskstoissues",
     ]
+    _EXTENSION_SKILL_COMMANDS = [
+        "ai-assets-extract",
+        "assets-extract",
+    ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
         """Build the full expected file list for a given script variant."""
@@ -356,8 +400,20 @@ class SkillsIntegrationTests:
         # Skill files
         for cmd in self._SKILL_COMMANDS:
             files.append(f"{skills_prefix}/speckit-{cmd}/SKILL.md")
+        for cmd in self._EXTENSION_SKILL_COMMANDS:
+            files.append(f"{skills_prefix}/speckit-{cmd}/SKILL.md")
         # Integration metadata
         files += [
+            ".specify/extensions/.registry",
+            ".specify/extensions/ai-assets/README.md",
+            ".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md",
+            ".specify/extensions/ai-assets/extension.yml",
+            ".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh",
+            ".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1",
+            ".specify/extensions/ai-assets/scripts/scan_repo.py",
+            ".specify/extensions/ai-assets/templates/commands/plan.md",
+            ".specify/extensions/ai-assets/templates/plan-template.md",
+            ".specify/extensions.yml",
             ".specify/init-options.json",
             ".specify/integration.json",
             f".specify/integrations/{self.KEY}.manifest.json",
