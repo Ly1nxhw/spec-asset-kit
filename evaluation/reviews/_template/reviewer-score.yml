@@ -1,0 +1,13 @@
+case_id: example-case-id
+group: B
+reviewer: architecture
+scores:
+  business_correctness: 0
+  architecture_fit: 0
+  test_quality: 0
+  gold_diff_alignment: 0
+  scope_control: 0
+  maintainability: 0
+blockers: []
+acceptable_for_pr: false
+summary: ""

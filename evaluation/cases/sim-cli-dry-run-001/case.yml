@@ -1,0 +1,37 @@
+id: sim-cli-dry-run-001
+repo: simulated-cli
+base_branch: main
+base_commit: sim-M
+feature_branch: feature/dry-run
+feature_final_commit: sim-F
+feature_input: "为已有 CLI 增加 --dry-run 参数：打印将要写入的内容，但不实际写文件。"
+expected_entrypoints:
+  - sample_cli.py
+expected_modules:
+  - sample_cli.py
+expected_test_entrypoints:
+  - tests/test_sample_cli.py
+forbidden_areas:
+  - src/commands/
+domain_terms:
+  - dry-run
+  - output file
+  - preview
+known_conventions:
+  - "CLI 参数在 sample_cli.py 的 build_parser 中声明"
+  - "行为测试放在 tests/test_sample_cli.py"
+gold_notes:
+  - "应沿用现有 argparse 入口和 write_message 函数，不新增不存在的 commands 分层"
+gold_reference:
+  diff_range: "sim-M..sim-F"
+  key_files:
+    - sample_cli.py
+    - tests/test_sample_cli.py
+  key_behaviors:
+    - "--dry-run 输出 preview 信息"
+    - "--dry-run 不创建输出文件"
+    - "未使用 --dry-run 时保留原有写文件行为"
+judge_only:
+  pr_url: "simulated://sim-cli-dry-run-001"
+  notes:
+    - "gold.diff 和 gold-files.txt 只允许裁判阶段使用。"

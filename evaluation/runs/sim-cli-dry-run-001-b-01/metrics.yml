@@ -1,0 +1,14 @@
+path_exists_rate: 1.0
+missing_path_count: 0
+unknown_dependency_count: 0
+wrong_test_framework_count: 0
+asset_reference_count: 4
+conflict_recorded_count: 0
+expected_file_hit_rate: 1.0
+changed_file_precision: 1.0
+out_of_scope_file_count: 0
+behavior_match_score: 5
+test_overlap_rate: 1.0
+gold_diff_alignment_score: 5
+review_blocker_count: 0
+manual_fix_minutes: 0

@@ -1,0 +1,29 @@
+description: Numeric metrics used to compare baseline spec-kit with asset-enhanced spec-kit.
+positive_metrics:
+  path_exists_rate: Mentioned repository paths that really exist or are explicitly intended to be created.
+  expected_file_hit_rate: Changed gold key files divided by gold key files.
+  changed_file_precision: Changed files inside gold key range or accepted substitute range.
+  behavior_match_score: Business behavior match, 1-5.
+  test_overlap_rate: Covered gold test scenarios divided by expected gold scenarios.
+  gold_diff_alignment_score: Intent and scope alignment with M..F, 1-5.
+  asset_file_completeness: Required ai-assets files present, 0-1.
+  section_completeness: Core asset sections present, 0-1.
+  grounded_rate: Asset claims with traceable sources divided by total claims.
+  useful_asset_score: Human usefulness score, 1-5.
+negative_metrics:
+  missing_path_count: Nonexistent or wrong paths mentioned in plan/tasks.
+  unknown_dependency_count: Dependencies not present in config, source, or docs.
+  wrong_test_framework_count: Incorrect test framework assumptions.
+  out_of_scope_file_count: Files changed outside the feature scope.
+  review_blocker_count: Blocking review issues.
+  manual_fix_minutes: Estimated minutes to repair output to a mergeable state.
+  unsupported_observed_count: Observed asset claims without evidence.
+  wrong_fact_count: Asset facts conflicting with source or authoritative docs.
+thresholds:
+  minimum_real_cases: 8
+  repeats_per_group: 3
+  target_b_win_rate_delta: 0.2
+  target_hallucination_reduction: 0.3
+  target_blocker_reduction: 0.25
+  target_gold_alignment_improvement: 0.15
+  no_regression_metric: out_of_scope_file_count

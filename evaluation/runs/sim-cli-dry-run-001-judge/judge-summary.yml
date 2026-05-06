@@ -1,0 +1,33 @@
+case_id: sim-cli-dry-run-001
+gold_reference:
+  diff: evaluation/cases/sim-cli-dry-run-001/gold.diff
+  files: evaluation/cases/sim-cli-dry-run-001/gold-files.txt
+groups:
+  A:
+    acceptable_for_pr: false
+    l2_plan_score: 62
+    l3_total_score: 51
+    scores:
+      business_correctness: 10
+      architecture_fit: 8
+      test_quality: 6
+      gold_diff_alignment: 6
+      scope_control: 13
+      maintainability: 8
+    blockers:
+      - "Dry-run still writes the output file."
+      - "Plan hallucinated src/commands/dry_run.py."
+  B:
+    acceptable_for_pr: true
+    l2_plan_score: 94
+    l3_total_score: 100
+    scores:
+      business_correctness: 25
+      architecture_fit: 20
+      test_quality: 15
+      gold_diff_alignment: 15
+      scope_control: 15
+      maintainability: 10
+    blockers: []
+winner: B
+summary: "B wins the simulated replay: it consumes assets, avoids nonexistent paths, matches gold behavior, passes gold acceptance tests, and requires no manual repair."

@@ -1,0 +1,12 @@
+case_id: sim-cli-dry-run-001
+reviewer: test
+scores:
+  A:
+    test_quality: 2
+  B:
+    test_quality: 5
+blockers:
+  A:
+    - "A tests parser acceptance but misses the no-write behavior."
+  B: []
+summary: "B covers both old write behavior and the new dry-run side-effect requirement."

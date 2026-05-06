@@ -1,0 +1,50 @@
+diff -ru -x __pycache__ base/sample_cli.py gold/sample_cli.py
+--- base/sample_cli.py
++++ gold/sample_cli.py
+@@ -8,17 +8,26 @@
+     parser = argparse.ArgumentParser(description="Write a message to a file.")
+     parser.add_argument("--message", required=True)
+     parser.add_argument("--output", required=True)
++    parser.add_argument(
++        "--dry-run",
++        action="store_true",
++        help="Preview the write without creating the output file.",
++    )
+     return parser
+
+
+-def write_message(message: str, output: str) -> None:
++def write_message(message: str, output: str, *, dry_run: bool = False) -> None:
++    if dry_run:
++        print(f"dry-run: would write {message!r} to {output}")
++        return
+     Path(output).write_text(message + "\n", encoding="utf-8")
+
+
+ def main(argv: list[str] | None = None) -> int:
+     args = build_parser().parse_args(argv)
+-    write_message(args.message, args.output)
+-    print(f"wrote {args.output}")
++    write_message(args.message, args.output, dry_run=args.dry_run)
++    if not args.dry_run:
++        print(f"wrote {args.output}")
+     return 0
+
+
+diff -ru -x __pycache__ base/tests/test_sample_cli.py gold/tests/test_sample_cli.py
+--- base/tests/test_sample_cli.py
++++ gold/tests/test_sample_cli.py
+@@ -10,3 +10,13 @@
+
+     assert rc == 0
+     assert output.read_text(encoding="utf-8") == "hello\n"
++
++
++def test_dry_run_does_not_write_file(tmp_path, capsys):
++    output = tmp_path / "message.txt"
++
++    rc = main(["--message", "hello", "--output", str(output), "--dry-run"])
++
++    assert rc == 0
++    assert not output.exists()
++    assert "dry-run: would write 'hello'" in capsys.readouterr().out

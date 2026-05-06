@@ -1,0 +1,21 @@
+id: example-case-id
+repo: example-repo
+base_branch: main
+base_commit: abc1234
+feature_branch: feature/example
+feature_final_commit: def5678
+feature_input: "Describe the real feature request here."
+expected_entrypoints: []
+expected_modules: []
+expected_test_entrypoints: []
+forbidden_areas: []
+domain_terms: []
+known_conventions: []
+gold_notes: []
+gold_reference:
+  diff_range: "abc1234..def5678"
+  key_files: []
+  key_behaviors: []
+judge_only:
+  pr_url: ""
+  notes: []

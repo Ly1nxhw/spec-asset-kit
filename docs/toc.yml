@@ -11,6 +11,8 @@
       href: quickstart.md
     - name: User Manual (zh-CN)
       href: user-manual.zh-CN.md
+    - name: Evaluation (zh-CN)
+      href: evaluation.zh-CN.md
     - name: Upgrade
       href: upgrade.md
 

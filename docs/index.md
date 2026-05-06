@@ -30,6 +30,7 @@
 - [安装说明](installation.md)
 - [快速开始](quickstart.md)
 - [详细使用说明书](user-manual.zh-CN.md)
+- [AI Assets 评测流程](evaluation.zh-CN.md)
 - [升级说明](upgrade.md)
 - [本地开发](local-development.md)
 
@@ -69,9 +70,10 @@
 如果你是维护者或二次开发者：
 
 1. [user-manual.zh-CN.md](user-manual.zh-CN.md)
-2. [reference/extensions.md](reference/extensions.md)
-3. [reference/workflows.md](reference/workflows.md)
-4. [../enhance/fork-enhancement-blueprint.zh-CN.md](../enhance/fork-enhancement-blueprint.zh-CN.md)
+2. [evaluation.zh-CN.md](evaluation.zh-CN.md)
+3. [reference/extensions.md](reference/extensions.md)
+4. [reference/workflows.md](reference/workflows.md)
+5. [../enhance/fork-enhancement-blueprint.zh-CN.md](../enhance/fork-enhancement-blueprint.zh-CN.md)
 
 ## 支持与贡献
 

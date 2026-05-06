@@ -1,0 +1,39 @@
+run_id: 2026-05-06-l1-preflight-scan
+case_id: l1-asset-quality-preflight
+group: L1
+model: null
+temperature: null
+agent: codex
+base_commit: current-worktree
+feature_final_commit: null
+started_at: "2026-05-06T14:15:58+08:00"
+commands:
+  - "python extensions/ai-assets/scripts/scan_repo.py ."
+results:
+  scanner:
+    completed: true
+    source_roots:
+      - src
+    readme_sources:
+      - README.md
+    agent_sources:
+      - AGENTS.md
+    script_count: 8
+    workflow_count: 13
+    template_count: 25
+  assets:
+    root_ai_assets_dir_present: false
+outputs:
+  scan_json: terminal-output
+  assets_dir: ai-assets/
+metrics:
+  asset_file_completeness: 0
+  section_completeness: null
+  grounded_rate: null
+  unsupported_observed_count: null
+  wrong_fact_count: null
+review:
+  blocker_count: 1
+  notes:
+    - "L1 scanner preflight can run, but generated ai-assets files are not present in the repository root yet."
+    - "Run speckit.ai-assets.extract in an initialized project context before scoring L1 asset quality."

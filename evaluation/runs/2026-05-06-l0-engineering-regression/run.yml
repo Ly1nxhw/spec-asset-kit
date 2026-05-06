@@ -1,0 +1,33 @@
+run_id: 2026-05-06-l0-engineering-regression
+case_id: l0-engineering-regression
+group: L0
+model: gpt-5.5
+temperature: null
+agent: codex
+base_commit: current-worktree
+feature_final_commit: null
+started_at: "2026-05-06T14:15:58+08:00"
+commands:
+  - "PYTHONPATH=src pytest tests/extensions/ai_assets/test_ai_assets_extension.py -v tests/integrations/test_integration_generic.py -v tests/integrations/test_integration_codex.py -v"
+results:
+  pytest:
+    passed: 60
+    skipped: 1
+    failed: 0
+    duration_seconds: 1.21
+outputs:
+  plan: null
+  tasks: null
+  diff: null
+metrics:
+  l0_passed: true
+  asset_file_completeness: null
+  section_completeness: null
+  grounded_rate: null
+  missing_path_count: null
+  hallucination_count: null
+review:
+  blocker_count: 0
+  notes:
+    - "This run covers only the L0 engineering regression layer from docs/evaluation.zh-CN.md."
+    - "PowerShell scanner parity test was skipped by the test suite in the local environment."

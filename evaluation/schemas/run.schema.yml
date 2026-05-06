@@ -1,0 +1,30 @@
+description: A single A/B/L0/L1 evaluation run record.
+required:
+  - run_id
+  - case_id
+  - group
+  - model
+  - agent
+  - base_commit
+  - started_at
+fields:
+  run_id: Unique run id. Recommended pattern is <case-id>-<group-lower>-<repeat>.
+  case_id: Case id from evaluation/cases/<case-id>/case.yml.
+  group: A for baseline, B for asset enhanced, L0 or L1 for non-A/B checks.
+  model: Model name and version used by the execution agent.
+  temperature: Decoding temperature or null if unavailable.
+  agent: Coding assistant used for the run.
+  base_commit: Commit M used for execution.
+  feature_final_commit: Commit F. This is recorded for audit but must not be exposed to execution agents.
+  started_at: ISO timestamp.
+  commands: Commands and results observed during the run.
+  outputs:
+    plan: Path to generated plan.md, if applicable.
+    tasks: Path to generated tasks.md, if applicable.
+    diff: Path to generated changes.diff, if applicable.
+    assets_dir: Path to generated ai-assets directory for L1 runs.
+  metrics: Numeric fields consumed by evaluation/scripts/aggregate_results.py.
+  review:
+    blocker_count: Count of review blockers.
+    correction_count: Count of required corrections.
+    notes: Short evidence notes.

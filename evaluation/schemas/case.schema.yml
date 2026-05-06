@@ -1,0 +1,31 @@
+description: Historical replay case manifest for ai-assets quantitative evaluation.
+required:
+  - id
+  - repo
+  - base_branch
+  - base_commit
+  - feature_final_commit
+  - feature_input
+  - gold_reference
+fields:
+  id: Stable case id. Use a real feature id when possible.
+  repo: Source repository name. In real business projects this should point to the evaluated repo, not spec-asset-kit.
+  base_branch: Branch used to locate the historical base.
+  base_commit: Historical starting commit M exposed to execution agents.
+  feature_branch: Historical feature branch name when available.
+  feature_final_commit: Final historical commit F used only for judge gold reference.
+  feature_input: Original requirement text visible to both A and B execution agents.
+  expected_entrypoints: Public hints about likely entrypoints, if they were known from the original task.
+  expected_modules: Public hints about expected modules.
+  expected_test_entrypoints: Public hints about relevant test entrypoints.
+  forbidden_areas: Areas that should not be changed for this feature.
+  domain_terms: Existing domain terms expected in a grounded plan.
+  known_conventions: Repository conventions that are safe to expose to execution agents.
+  gold_notes: Notes derived from M..F. Judge-only unless explicitly safe to expose.
+  gold_reference:
+    diff_range: Historical M..F range.
+    key_files: Files that matter for gold alignment.
+    key_behaviors: Behavior checklist derived from the real feature.
+  judge_only:
+    pr_url: PR, ticket, or audit link used only by reviewers.
+    notes: Non-public judging notes that must not leak to execution agents.

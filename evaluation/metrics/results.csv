@@ -1,0 +1,3 @@
+agent,asset_reference_count,behavior_match_score,case_id,changed_file_precision,conflict_recorded_count,expected_file_hit_rate,gold_diff_alignment_score,group,manual_fix_minutes,metrics_file,missing_path_count,model,out_of_scope_file_count,path_exists_rate,review_blocker_count,run_file,run_id,test_overlap_rate,unknown_dependency_count,wrong_test_framework_count
+codex,0,2,sim-cli-dry-run-001,1.0,0,1.0,2,A,10,evaluation/runs/sim-cli-dry-run-001-a-01/metrics.yml,1,gpt-5.5,0,0.67,1,evaluation/runs/sim-cli-dry-run-001-a-01/run.yml,sim-cli-dry-run-001-a-01,0.5,0,0
+codex,4,5,sim-cli-dry-run-001,1.0,0,1.0,5,B,0,evaluation/runs/sim-cli-dry-run-001-b-01/metrics.yml,0,gpt-5.5,0,1.0,0,evaluation/runs/sim-cli-dry-run-001-b-01/run.yml,sim-cli-dry-run-001-b-01,1.0,0,0

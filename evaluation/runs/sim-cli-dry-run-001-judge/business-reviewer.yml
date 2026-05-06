@@ -1,0 +1,14 @@
+case_id: sim-cli-dry-run-001
+reviewer: business
+scores:
+  A:
+    business_correctness: 2
+    gold_diff_alignment: 2
+  B:
+    business_correctness: 5
+    gold_diff_alignment: 5
+blockers:
+  A:
+    - "Dry-run still creates the output file."
+  B: []
+summary: "B satisfies preview-without-write behavior; A only adds the flag and message."

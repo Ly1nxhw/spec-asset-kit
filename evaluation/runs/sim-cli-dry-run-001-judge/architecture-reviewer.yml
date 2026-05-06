@@ -1,0 +1,14 @@
+case_id: sim-cli-dry-run-001
+reviewer: architecture
+scores:
+  A:
+    architecture_fit: 2
+    scope_control: 4
+  B:
+    architecture_fit: 5
+    scope_control: 5
+blockers:
+  A:
+    - "Plan introduced nonexistent src/commands/ boundary."
+  B: []
+summary: "B follows the fixture's single-file CLI architecture; A partially misreads module boundaries."

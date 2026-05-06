@@ -1,0 +1,24 @@
+run_id: sim-cli-dry-run-001-l1-assets
+case_id: sim-cli-dry-run-001
+group: B
+model: gpt-5.5
+temperature: 0
+agent: codex
+base_commit: sim-M
+feature_final_commit: sim-F
+started_at: "2026-05-06T14:15:58+08:00"
+outputs:
+  assets_dir: evaluation/runs/sim-cli-dry-run-001-b-01/ai-assets
+metrics:
+  asset_file_completeness: 1.0
+  section_completeness: 1.0
+  grounded_rate: 0.91
+  unsupported_observed_count: 0
+  wrong_fact_count: 0
+  useful_asset_score: 5
+review:
+  blocker_count: 0
+  notes:
+    - "All 7 required asset files are present."
+    - "The 6 core assets include Observed, Inferred, and Open Questions."
+    - "Observed statements cite sample_cli.py, tests/test_sample_cli.py, fixture tree, or the case input."
