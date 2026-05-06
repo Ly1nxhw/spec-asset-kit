@@ -11,6 +11,7 @@
 - 中文原生模板与提示词
 - 面向 brownfield 项目的 `ai-assets` 项目理解层
 - 让 `plan` 显式消费项目理解资产，减少“只会按模板写文档”的空转
+- 提供可迁移的量化评测工具包，用真实历史 feature replay 验证增强收益
 
 ## 项目定位
 
@@ -21,6 +22,7 @@
 - 在中文团队环境中，默认工作流、模板和产出仍然可读、可维护
 - AI 在进入项目时，不只看到单个 feature 文档，还能看到持续积累的项目级 AI 资产
 - 技术规划阶段能显式利用项目术语、结构、约定、历史线索，而不是每次从零猜
+- 增强是否有效不只靠主观报告，而是通过 A/B replay、结构化指标和裁判规则量化
 
 ## 当前能力
 
@@ -78,6 +80,26 @@ ai-assets/
 - 校正目录结构和模块边界假设
 - 把项目隐性规则带进技术规划
 
+### 4. 可迁移评测工具包
+
+本仓库提供 `evaluation/` 目录，用于量化判断 `ai-assets` 是否真的提升了 spec-kit 在 brownfield 项目中的表现。
+
+它包含：
+
+- case/run/metrics schema
+- L3 历史 feature replay 裁判规则
+- simulated smoke case
+- A/B run 示例
+- 聚合脚本 `evaluation/scripts/aggregate_results.py`
+- 可生成 `results.csv`、`summary.json`、`quantitative-summary.md` 的指标流水线
+
+关键边界：
+
+- `spec-asset-kit/evaluation/` 维护评测方法、模板、脚本和公开示例。
+- 真正有说服力的 L2/L3/L4 数据应在真实业务项目中采集。
+- 真实项目建议使用 `.speckit-eval/` 或 `evaluation/` 保存历史 replay case、A/B run、judge 和 metrics。
+- simulated case 只能证明流程可运行，不能单独证明稳定收益。
+
 ## 快速开始
 
 ### 安装
@@ -122,6 +144,8 @@ specify init --here --integration codex --script sh
 - 对应 agent 的命令或技能目录，例如 `.agents/skills/`
 
 ## 推荐工作流
+
+### 日常 SDD 工作流
 
 ### 1. 建立宪章
 
@@ -173,6 +197,43 @@ specify init --here --integration codex --script sh
 
 按照任务清单分阶段推进实现。
 
+## 量化评测工作流
+
+当你要判断 `ai-assets` 是否值得继续投入，推荐使用真实历史 feature replay，而不是只看一次演示报告。
+
+标准 A/B 形状：
+
+```text
+base commit M
+gold commit F
+A: M + upstream spec-kit + 原始需求
+B: M + spec-asset-kit + ai-assets + 原始需求
+judge: A/B 输出 + gold diff
+```
+
+执行 agent 不能看到 `gold.diff`、`gold-files.txt` 或真实最终实现；这些材料只允许在 judge 阶段使用。
+
+推荐最小规模：
+
+- 至少 8 个真实历史 replay case
+- 每个 case 的 A/B 组各重复 3 次
+- 固定同一 agent、模型、temperature、时间上限和测试命令
+- 使用结构化 reviewer score 和 judge summary
+- 汇总 B 组胜率、PR 可接受率、幻觉下降率、blocker 下降率、gold alignment 提升和人工修复成本
+
+在本仓库中聚合示例数据：
+
+```bash
+python evaluation/scripts/aggregate_results.py
+```
+
+在真实业务项目中复用聚合脚本：
+
+```bash
+python /path/to/spec-asset-kit/evaluation/scripts/aggregate_results.py \
+  --evaluation-root .speckit-eval
+```
+
 ## `ai-assets` 的设计原则
 
 `ai-assets` 是 AI 辅助理解层，不是正式事实源。
@@ -196,6 +257,8 @@ specify init --here --integration codex --script sh
 - 项目概览：[docs/index.md](./docs/index.md)
 - 快速开始：[docs/quickstart.md](./docs/quickstart.md)
 - 详细使用说明：[docs/user-manual.zh-CN.md](./docs/user-manual.zh-CN.md)
+- AI Assets 评测流程：[docs/evaluation.zh-CN.md](./docs/evaluation.zh-CN.md)
+- 评测工具包：[evaluation/README.md](./evaluation/README.md)
 - 扩展参考：[docs/reference/extensions.md](./docs/reference/extensions.md)
 - fork 改造蓝图：[enhance/fork-enhancement-blueprint.zh-CN.md](./enhance/fork-enhancement-blueprint.zh-CN.md)
 
@@ -214,6 +277,7 @@ specify init --here --integration codex --script sh
 
 - Phase 1：中文原生化
 - Phase 2：`ai-assets.extract` 与 `plan` 联动
+- Phase 3：`ai-assets` 量化评测工具包与 simulated replay smoke case
 
 当前还没有做的事：
 
@@ -221,6 +285,7 @@ specify init --here --integration codex --script sh
 - 完整 drift 检测
 - 复杂多语言切换
 - 更重型的静态分析或知识治理系统
+- 真实业务项目上的大规模 replay 数据集
 
 ## 开发与验证
 
@@ -231,6 +296,7 @@ specify init --here --integration codex --script sh
 - 命令/模板覆盖解析
 - `plan` 对 `ai-assets` 的显式消费
 - 多类 agent 集成的初始化与命令注册
+- `evaluation` 聚合脚本的 A/B 指标口径
 
 如果你在这个 fork 上继续迭代，建议优先保持：
 
@@ -238,6 +304,17 @@ specify init --here --integration codex --script sh
 - 文件路径兼容
 - workflow 主链稳定
 - 文档与测试同步更新
+
+推荐本地验证命令：
+
+```bash
+PYTHONPATH=src pytest \
+  tests/extensions/ai_assets/test_ai_assets_extension.py \
+  tests/integrations/test_integration_generic.py \
+  tests/integrations/test_integration_codex.py \
+  tests/evaluation/test_aggregate_results.py \
+  -v
+```
 
 ## 许可证
 
