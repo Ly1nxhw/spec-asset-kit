@@ -197,6 +197,15 @@ specify init --here --integration codex --script sh
 
 按照任务清单分阶段推进实现。
 
+实现阶段默认采用细粒度 Git checkpoint：
+
+- 每完成一个可独立验证的阶段、用户故事或任务组，先运行相关验证
+- 更新 `tasks.md` 中对应任务状态
+- 只提交当前任务组相关文件
+- 创建语义清晰的本地 commit
+- 不把整个需求压成一个巨大最终提交
+- `git push` 只在你明确要求 checkpoint/push 时执行
+
 ## 量化评测工作流
 
 当你要判断 `ai-assets` 是否值得继续投入，推荐使用真实历史 feature replay，而不是只看一次演示报告。

@@ -55,6 +55,20 @@ specify init my-project --integration copilot --branch-numbering timestamp
 | ----------------- | ------------------------------------------------------------------------ |
 | `SPECIFY_FEATURE` | Override feature detection for non-Git repositories. Set to the feature directory name (e.g., `001-photo-albums`) to work on a specific feature when not using Git branches. Must be set in the context of the agent prior to using `/speckit.plan` or follow-up commands. |
 
+### Git Checkpoint Policy
+
+During `/speckit.implement`, agents should avoid creating one large final commit for a multi-step feature. In Git repositories, the implementation workflow expects local commits after each independently verifiable phase, user story, or task group, unless the user explicitly disables commits.
+
+Each checkpoint should:
+
+- run the relevant validation for that task group,
+- mark completed items in `tasks.md`,
+- stage only files related to the current task group,
+- create a clear local commit message,
+- leave `git push` to an explicit user checkpoint/push request.
+
+Non-Git projects should still report the same checkpoint boundaries without creating commits.
+
 ## Check Installed Tools
 
 ```bash
