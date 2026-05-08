@@ -150,6 +150,8 @@ $ARGUMENTS
    - 确认测试通过并满足要求
    - 确认实现遵循 plan
    - 确认 Git 提交历史不是一个覆盖全部实现的大提交
+   - 如果项目安装了 bundled `ai-assets` 扩展，建议运行 `/speckit.ai-assets.check` 做只读漂移检查
+   - 如果本次实现改变了业务规则、术语、用户旅程、外部系统、历史决策或 `ai-assets` 中引用的实现锚点，建议运行 `/speckit.ai-assets.reconcile`
    - 若仍有未提交改动，说明原因并列出文件
    - 输出最终完成报告
 

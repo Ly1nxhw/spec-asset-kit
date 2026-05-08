@@ -413,6 +413,10 @@ class YamlIntegrationTests:
         "speckit.assets.extract.yaml",
         "speckit.ai-assets.refine.yaml",
         "speckit.assets.refine.yaml",
+        "speckit.ai-assets.check.yaml",
+        "speckit.assets.check.yaml",
+        "speckit.ai-assets.reconcile.yaml",
+        "speckit.assets.reconcile.yaml",
     ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
@@ -432,9 +436,14 @@ class YamlIntegrationTests:
         files.append(".specify/extensions/ai-assets/README.md")
         files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md")
         files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.check.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.reconcile.md")
         files.append(".specify/extensions/ai-assets/extension.yml")
         files.append(".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh")
+        files.append(".specify/extensions/ai-assets/scripts/bash/check-ai-assets.sh")
         files.append(".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1")
+        files.append(".specify/extensions/ai-assets/scripts/powershell/check-ai-assets.ps1")
+        files.append(".specify/extensions/ai-assets/scripts/check_ai_assets.py")
         files.append(".specify/extensions/ai-assets/scripts/scan_repo.py")
         files.append(".specify/extensions/ai-assets/templates/commands/plan.md")
         files.append(".specify/extensions/ai-assets/templates/plan-template.md")

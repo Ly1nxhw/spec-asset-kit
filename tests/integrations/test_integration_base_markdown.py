@@ -250,6 +250,10 @@ class MarkdownIntegrationTests:
         assert (cmd_dir / "speckit.assets.extract.md").exists()
         assert (cmd_dir / "speckit.ai-assets.refine.md").exists()
         assert (cmd_dir / "speckit.assets.refine.md").exists()
+        assert (cmd_dir / "speckit.ai-assets.check.md").exists()
+        assert (cmd_dir / "speckit.assets.check.md").exists()
+        assert (cmd_dir / "speckit.ai-assets.reconcile.md").exists()
+        assert (cmd_dir / "speckit.assets.reconcile.md").exists()
         assert "ai-assets/business-context.md" in plan_command
 
     def test_init_options_includes_context_file(self, tmp_path):
@@ -287,6 +291,10 @@ class MarkdownIntegrationTests:
         "speckit.assets.extract.md",
         "speckit.ai-assets.refine.md",
         "speckit.assets.refine.md",
+        "speckit.ai-assets.check.md",
+        "speckit.assets.check.md",
+        "speckit.ai-assets.reconcile.md",
+        "speckit.assets.reconcile.md",
     ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
@@ -306,9 +314,14 @@ class MarkdownIntegrationTests:
         files.append(".specify/extensions/ai-assets/README.md")
         files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md")
         files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.check.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.reconcile.md")
         files.append(".specify/extensions/ai-assets/extension.yml")
         files.append(".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh")
+        files.append(".specify/extensions/ai-assets/scripts/bash/check-ai-assets.sh")
         files.append(".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1")
+        files.append(".specify/extensions/ai-assets/scripts/powershell/check-ai-assets.ps1")
+        files.append(".specify/extensions/ai-assets/scripts/check_ai_assets.py")
         files.append(".specify/extensions/ai-assets/scripts/scan_repo.py")
         files.append(".specify/extensions/ai-assets/templates/commands/plan.md")
         files.append(".specify/extensions/ai-assets/templates/plan-template.md")

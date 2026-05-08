@@ -1,239 +1,58 @@
-# Extensions
+# 扩展参考
 
-Extensions add new capabilities to Spec Kit — domain-specific commands, external tool integrations, quality gates, and more. They introduce new commands and templates that go beyond the built-in Spec-Driven Development workflow.
+扩展用于给 Spec Kit 增加新的命令、模板覆盖、质量门禁和外部工具集成。
 
-## Bundled Extension: `ai-assets`
+## 内置扩展：`ai-assets`
 
-In this fork, `ai-assets` is bundled and installed by default during `specify init`.
+本 fork 在 `specify init` 时默认安装 bundled `ai-assets` 扩展。
 
-It provides:
+它提供：
 
 - `speckit.ai-assets.extract`
-- alias: `speckit.assets.extract`
+- 别名：`speckit.assets.extract`
 - `speckit.ai-assets.refine`
-- alias: `speckit.assets.refine`
-- a mandatory `before_plan` hook
-- template overrides for `plan` and `plan-template`
+- 别名：`speckit.assets.refine`
+- `speckit.ai-assets.check`
+- 别名：`speckit.assets.check`
+- `speckit.ai-assets.reconcile`
+- 别名：`speckit.assets.reconcile`
+- 强制 `before_plan` 钩子
+- `plan` 与 `plan-template` 模板覆盖
 
-Its responsibility is to initialize and refresh the root-level `ai-assets/` directory so planning can consume business private knowledge before implementation design starts. It should explain domain concepts, business rules, user journeys, and upstream/downstream semantics rather than regenerate a full architecture or tech-stack document.
+职责边界：
 
-`extract` treats repo-derived business knowledge as candidate by default. `refine` consumes human answers and promotes confirmed knowledge into the core assets.
+- `extract` 从仓库证据生成候选业务知识和待确认问题。
+- `refine` 消费人的明确回答，把候选知识沉淀为 `confirmed`。
+- `check` 严格只读，用于检查资产缺失、章节缺失、过期锚点、缺来源确认项、候选项未进入待确认队列、plan 误用 candidate、tasks 引用不存在路径等问题。
+- `reconcile` 只更新 `ai-assets/`，用于实现后对齐资产、生成 `reconcile-report.md`、追加待确认问题，并保留人工确认边界。
 
-Default generated assets:
+重要规则：
 
-```text
-ai-assets/
-|- business-context.md
-|- domain-glossary.md
-|- business-rules.md
-|- user-journeys.md
-|- external-systems.md
-|- decision-log.md
-|- open-questions.md
-`- extraction-report.md
-```
+- `ai-assets/` 是 AI 辅助理解层，不是事实源。
+- 业务知识是主要内容，技术事实只作为实现锚点。
+- `confirmed` 可以指导规划；`candidate` 只能作为风险、待确认项或 refine 输入。
+- 不得用资产内容替代源码、配置、契约或正式文档。
 
-Important rule:
-
-- `ai-assets` is an AI-facing summary layer
-- business knowledge is the main content; technical facts are only implementation anchors
-- `confirmed` knowledge can guide planning; `candidate` knowledge must remain a risk or confirmation question
-- it does not replace code, configuration, contracts, or formal documentation as the source of truth
-
-## Search Available Extensions
+## 常用命令
 
 ```bash
 specify extension search [query]
-```
-
-| Option       | Description                          |
-| ------------ | ------------------------------------ |
-| `--tag`      | Filter by tag                        |
-| `--author`   | Filter by author                     |
-| `--verified` | Show only verified extensions        |
-
-Searches all active catalogs for extensions matching the query. Without a query, lists all available extensions.
-
-## Install an Extension
-
-```bash
 specify extension add <name>
-```
-
-| Option          | Description                                              |
-| --------------- | -------------------------------------------------------- |
-| `--dev`         | Install from a local directory (for development)         |
-| `--from <url>`  | Install from a custom URL instead of the catalog         |
-| `--priority <N>`| Resolution priority (default: 10; lower = higher precedence) |
-
-Installs an extension from the catalog, a URL, or a local directory. Extension commands are automatically registered with the currently installed AI coding agent integration.
-
-> **Note:** All extension commands require a project already initialized with `specify init`.
-
-## Remove an Extension
-
-```bash
-specify extension remove <name>
-```
-
-| Option          | Description                                    |
-| --------------- | ---------------------------------------------- |
-| `--keep-config` | Preserve configuration files during removal    |
-| `--force`       | Skip confirmation prompt                       |
-
-Removes an installed extension. Configuration files are backed up by default; use `--keep-config` to leave them in place or `--force` to skip the confirmation.
-
-## List Installed Extensions
-
-```bash
 specify extension list
-```
-
-| Option        | Description                                        |
-| ------------- | -------------------------------------------------- |
-| `--available` | Show available (uninstalled) extensions            |
-| `--all`       | Show both installed and available extensions       |
-
-Lists installed extensions with their status, version, and command counts.
-
-## Extension Info
-
-```bash
 specify extension info <name>
-```
-
-Shows detailed information about an installed or available extension, including its description, version, commands, and configuration.
-
-## Update Extensions
-
-```bash
 specify extension update [<name>]
-```
-
-Updates a specific extension, or all installed extensions if no name is given.
-
-## Enable / Disable an Extension
-
-```bash
+specify extension remove <name>
 specify extension enable <name>
 specify extension disable <name>
 ```
 
-Disable an extension without removing it. Disabled extensions are not loaded and their commands are not available. Re-enable with `enable`.
+## 配置
 
-## Set Extension Priority
+扩展可以在 `.specify/extensions/<ext>/` 下提供项目配置、本地配置和配置模板。配置优先级通常是：
 
-```bash
-specify extension set-priority <name> <priority>
-```
+1. 扩展默认值
+2. 项目配置
+3. 本地配置
+4. 环境变量
 
-Changes the resolution priority of an extension. When multiple extensions provide a command with the same name, the extension with the lowest priority number takes precedence.
-
-## Catalog Management
-
-Extension catalogs control where `search` and `add` look for extensions. Catalogs are checked in priority order (lower number = higher precedence).
-
-### List Catalogs
-
-```bash
-specify extension catalog list
-```
-
-Shows all active catalogs in the stack with their priorities and install permissions.
-
-### Add a Catalog
-
-```bash
-specify extension catalog add <url>
-```
-
-| Option                               | Description                                        |
-| ------------------------------------ | -------------------------------------------------- |
-| `--name <name>`                      | Required. Unique name for the catalog              |
-| `--priority <N>`                     | Priority (default: 10; lower = higher precedence)  |
-| `--install-allowed / --no-install-allowed` | Whether extensions can be installed from this catalog |
-| `--description <text>`               | Optional description                               |
-
-Adds a catalog to the project's `.specify/extension-catalogs.yml`.
-
-### Remove a Catalog
-
-```bash
-specify extension catalog remove <name>
-```
-
-Removes a catalog from the project configuration.
-
-### Catalog Resolution Order
-
-Catalogs are resolved in this order (first match wins):
-
-1. **Environment variable** — `SPECKIT_CATALOG_URL` overrides all catalogs
-2. **Project config** — `.specify/extension-catalogs.yml`
-3. **User config** — `~/.specify/extension-catalogs.yml`
-4. **Built-in defaults** — official catalog + community catalog
-
-Example `.specify/extension-catalogs.yml`:
-
-```yaml
-catalogs:
-  - name: "my-org-catalog"
-    url: "https://example.com/catalog.json"
-    priority: 5
-    install_allowed: true
-    description: "Our approved extensions"
-```
-
-## Extension Configuration
-
-Most extensions include configuration files in their install directory:
-
-```text
-.specify/extensions/<ext>/
-├── <ext>-config.yml           # Project config (version controlled)
-├── <ext>-config.local.yml     # Local overrides (gitignored)
-└── <ext>-config.template.yml  # Template reference
-```
-
-Configuration is merged in this order (highest priority last):
-
-1. **Extension defaults** (from `extension.yml`)
-2. **Project config** (`<ext>-config.yml`)
-3. **Local overrides** (`<ext>-config.local.yml`)
-4. **Environment variables** (`SPECKIT_<EXT>_*`)
-
-To set up configuration for a newly installed extension, copy the template:
-
-```bash
-cp .specify/extensions/<ext>/<ext>-config.template.yml \
-   .specify/extensions/<ext>/<ext>-config.yml
-```
-
-## FAQ
-
-### Why can't I find an extension with `search`?
-
-Check the spelling of the extension name. The extension may not be published yet, or it may be in a catalog you haven't added. Use `specify extension catalog list` to see which catalogs are active.
-
-### Why doesn't the extension command appear in my AI coding agent?
-
-Verify the extension is installed and enabled with `specify extension list`. If it shows as installed, restart your AI coding agent — it may need to reload for it to take effect.
-
-### How do I set up extension configuration?
-
-Copy the config template that ships with the extension:
-
-```bash
-cp .specify/extensions/<ext>/<ext>-config.template.yml \
-   .specify/extensions/<ext>/<ext>-config.yml
-```
-
-See [Extension Configuration](#extension-configuration) for details on config layers and overrides.
-
-### How do I resolve an incompatible version error?
-
-Update Spec Kit to the version required by the extension.
-
-### Who maintains extensions?
-
-Most extensions are independently created and maintained by their respective authors. The Spec Kit maintainers do not review, audit, endorse, or support extension code. Review an extension's source code before installing and use at your own discretion. For issues with a specific extension, contact its author or file an issue on the extension's repository.
+安装第三方扩展前，应先检查源码、命令、脚本和 hook 行为。

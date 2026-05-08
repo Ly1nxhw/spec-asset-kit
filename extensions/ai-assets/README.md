@@ -1,46 +1,49 @@
-# AI Assets Extension
+# AI Assets 扩展
 
-This bundled extension adds `speckit.ai-assets.extract` and
-`speckit.ai-assets.refine` to keep a lightweight `ai-assets/` knowledge layer
-alongside the normal Spec Kit workflow.
+该 bundled 扩展用于在标准 Spec Kit 工作流旁维护轻量的 `ai-assets/` 项目理解层。
 
-It is designed to:
+它提供：
 
-- scan the repository for verifiable source files and candidate business signals
-- synthesize business-facing private knowledge without treating weak repo
-  inference as confirmed fact
-- collect human confirmation questions in `open-questions.md`
-- promote human-confirmed answers through `speckit.ai-assets.refine`
-- make `speckit.plan` read confirmed business context before planning
+- `speckit.ai-assets.extract` / `speckit.assets.extract`
+- `speckit.ai-assets.refine` / `speckit.assets.refine`
+- `speckit.ai-assets.check` / `speckit.assets.check`
+- `speckit.ai-assets.reconcile` / `speckit.assets.reconcile`
+- `before_plan` 钩子，让规划阶段先刷新项目理解资产
 
-It is not intended to regenerate a full architecture document, tech-stack
-inventory, or repository map. Technical facts should appear only as short
-implementation anchors that help trace a business concept back to code.
+## 设计目标
 
-Generated project assets:
+- 从仓库事实中提取可追溯的业务线索
+- 将弱推断默认标记为 `candidate`
+- 把需要人工确认的问题汇总到 `open-questions.md`
+- 通过 `refine` 消费人工回答并沉淀 `confirmed` 知识
+- 通过 `check` 做只读漂移检查
+- 通过 `reconcile` 在实现后对齐资产，但不静默改写已确认业务含义
 
-- `ai-assets/business-context.md`
-- `ai-assets/domain-glossary.md`
-- `ai-assets/business-rules.md`
-- `ai-assets/user-journeys.md`
-- `ai-assets/external-systems.md`
-- `ai-assets/decision-log.md`
-- `ai-assets/open-questions.md`
-- `ai-assets/extraction-report.md`
+## 默认资产
 
-Core generated assets must separate:
+```text
+ai-assets/
+|- business-context.md
+|- domain-glossary.md
+|- business-rules.md
+|- user-journeys.md
+|- external-systems.md
+|- decision-log.md
+|- open-questions.md
+`- extraction-report.md
+```
+
+核心资产必须区分：
 
 - `已确认知识`
 - `候选线索`
 - `实现锚点`
 - `待确认问题`
 
-Knowledge status values:
+知识状态：
 
-- `confirmed`: formal docs/contracts/tests or explicit human confirmation
-- `candidate`: repo-derived signal that still needs a human answer
-- `deprecated`: old term, old workflow, or knowledge that should not drive new work
+- `confirmed`：来自正式文档、契约、测试，或人的明确确认
+- `candidate`：来自 repo 线索的推断，仍需要人工确认
+- `deprecated`：旧术语、旧流程或不应继续驱动新需求的知识
 
-Important rule: `ai-assets/` is an interpretation layer for AI assistance. It
-does not replace code, configuration, contracts, or formal project documents as
-the source of truth.
+重要规则：`ai-assets/` 是 AI 辅助理解层，不替代源码、配置、契约或正式项目文档的事实源地位。

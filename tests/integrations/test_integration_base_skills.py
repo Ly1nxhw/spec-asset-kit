@@ -395,6 +395,10 @@ class SkillsIntegrationTests:
         "assets-extract",
         "ai-assets-refine",
         "assets-refine",
+        "ai-assets-check",
+        "assets-check",
+        "ai-assets-reconcile",
+        "assets-reconcile",
     ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
@@ -414,9 +418,14 @@ class SkillsIntegrationTests:
             ".specify/extensions/ai-assets/README.md",
             ".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md",
             ".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md",
+            ".specify/extensions/ai-assets/commands/speckit.ai-assets.check.md",
+            ".specify/extensions/ai-assets/commands/speckit.ai-assets.reconcile.md",
             ".specify/extensions/ai-assets/extension.yml",
             ".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh",
+            ".specify/extensions/ai-assets/scripts/bash/check-ai-assets.sh",
             ".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1",
+            ".specify/extensions/ai-assets/scripts/powershell/check-ai-assets.ps1",
+            ".specify/extensions/ai-assets/scripts/check_ai_assets.py",
             ".specify/extensions/ai-assets/scripts/scan_repo.py",
             ".specify/extensions/ai-assets/templates/commands/plan.md",
             ".specify/extensions/ai-assets/templates/plan-template.md",

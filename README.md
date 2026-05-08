@@ -46,6 +46,10 @@
 - 兼容别名：`speckit.assets.extract`
 - 命令：`speckit.ai-assets.refine`
 - 兼容别名：`speckit.assets.refine`
+- 命令：`speckit.ai-assets.check`
+- 兼容别名：`speckit.assets.check`
+- 命令：`speckit.ai-assets.reconcile`
+- 兼容别名：`speckit.assets.reconcile`
 - 强制 `before_plan` 钩子：规划前自动确保项目理解资产存在
 
 默认生成的资产目录：
@@ -192,6 +196,20 @@ specify init --here --integration codex --script sh
 
 这会把已确认的业务知识升级为 `confirmed`，并保留未确认的候选线索。
 
+实现完成后建议先运行只读检查：
+
+```text
+/speckit.ai-assets.check
+```
+
+如果检查发现资产漂移，或本次实现改变了业务规则、术语、用户旅程、外部系统、历史决策或实现锚点，再运行：
+
+```text
+/speckit.ai-assets.reconcile
+```
+
+`reconcile` 只允许更新 `ai-assets/`，不得静默改写已确认业务含义，也不得把未确认候选线索直接升级为事实。
+
 ### 4. 生成技术规划
 
 ```text
@@ -310,7 +328,7 @@ python /path/to/spec-asset-kit/evaluation/scripts/aggregate_results.py \
 当前还没有做的事：
 
 - 更完整的资产冲突 reconcile 流程
-- 完整 drift 检测
+- 更完整的 drift 检测门禁与自动化集成
 - 复杂多语言切换
 - 更重型的静态分析或知识治理系统
 - 真实业务项目上的大规模 replay 数据集

@@ -539,6 +539,32 @@ ai-assets/
 3. `/speckit.ai-assets.refine` 把明确回答升级为 `confirmed`
 4. `/speckit.plan` 只把 `confirmed` 当事实，遇到 `candidate` 继续记录风险
 
+### 7.6 漂移检查与实现后对齐
+
+实现完成后，建议运行：
+
+```text
+/speckit.ai-assets.check
+```
+
+该命令严格只读，用于检查：
+
+- 必需资产是否缺失
+- 核心资产章节是否完整
+- 实现锚点路径是否过期
+- `confirmed` 条目是否缺少来源或锚点
+- `candidate` 条目是否同步进入 `open-questions.md`
+- plan 是否疑似把 `candidate` 当事实使用
+- tasks 是否引用不存在路径
+
+如果检查发现资产需要更新，或者本次实现改变了业务规则、术语、用户旅程、外部系统、历史决策或实现锚点，再运行：
+
+```text
+/speckit.ai-assets.reconcile
+```
+
+`reconcile` 只允许更新 `ai-assets/` 下的资产报告和待确认问题。它不得静默改写 `confirmed` 业务含义，也不得在没有人工确认、正式文档、契约或测试依据时把 `candidate` 升级为 `confirmed`。
+
 ## 8. `plan` 如何消费 `ai-assets`
 
 在这个 fork 里，`plan` 不是单独看 `spec.md` 就开始推导。
@@ -581,6 +607,10 @@ ai-assets/
 - `speckit.assets.extract`
 - `speckit.ai-assets.refine`
 - `speckit.assets.refine`
+- `speckit.ai-assets.check`
+- `speckit.assets.check`
+- `speckit.ai-assets.reconcile`
+- `speckit.assets.reconcile`
 - `before_plan` 强制钩子
 - `plan` 命令模板覆盖
 - `plan-template` 文档模板覆盖

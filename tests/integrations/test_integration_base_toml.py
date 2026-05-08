@@ -534,6 +534,10 @@ class TomlIntegrationTests:
         "speckit.assets.extract.toml",
         "speckit.ai-assets.refine.toml",
         "speckit.assets.refine.toml",
+        "speckit.ai-assets.check.toml",
+        "speckit.assets.check.toml",
+        "speckit.ai-assets.reconcile.toml",
+        "speckit.assets.reconcile.toml",
     ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
@@ -553,9 +557,14 @@ class TomlIntegrationTests:
         files.append(".specify/extensions/ai-assets/README.md")
         files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md")
         files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.check.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.reconcile.md")
         files.append(".specify/extensions/ai-assets/extension.yml")
         files.append(".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh")
+        files.append(".specify/extensions/ai-assets/scripts/bash/check-ai-assets.sh")
         files.append(".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1")
+        files.append(".specify/extensions/ai-assets/scripts/powershell/check-ai-assets.ps1")
+        files.append(".specify/extensions/ai-assets/scripts/check_ai_assets.py")
         files.append(".specify/extensions/ai-assets/scripts/scan_repo.py")
         files.append(".specify/extensions/ai-assets/templates/commands/plan.md")
         files.append(".specify/extensions/ai-assets/templates/plan-template.md")

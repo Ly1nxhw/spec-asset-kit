@@ -27,6 +27,16 @@ provides:
         - speckit.assets.refine
       file: commands/speckit.ai-assets.refine.md
       description: "Promote candidate business knowledge using human answers."
+    - name: speckit.ai-assets.check
+      aliases:
+        - speckit.assets.check
+      file: commands/speckit.ai-assets.check.md
+      description: "只读检查 ai-assets 漂移、过期锚点和规划误用。"
+    - name: speckit.ai-assets.reconcile
+      aliases:
+        - speckit.assets.reconcile
+      file: commands/speckit.ai-assets.reconcile.md
+      description: "实现后对齐 ai-assets，并保留人工确认边界。"
 
 hooks:
   before_plan:

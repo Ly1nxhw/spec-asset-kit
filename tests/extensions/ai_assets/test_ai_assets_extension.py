@@ -14,6 +14,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 EXT_DIR = PROJECT_ROOT / "extensions" / "ai-assets"
 EXT_BASH = EXT_DIR / "scripts" / "bash" / "extract-ai-assets.sh"
 EXT_PS = EXT_DIR / "scripts" / "powershell" / "extract-ai-assets.ps1"
+CHECK_BASH = EXT_DIR / "scripts" / "bash" / "check-ai-assets.sh"
+CHECK_PS = EXT_DIR / "scripts" / "powershell" / "check-ai-assets.ps1"
 
 HAS_PWSH = shutil.which("pwsh") is not None
 
@@ -38,6 +40,50 @@ def _build_repo_fixture(tmp_path: Path) -> Path:
     return tmp_path
 
 
+def _build_assets_fixture(tmp_path: Path) -> Path:
+    repo = _build_repo_fixture(tmp_path)
+    assets = repo / "ai-assets"
+    assets.mkdir()
+    core = """## Confirmed Knowledge
+
+| Field | Value |
+|---|---|
+| Status | confirmed |
+| Source | `README.md` |
+
+## Candidate Signals
+
+| Field | Value |
+|---|---|
+| Status | candidate |
+| Source | `missing/path.md` |
+
+## Implementation Anchors
+
+- `src/main.py`
+
+## Open Questions
+
+- Needs confirmation.
+"""
+    for name in [
+        "business-context.md",
+        "domain-glossary.md",
+        "business-rules.md",
+        "user-journeys.md",
+        "external-systems.md",
+        "decision-log.md",
+    ]:
+        (assets / name).write_text(core, encoding="utf-8")
+    (assets / "open-questions.md").write_text(
+        "## Needs Human Confirmation\n\n| ID | Question | Why It Matters | Evidence | Affected Assets |\n"
+        "|---|---|---|---|---|\n| AQ001 | Confirm candidate? | Planning risk | `README.md` | `business-context.md` |\n",
+        encoding="utf-8",
+    )
+    (assets / "extraction-report.md").write_text("# Extraction Report\n", encoding="utf-8")
+    return repo
+
+
 def _run_bash(repo_root: Path) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["bash", str(EXT_BASH), "--json"],
@@ -51,6 +97,26 @@ def _run_bash(repo_root: Path) -> subprocess.CompletedProcess:
 def _run_pwsh(repo_root: Path) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["pwsh", "-NoProfile", "-File", str(EXT_PS), "-Json"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def _run_check_bash(repo_root: Path) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["bash", str(CHECK_BASH), "--json"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def _run_check_pwsh(repo_root: Path) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["pwsh", "-NoProfile", "-File", str(CHECK_PS), "-Json"],
         cwd=repo_root,
         capture_output=True,
         text=True,
@@ -76,6 +142,10 @@ class TestAIAssetsManifest:
         assert "speckit.assets.extract" in commands["speckit.ai-assets.extract"]["aliases"]
         assert "speckit.ai-assets.refine" in commands
         assert "speckit.assets.refine" in commands["speckit.ai-assets.refine"]["aliases"]
+        assert "speckit.ai-assets.check" in commands
+        assert "speckit.assets.check" in commands["speckit.ai-assets.check"]["aliases"]
+        assert "speckit.ai-assets.reconcile" in commands
+        assert "speckit.assets.reconcile" in commands["speckit.ai-assets.reconcile"]["aliases"]
         assert manifest.hooks["before_plan"]["command"] == "speckit.ai-assets.extract"
         assert manifest.hooks["before_plan"]["optional"] is False
 
@@ -89,6 +159,7 @@ class TestAIAssetsManifest:
         assert (EXT_DIR / "templates" / "commands" / "plan.md").is_file()
         assert (EXT_DIR / "templates" / "plan-template.md").is_file()
         assert (EXT_DIR / "scripts" / "scan_repo.py").is_file()
+        assert (EXT_DIR / "scripts" / "check_ai_assets.py").is_file()
 
     def test_extract_command_targets_business_assets(self):
         command = (EXT_DIR / "commands" / "speckit.ai-assets.extract.md").read_text(encoding="utf-8")
@@ -115,6 +186,20 @@ class TestAIAssetsManifest:
         assert "将仍不完整的内容保留为 `candidate`" in command
         assert "人的明确回答优先于 repo 推断" in command
 
+    def test_check_command_is_read_only(self):
+        command = (EXT_DIR / "commands" / "speckit.ai-assets.check.md").read_text(encoding="utf-8")
+
+        assert "严格只读" in command
+        assert "过期的实现锚点路径" in command
+        assert "不要把 `candidate` 升级为 `confirmed`" in command
+
+    def test_reconcile_command_limits_write_scope(self):
+        command = (EXT_DIR / "commands" / "speckit.ai-assets.reconcile.md").read_text(encoding="utf-8")
+
+        assert "只允许更新 `ai-assets/`" in command
+        assert "reconcile-report.md" in command
+        assert "不得静默改写 `confirmed`" in command
+
 
 class TestAIAssetsInstall:
     def test_install_from_directory(self, tmp_path: Path):
@@ -127,6 +212,7 @@ class TestAIAssetsInstall:
         assert manifest.id == "ai-assets"
         assert manager.registry.is_installed("ai-assets")
         assert (tmp_path / ".specify" / "extensions" / "ai-assets" / "scripts" / "scan_repo.py").is_file()
+        assert (tmp_path / ".specify" / "extensions" / "ai-assets" / "scripts" / "check_ai_assets.py").is_file()
         assert (tmp_path / ".specify" / "extensions" / "ai-assets" / "templates" / "commands" / "plan.md").is_file()
 
     def test_install_registers_before_plan_hook(self, tmp_path: Path):
@@ -186,12 +272,38 @@ class TestAIAssetsScannerBash:
         assert "templates/spec-template.md" in payload["templates"]
 
 
+@requires_bash
+class TestAIAssetsCheckBash:
+    def test_checker_reports_stale_anchors(self, tmp_path: Path):
+        repo = _build_assets_fixture(tmp_path)
+        result = _run_check_bash(repo)
+
+        assert result.returncode == 0, result.stderr
+        payload = json.loads(result.stdout)
+
+        assert payload["summary"]["status"] == "WARN"
+        assert payload["summary"]["stale_anchor_count"] >= 1
+        assert any(f["id"].startswith("STALE_ANCHOR") for f in payload["findings"])
+
+
 @pytest.mark.skipif(not HAS_PWSH, reason="pwsh not available")
 class TestAIAssetsScannerPowerShell:
     def test_scanner_matches_bash_contract(self, tmp_path: Path):
         repo = _build_repo_fixture(tmp_path)
         bash_result = _run_bash(repo)
         pwsh_result = _run_pwsh(repo)
+
+        assert bash_result.returncode == 0, bash_result.stderr
+        assert pwsh_result.returncode == 0, pwsh_result.stderr
+
+        bash_payload = json.loads(bash_result.stdout)
+        pwsh_payload = json.loads(pwsh_result.stdout)
+        assert pwsh_payload == bash_payload
+
+    def test_check_wrapper_matches_bash_contract(self, tmp_path: Path):
+        repo = _build_assets_fixture(tmp_path)
+        bash_result = _run_check_bash(repo)
+        pwsh_result = _run_check_pwsh(repo)
 
         assert bash_result.returncode == 0, bash_result.stderr
         assert pwsh_result.returncode == 0, pwsh_result.stderr
