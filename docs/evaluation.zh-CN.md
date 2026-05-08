@@ -94,7 +94,7 @@ pytest tests/integrations/test_integration_codex.py -v
 
 ### L1: 资产质量评测
 
-目标：评估 `ai-assets.extract` 生成的 7 个资产是否准确、可追溯、不过度编造。
+目标：评估 `ai-assets.extract` 生成的 8 个资产是否准确、可追溯、不过度编造，并评估 `ai-assets.refine` 是否能把人工确认沉淀为可消费知识。
 
 评估对象：
 
@@ -104,16 +104,18 @@ pytest tests/integrations/test_integration_codex.py -v
 - `ai-assets/user-journeys.md`
 - `ai-assets/external-systems.md`
 - `ai-assets/decision-log.md`
+- `ai-assets/open-questions.md`
 - `ai-assets/extraction-report.md`
 
 核心指标：
 
 | 指标 | 定义 |
 |---|---|
-| `asset_file_completeness` | 7 个资产文件是否全部存在 |
-| `section_completeness` | 6 个核心资产是否包含 `核心解释 / 实现锚点 / 待确认问题` |
+| `asset_file_completeness` | 8 个资产文件是否全部存在 |
+| `section_completeness` | 6 个核心资产是否包含 `已确认知识 / 候选线索 / 实现锚点 / 待确认问题` |
 | `grounded_rate` | 有明确来源路径的结论数 / 总结论数 |
-| `unsupported_observed_count` | 写在 `核心解释` 但找不到来源的结论数 |
+| `candidate_question_coverage` | 有待确认问题的 candidate 数 / candidate 总数 |
+| `confirmed_without_source_count` | 标记为 confirmed 但没有正式来源或人工确认记录的结论数 |
 | `wrong_fact_count` | 与源码、配置、正式文档冲突的结论数 |
 | `useful_asset_score` | 人工评估资产对理解项目是否有帮助，1-5 分 |
 
@@ -122,7 +124,8 @@ pytest tests/integrations/test_integration_codex.py -v
 - `asset_file_completeness = 100%`
 - `section_completeness = 100%`
 - `grounded_rate >= 80%`
-- `unsupported_observed_count = 0`
+- `candidate_question_coverage >= 90%`
+- `confirmed_without_source_count = 0`
 - `wrong_fact_count = 0`
 
 ### L2: 离线规划质量 A/B

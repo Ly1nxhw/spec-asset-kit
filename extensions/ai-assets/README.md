@@ -1,13 +1,17 @@
 # AI Assets Extension
 
-This bundled extension adds `speckit.ai-assets.extract` and keeps a lightweight
-`ai-assets/` knowledge layer alongside the normal Spec Kit workflow.
+This bundled extension adds `speckit.ai-assets.extract` and
+`speckit.ai-assets.refine` to keep a lightweight `ai-assets/` knowledge layer
+alongside the normal Spec Kit workflow.
 
 It is designed to:
 
-- scan the repository for verifiable source files
-- synthesize business-facing private knowledge from those sources
-- make `speckit.plan` read business context before planning
+- scan the repository for verifiable source files and candidate business signals
+- synthesize business-facing private knowledge without treating weak repo
+  inference as confirmed fact
+- collect human confirmation questions in `open-questions.md`
+- promote human-confirmed answers through `speckit.ai-assets.refine`
+- make `speckit.plan` read confirmed business context before planning
 
 It is not intended to regenerate a full architecture document, tech-stack
 inventory, or repository map. Technical facts should appear only as short
@@ -21,13 +25,21 @@ Generated project assets:
 - `ai-assets/user-journeys.md`
 - `ai-assets/external-systems.md`
 - `ai-assets/decision-log.md`
+- `ai-assets/open-questions.md`
 - `ai-assets/extraction-report.md`
 
-Every generated asset must separate:
+Core generated assets must separate:
 
-- `核心解释`
+- `已确认知识`
+- `候选线索`
 - `实现锚点`
 - `待确认问题`
+
+Knowledge status values:
+
+- `confirmed`: formal docs/contracts/tests or explicit human confirmation
+- `candidate`: repo-derived signal that still needs a human answer
+- `deprecated`: old term, old workflow, or knowledge that should not drive new work
 
 Important rule: `ai-assets/` is an interpretation layer for AI assistance. It
 does not replace code, configuration, contracts, or formal project documents as

@@ -44,6 +44,8 @@
 
 - 命令：`speckit.ai-assets.extract`
 - 兼容别名：`speckit.assets.extract`
+- 命令：`speckit.ai-assets.refine`
+- 兼容别名：`speckit.assets.refine`
 - 强制 `before_plan` 钩子：规划前自动确保项目理解资产存在
 
 默认生成的资产目录：
@@ -56,16 +58,20 @@ ai-assets/
 |- user-journeys.md
 |- external-systems.md
 |- decision-log.md
+|- open-questions.md
 `- extraction-report.md
 ```
 
 每类核心资产都要求明确区分：
 
-- `核心解释`
+- `已确认知识`
+- `候选线索`
 - `实现锚点`
 - `待确认问题`
 
 `ai-assets` 的重点是解释业务私有知识、领域术语、业务规则、用户旅程和上下游语义。技术栈、目录结构和模块边界只作为实现锚点简要引用，不再重新生成一份架构说明。
+
+它默认把从 repo 命名、代码分支、注释和弱文档中推断出的内容标记为 `candidate`，并写入 `open-questions.md`。只有正式文档、契约、测试或人的明确回答才能升级为 `confirmed`。`speckit.ai-assets.refine` 负责消费人工回答，把候选线索沉淀成可被规划阶段采用的已确认知识。
 
 ### 3. `plan` 显式消费 `ai-assets`
 
@@ -75,12 +81,14 @@ ai-assets/
 - `ai-assets/domain-glossary.md`
 - `ai-assets/business-rules.md`
 - `ai-assets/user-journeys.md`
+- `ai-assets/open-questions.md`
 
 这样做的目标是：
 
 - 稳定业务私有术语
 - 让技术规划先理解业务规则、状态流转和用户旅程
 - 把上下游系统、人工运营边界和历史决策带进规划
+- 区分 `confirmed`、`candidate`、`deprecated`，避免把 AI 推断当成事实
 - 避免 agent 只按技术目录猜实现方向
 
 ### 4. 可迁移评测工具包
@@ -175,6 +183,14 @@ specify init --here --integration codex --script sh
 ```
 
 这会帮助 AI 先理解项目是什么，再做规划。
+
+如果 `ai-assets/open-questions.md` 中存在需要人工确认的问题，补充业务答案后运行：
+
+```text
+/speckit.ai-assets.refine
+```
+
+这会把已确认的业务知识升级为 `confirmed`，并保留未确认的候选线索。
 
 ### 4. 生成技术规划
 
@@ -293,7 +309,7 @@ python /path/to/spec-asset-kit/evaluation/scripts/aggregate_results.py \
 
 当前还没有做的事：
 
-- `assets.reconcile`
+- 更完整的资产冲突 reconcile 流程
 - 完整 drift 检测
 - 复杂多语言切换
 - 更重型的静态分析或知识治理系统

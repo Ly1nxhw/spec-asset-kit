@@ -488,6 +488,8 @@ class TomlIntegrationTests:
 
         assert (cmd_dir / "speckit.ai-assets.extract.toml").exists()
         assert (cmd_dir / "speckit.assets.extract.toml").exists()
+        assert (cmd_dir / "speckit.ai-assets.refine.toml").exists()
+        assert (cmd_dir / "speckit.assets.refine.toml").exists()
         assert "ai-assets/business-context.md" in plan_command
 
     def test_init_options_includes_context_file(self, tmp_path):
@@ -530,6 +532,8 @@ class TomlIntegrationTests:
     EXTENSION_COMMANDS = [
         "speckit.ai-assets.extract.toml",
         "speckit.assets.extract.toml",
+        "speckit.ai-assets.refine.toml",
+        "speckit.assets.refine.toml",
     ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
@@ -548,6 +552,7 @@ class TomlIntegrationTests:
         files.append(".specify/extensions/.registry")
         files.append(".specify/extensions/ai-assets/README.md")
         files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md")
         files.append(".specify/extensions/ai-assets/extension.yml")
         files.append(".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh")
         files.append(".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1")

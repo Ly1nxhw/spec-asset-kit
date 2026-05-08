@@ -66,12 +66,17 @@ $ARGUMENTS
    - `ai-assets/domain-glossary.md`
    - `ai-assets/business-rules.md`
    - `ai-assets/user-journeys.md`
+   - `ai-assets/open-questions.md`
    - 可选补充：`ai-assets/external-systems.md`、`ai-assets/decision-log.md`、`ai-assets/extraction-report.md`
    - 读取后必须执行以下约束：
+     - 只把标记为 `confirmed` 的业务知识当作规划事实
+     - 遇到 `candidate` 内容，必须记录为风险、待确认项，或先建议运行 `/speckit.ai-assets.refine`
+     - 遇到 `deprecated` 内容，只能用于兼容、迁移或历史解释，不能作为新方案依据
      - 用 `business-context.md` 理解业务域、角色、目标和非技术背景
      - 用 `domain-glossary.md` 稳定业务私有术语，不要在 plan 中随意改写内部名词
      - 用 `business-rules.md` 和 `user-journeys.md` 约束功能行为、状态流转、权限边界和异常流程
      - 用 `external-systems.md` 与 `decision-log.md` 识别上下游依赖、历史包袱和人工运营边界
+     - 用 `open-questions.md` 识别还需要人工输入的业务私有知识
      - 技术栈、目录结构、模块边界只作为实现锚点，不要把 ai-assets 当成架构文档复述
      - 如果 ai-assets 与代码、配置、宪章、规格冲突，始终以后者为准，并在计划中显式记录冲突
 
@@ -164,3 +169,4 @@ $ARGUMENTS
 - 所有文件系统操作使用绝对路径；文档引用使用项目相对路径
 - 任何门禁失败或未解决澄清都必须报错，不得静默跳过
 - `ai-assets/` 是 AI 辅助理解层，不是事实源本身；如与代码或正式文档冲突，必须以正式事实源为准
+- `candidate` 只能作为线索，不能作为最终设计依据；需要进入 plan 风险或通过 `/speckit.ai-assets.refine` 获得人工确认

@@ -248,6 +248,8 @@ class MarkdownIntegrationTests:
 
         assert (cmd_dir / "speckit.ai-assets.extract.md").exists()
         assert (cmd_dir / "speckit.assets.extract.md").exists()
+        assert (cmd_dir / "speckit.ai-assets.refine.md").exists()
+        assert (cmd_dir / "speckit.assets.refine.md").exists()
         assert "ai-assets/business-context.md" in plan_command
 
     def test_init_options_includes_context_file(self, tmp_path):
@@ -283,6 +285,8 @@ class MarkdownIntegrationTests:
     EXTENSION_COMMANDS = [
         "speckit.ai-assets.extract.md",
         "speckit.assets.extract.md",
+        "speckit.ai-assets.refine.md",
+        "speckit.assets.refine.md",
     ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
@@ -301,6 +305,7 @@ class MarkdownIntegrationTests:
         files.append(".specify/extensions/.registry")
         files.append(".specify/extensions/ai-assets/README.md")
         files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md")
+        files.append(".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md")
         files.append(".specify/extensions/ai-assets/extension.yml")
         files.append(".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh")
         files.append(".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1")

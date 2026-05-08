@@ -22,6 +22,11 @@ provides:
         - speckit.assets.extract
       file: commands/speckit.ai-assets.extract.md
       description: "Initialize or refresh ai-assets/ from business and repository facts."
+    - name: speckit.ai-assets.refine
+      aliases:
+        - speckit.assets.refine
+      file: commands/speckit.ai-assets.refine.md
+      description: "Promote candidate business knowledge using human answers."
 
 hooks:
   before_plan:

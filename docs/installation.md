@@ -84,6 +84,8 @@ After initialization, you should see the following commands available in your AI
 - `/speckit.specify` - Create specifications
 - `/speckit.plan` - Generate implementation plans  
 - `/speckit.tasks` - Break down into actionable tasks
+- `/speckit.ai-assets.extract` - Generate candidate business knowledge assets
+- `/speckit.ai-assets.refine` - Promote human-confirmed business knowledge
 
 The `.specify/scripts` directory will contain both `.sh` and `.ps1` scripts.
 

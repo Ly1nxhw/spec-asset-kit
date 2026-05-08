@@ -70,8 +70,12 @@ class TestAIAssetsManifest:
         from specify_cli.extensions import ExtensionManifest
 
         manifest = ExtensionManifest(EXT_DIR / "extension.yml")
-        assert manifest.commands[0]["name"] == "speckit.ai-assets.extract"
-        assert "speckit.assets.extract" in manifest.commands[0]["aliases"]
+        commands = {command["name"]: command for command in manifest.commands}
+
+        assert "speckit.ai-assets.extract" in commands
+        assert "speckit.assets.extract" in commands["speckit.ai-assets.extract"]["aliases"]
+        assert "speckit.ai-assets.refine" in commands
+        assert "speckit.assets.refine" in commands["speckit.ai-assets.refine"]["aliases"]
         assert manifest.hooks["before_plan"]["command"] == "speckit.ai-assets.extract"
         assert manifest.hooks["before_plan"]["optional"] is False
 
@@ -93,8 +97,23 @@ class TestAIAssetsManifest:
         assert "domain-glossary.md" in command
         assert "business-rules.md" in command
         assert "user-journeys.md" in command
+        assert "open-questions.md" in command
+        assert "confirmed" in command
+        assert "candidate" in command
+        assert "deprecated" in command
+        assert "已确认知识" in command
+        assert "候选线索" in command
         assert "技术栈、目录结构、模块边界、运行命令只在“实现锚点”中简要列出" in command
         assert "不再使用 `[high]`、`[medium]`、`[low]` 平铺列表" in command
+
+    def test_refine_command_promotes_human_confirmed_knowledge(self):
+        command = (EXT_DIR / "commands" / "speckit.ai-assets.refine.md").read_text(encoding="utf-8")
+
+        assert "open-questions.md" in command
+        assert "将明确确认的内容标记为 `confirmed`" in command
+        assert "将明确否定或过时的内容标记为 `deprecated`" in command
+        assert "将仍不完整的内容保留为 `candidate`" in command
+        assert "人的明确回答优先于 repo 推断" in command
 
 
 class TestAIAssetsInstall:

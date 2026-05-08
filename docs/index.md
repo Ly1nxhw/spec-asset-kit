@@ -46,8 +46,12 @@
 
 - `speckit.ai-assets.extract`
 - `speckit.assets.extract`
+- `speckit.ai-assets.refine`
+- `speckit.assets.refine`
 - `before_plan` 强制钩子
 - `plan` 对 `ai-assets` 的显式消费
+
+`extract` 负责从 repo 线索生成候选业务知识和待确认问题，`refine` 负责消费人的明确回答，把关键业务私有知识升级为 `confirmed`，避免把模型推断直接当事实。
 
 ### 最小侵入增强
 

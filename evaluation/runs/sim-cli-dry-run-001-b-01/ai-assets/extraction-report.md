@@ -11,6 +11,7 @@
 - The fixture has one CLI entrypoint and one pytest file.
 - `--dry-run` should be implemented in `sample_cli.py`.
 - The most important behavioral check is that dry-run does not create the output file.
+- confirmed: 8; candidate: 3; deprecated: 0.
 
 ## Gaps
 
@@ -18,4 +19,5 @@
 
 ## Planning Guidance
 
-- `speckit.plan` should consume `business-context.md`, `domain-glossary.md`, `business-rules.md`, and `user-journeys.md` before planning.
+- `speckit.plan` should consume `business-context.md`, `domain-glossary.md`, `business-rules.md`, `user-journeys.md`, and `open-questions.md` before planning.
+- Only confirmed entries should be treated as facts. Candidate entries should be recorded as planning risks or refined with human input.

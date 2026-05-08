@@ -218,6 +218,7 @@ ai-assets/
 |- user-journeys.md
 |- external-systems.md
 |- decision-log.md
+|- open-questions.md
 `- extraction-report.md
 ```
 
@@ -290,9 +291,18 @@ ai-assets/
 
 原因：
 
-- 先把业务私有知识、领域术语、业务规则和用户旅程抽出来
+- 先把业务私有知识、领域术语、业务规则和用户旅程整理成候选线索
 - 让后续 `plan` 和 `tasks` 阶段先理解业务，再选择实现路径
 - 避免 agent 只重新罗列技术栈、架构和目录结构
+- 把无法从 repo 直接确认的私有知识写入 `open-questions.md`，等待人工补充
+
+如果 `open-questions.md` 中已有需要人工确认的问题，先补充业务答案，再运行：
+
+```text
+/speckit.ai-assets.refine
+```
+
+`refine` 会把人的明确回答沉淀为 `confirmed` 知识；没有确认的内容继续保留为 `candidate`。
 
 ### 5.4 第四步：生成技术规划
 
@@ -314,6 +324,8 @@ ai-assets/
 - 用 `domain-glossary.md` 稳定业务私有术语
 - 用 `business-rules.md` 和 `user-journeys.md` 约束行为、状态和流程
 - 用 `external-systems.md`、`decision-log.md` 补充上下游语义和历史决策
+- 用 `open-questions.md` 识别还没有被人工确认的业务私有知识
+- 只把 `confirmed` 当作规划事实；`candidate` 必须进入风险、待确认项或先通过 `refine` 确认
 
 ### 5.5 第五步：拆任务
 
@@ -436,7 +448,21 @@ ai-assets/
 - 产品/运营约束变化
 - 仍影响新需求的历史包袱
 
-### 6.7 `extraction-report.md`
+### 6.7 `open-questions.md`
+
+用途：
+
+- 汇总所有需要人工确认的业务问题
+- 说明每个问题为什么会影响后续规划、任务拆解或实现判断
+- 作为 `/speckit.ai-assets.refine` 的主要输入队列
+
+适合写入：
+
+- 从 repo 命名、代码分支、注释或弱文档推断出来但无法确认的业务含义
+- 需要产品、运营、业务研发或系统 owner 回答的问题
+- 已回答但还没有完全整理进核心资产的知识
+
+### 6.8 `extraction-report.md`
 
 用途：
 
@@ -465,7 +491,7 @@ ai-assets/
 当前采用混合式：
 
 1. 轻量扫描脚本先提取仓库事实
-2. 模板命令再基于这些事实生成资产
+2. 模板命令再基于这些事实生成候选资产和待确认问题
 
 这比“全靠模型盲读整个仓库”更稳定，也比重型静态分析器更轻。
 
@@ -487,14 +513,31 @@ ai-assets/
 除 `extraction-report.md` 外，每个核心资产都应区分：
 
 ```markdown
-## 核心解释
+## 已确认知识
+
+## 候选线索
 
 ## 实现锚点
 
 ## 待确认问题
 ```
 
-不再建议使用 `[high]`、`[medium]`、`[low]` 平铺列表。更推荐使用知识卡片、表格和明确标题，把“含义、规则、场景、来源、实现锚点”分开写清楚。
+不再建议使用 `[high]`、`[medium]`、`[low]` 平铺列表。更推荐使用 `confirmed`、`candidate`、`deprecated` 状态、知识卡片、表格和明确标题，把“含义、规则、场景、来源、实现锚点、待确认问题”分开写清楚。
+
+状态含义：
+
+- `confirmed`：来自正式文档、契约、测试，或人的明确确认
+- `candidate`：来自 repo 线索的推断，仍需要人工确认
+- `deprecated`：旧术语、旧流程或不应继续驱动新需求的历史知识
+
+### 7.5 人工确认流程
+
+`ai-assets.extract` 不应该假装能从 repo 里读出所有业务私有知识。更健康的流程是：
+
+1. `/speckit.ai-assets.extract` 生成候选线索和 `open-questions.md`
+2. 人补充业务答案、术语解释、规则边界或废弃说明
+3. `/speckit.ai-assets.refine` 把明确回答升级为 `confirmed`
+4. `/speckit.plan` 只把 `confirmed` 当事实，遇到 `candidate` 继续记录风险
 
 ## 8. `plan` 如何消费 `ai-assets`
 
@@ -508,7 +551,8 @@ ai-assets/
 4. 看 `ai-assets/domain-glossary.md`
 5. 看 `ai-assets/business-rules.md`
 6. 看 `ai-assets/user-journeys.md`
-7. 必要时看 `ai-assets/external-systems.md` 和 `ai-assets/decision-log.md`
+7. 看 `ai-assets/open-questions.md`
+8. 必要时看 `ai-assets/external-systems.md` 和 `ai-assets/decision-log.md`
 
 这样做的好处：
 
@@ -516,6 +560,7 @@ ai-assets/
 - 业务规则、状态流转和用户旅程更稳
 - 技术规划不只围绕目录结构展开
 - 能显式记录上下游约束和待确认业务问题
+- 能避免把 `candidate` 推断内容误当成已确认事实
 
 ## 9. 扩展机制
 
@@ -534,6 +579,8 @@ ai-assets/
 
 - `speckit.ai-assets.extract`
 - `speckit.assets.extract`
+- `speckit.ai-assets.refine`
+- `speckit.assets.refine`
 - `before_plan` 强制钩子
 - `plan` 命令模板覆盖
 - `plan-template` 文档模板覆盖
@@ -567,12 +614,13 @@ ai-assets/
 
 1. `specify init --here`
 2. `/speckit.ai-assets.extract`
-3. 检查 `ai-assets/` 初稿
-4. `/speckit.constitution`
-5. `/speckit.specify`
-6. `/speckit.plan`
-7. `/speckit.tasks`
-8. `/speckit.implement`
+3. 检查 `ai-assets/open-questions.md`
+4. 补充业务答案后运行 `/speckit.ai-assets.refine`
+5. `/speckit.constitution`
+6. `/speckit.specify`
+7. `/speckit.plan`
+8. `/speckit.tasks`
+9. `/speckit.implement`
 
 这类项目里，最好先让 AI 理解项目，再让它写规划。
 
@@ -582,8 +630,9 @@ ai-assets/
 
 - `constitution` 必须先建立
 - `plan` 前必须确保 `ai-assets` 至少有一版可用
-- `ai-assets` 只写总结，不替代源码和正式规范
-- 如果项目出现明显漂移，后续再补 `assets.reconcile`
+- `ai-assets` 只写业务知识沉淀和实现锚点，不替代源码和正式规范
+- repo 推断只能作为 `candidate`，关键业务规则必须经过人工确认
+- 如果项目出现明显漂移，后续再补资产冲突 reconcile 流程
 
 ## 11. 常见问题
 
@@ -614,7 +663,7 @@ ai-assets/
 
 不能完全替代。
 
-它更像“面向 AI 的总结性代码地图”，适合帮助 AI 在开始规划前快速理解项目，而不是替代 IDE、静态分析器或源码阅读本身。
+它更像“面向 AI 的业务知识工作台”，适合把领域术语、业务规则、用户旅程、上下游语义和待确认问题沉淀下来。代码路径只作为实现锚点存在，不替代 IDE、静态分析器或源码阅读本身。
 
 ### 11.4 为什么 `plan` 必须显式读 `ai-assets`？
 
@@ -624,9 +673,9 @@ ai-assets/
 
 当前最明显的后续方向包括：
 
-- `assets.reconcile`
+- 更完整的资产冲突 reconcile 流程
 - 更稳定的 drift 检测
-- 更好的人工校对流程
+- 更好的人工校对 UI 或工作台
 - 更丰富的 brownfield 抽取策略
 
 ## 12. 故障排查
@@ -659,7 +708,8 @@ ai-assets/
 建议做法：
 
 - 先保留高价值结论
-- 用 `待确认问题` 记录不确定项
+- 用 `candidate` 和 `open-questions.md` 记录不确定项
+- 用 `/speckit.ai-assets.refine` 消费人的明确回答
 - 不要把推断内容当事实源
 
 ### 12.4 中文环境下会不会影响效果

@@ -342,9 +342,13 @@ class SkillsIntegrationTests:
         plan_skill = skills_dir / "speckit-plan" / "SKILL.md"
         extract_skill = skills_dir / "speckit-ai-assets-extract" / "SKILL.md"
         alias_skill = skills_dir / "speckit-assets-extract" / "SKILL.md"
+        refine_skill = skills_dir / "speckit-ai-assets-refine" / "SKILL.md"
+        refine_alias_skill = skills_dir / "speckit-assets-refine" / "SKILL.md"
 
         assert extract_skill.exists()
         assert alias_skill.exists()
+        assert refine_skill.exists()
+        assert refine_alias_skill.exists()
         assert "ai-assets/business-context.md" in plan_skill.read_text(encoding="utf-8")
 
     def test_init_options_includes_context_file(self, tmp_path):
@@ -389,6 +393,8 @@ class SkillsIntegrationTests:
     _EXTENSION_SKILL_COMMANDS = [
         "ai-assets-extract",
         "assets-extract",
+        "ai-assets-refine",
+        "assets-refine",
     ]
 
     def _expected_files(self, script_variant: str) -> list[str]:
@@ -407,6 +413,7 @@ class SkillsIntegrationTests:
             ".specify/extensions/.registry",
             ".specify/extensions/ai-assets/README.md",
             ".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md",
+            ".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md",
             ".specify/extensions/ai-assets/extension.yml",
             ".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh",
             ".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1",

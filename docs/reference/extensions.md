@@ -10,10 +10,14 @@ It provides:
 
 - `speckit.ai-assets.extract`
 - alias: `speckit.assets.extract`
+- `speckit.ai-assets.refine`
+- alias: `speckit.assets.refine`
 - a mandatory `before_plan` hook
 - template overrides for `plan` and `plan-template`
 
 Its responsibility is to initialize and refresh the root-level `ai-assets/` directory so planning can consume business private knowledge before implementation design starts. It should explain domain concepts, business rules, user journeys, and upstream/downstream semantics rather than regenerate a full architecture or tech-stack document.
+
+`extract` treats repo-derived business knowledge as candidate by default. `refine` consumes human answers and promotes confirmed knowledge into the core assets.
 
 Default generated assets:
 
@@ -25,6 +29,7 @@ ai-assets/
 |- user-journeys.md
 |- external-systems.md
 |- decision-log.md
+|- open-questions.md
 `- extraction-report.md
 ```
 
@@ -32,6 +37,7 @@ Important rule:
 
 - `ai-assets` is an AI-facing summary layer
 - business knowledge is the main content; technical facts are only implementation anchors
+- `confirmed` knowledge can guide planning; `candidate` knowledge must remain a risk or confirmation question
 - it does not replace code, configuration, contracts, or formal documentation as the source of truth
 
 ## Search Available Extensions

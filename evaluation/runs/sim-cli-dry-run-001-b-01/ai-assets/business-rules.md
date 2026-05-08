@@ -1,13 +1,17 @@
 # Business Rules
 
-## 核心解释
+## 已确认知识
 
-| 规则 | 适用场景 | 例外 | 来源 | 实现锚点 |
-|---|---|---|---|---|
-| 普通模式必须写文件 | 未提供 `--dry-run` 时 | 无 | `tests/test_sample_cli.py` | `write_message()` |
-| dry-run 模式不得创建输出文件 | 提供 `--dry-run` 时 | 无 | `evaluation/cases/sim-cli-dry-run-001/input.md` | `main([...])`, `write_message()` |
-| dry-run 仍需给出用户反馈 | 提供 `--dry-run` 时 | 文案未严格限定 | `evaluation/cases/sim-cli-dry-run-001/input.md` | `print(...)` |
-| 原有 newline 行为必须保持 | 普通写入路径 | 无 | `sample_cli.py`, `tests/test_sample_cli.py` | `path.write_text(message + "\n")` |
+| 规则 | 适用场景 | 例外 | 状态 | 来源 | 实现锚点 |
+|---|---|---|---|---|---|
+| 普通模式必须写文件 | 未提供 `--dry-run` 时 | 无 | confirmed | `tests/test_sample_cli.py` | `write_message()` |
+| dry-run 模式不得创建输出文件 | 提供 `--dry-run` 时 | 无 | confirmed | `evaluation/cases/sim-cli-dry-run-001/input.md` | `main([...])`, `write_message()` |
+| dry-run 仍需给出用户反馈 | 提供 `--dry-run` 时 | 文案未严格限定 | confirmed | `evaluation/cases/sim-cli-dry-run-001/input.md` | `print(...)` |
+| 原有 newline 行为必须保持 | 普通写入路径 | 无 | confirmed | `sample_cli.py`, `tests/test_sample_cli.py` | `path.write_text(message + "\n")` |
+
+## 候选线索
+
+- dry-run 是否需要复用普通写入路径中的所有路径校验没有明确约束。
 
 ## 实现锚点
 

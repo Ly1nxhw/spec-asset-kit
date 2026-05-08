@@ -1,6 +1,6 @@
 # Business Context
 
-## 核心解释
+## 已确认知识
 
 ### 业务场景：安全预览文件写入
 
@@ -9,7 +9,12 @@
 | 含义 | 用户通过 CLI 把 `message` 写入 `output` 文件；新增 dry-run 后，用户可以先预览将要写入的内容。 |
 | 价值 | 在不产生文件副作用的前提下确认输入是否正确。 |
 | 参与者 | CLI 使用者。 |
+| 状态 | confirmed |
 | 来源 | `evaluation/cases/sim-cli-dry-run-001/input.md`, `sample_cli.py`, `tests/test_sample_cli.py` |
+
+## 候选线索
+
+- 无。
 
 ## 实现锚点
 
