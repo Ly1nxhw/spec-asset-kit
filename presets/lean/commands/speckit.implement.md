@@ -1,22 +1,19 @@
 ---
-description: Execute the implementation plan by processing all tasks in tasks.md.
+description: 按 tasks.md 中的任务执行实现计划。
 ---
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-## Outline
+## 执行纲要
 
-1. Read `.specify/feature.json` to get the feature directory path.
-
-2. **Load context**: `.specify/memory/constitution.md` and `<feature_directory>/spec.md` and `<feature_directory>/plan.md` and `<feature_directory>/tasks.md`.
-
-3. **Execute tasks** in order:
-   - Complete each task before moving to the next
-   - Mark completed tasks by changing `- [ ]` to `- [x]` in `<feature_directory>/tasks.md`
-   - Halt on failure and report the issue
-
-4. **Validate**: Verify all tasks are completed and the implementation matches the spec.
+1. 读取 `.specify/feature.json`，取得功能目录路径。
+2. **加载上下文**：`.specify/memory/constitution.md`、`<feature_directory>/spec.md`、`<feature_directory>/plan.md` 和 `<feature_directory>/tasks.md`。
+3. **按顺序执行任务**：
+   - 完成当前任务后再进入下一个任务。
+   - 完成任务后，将 `<feature_directory>/tasks.md` 中对应项从 `- [ ]` 改为 `- [x]`。
+   - 遇到失败时立即停止并报告问题。
+4. **验证**：确认所有任务已完成，且实现结果符合规格说明。

@@ -1,9 +1,9 @@
-# Agent File (Self-Test Preset)
+# Agent 文件（自检 Preset）
 
 <!-- preset:self-test -->
 
-> This template is provided by the self-test preset.
+> 此模板由 self-test preset 提供。
 
-## Agent Instructions
+## Agent 指令
 
-Follow these guidelines when working on this project.
+处理此项目时，请遵循这些准则。

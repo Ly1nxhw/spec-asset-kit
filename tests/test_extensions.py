@@ -981,7 +981,7 @@ class TestExtensionManager:
         backup_dir = project_dir / ".specify" / "extensions" / ".backup" / "test-ext"
         backup_file = backup_dir / "test-ext-config.yml"
         assert backup_file.exists()
-        assert backup_file.read_text() == "test: config"
+        assert backup_file.read_text(encoding="utf-8") == "test: config"
 
 
 # ===== CommandRegistrar Tests =====
@@ -1203,7 +1203,7 @@ $ARGUMENTS
         cmd_file = claude_dir / "speckit-test-ext-hello" / "SKILL.md"
         assert cmd_file.exists()
 
-        content = cmd_file.read_text()
+        content = cmd_file.read_text(encoding="utf-8")
         assert "description: Test hello command" in content
         assert "test-ext" in content
 
@@ -1298,7 +1298,7 @@ $ARGUMENTS
         skill_file = skills_dir / "speckit-test-ext-hello" / "SKILL.md"
         assert skill_file.exists()
 
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "name: speckit-test-ext-hello" in content
         assert "description: Test hello command" in content
         assert "compatibility:" in content
@@ -1363,7 +1363,7 @@ Agent __AGENT__
         skill_file = skills_dir / "speckit-ext-scripted-plan" / "SKILL.md"
         assert skill_file.exists()
 
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "{SCRIPT}" not in content
         assert "__AGENT__" not in content
         assert "{ARGS}" not in content
@@ -1413,8 +1413,8 @@ Agent __AGENT__
 
         assert primary.exists()
         assert alias.exists()
-        assert "name: speckit-ext-alias-skill-cmd" in primary.read_text()
-        assert "name: speckit-ext-alias-skill-shortcut" in alias.read_text()
+        assert "name: speckit-ext-alias-skill-cmd" in primary.read_text(encoding="utf-8")
+        assert "name: speckit-ext-alias-skill-shortcut" in alias.read_text(encoding="utf-8")
 
     def test_codex_skill_registration_uses_fallback_script_variant_without_init_options(
         self, project_dir, temp_dir
@@ -1470,7 +1470,7 @@ Run {SCRIPT}
         skill_file = skills_dir / "speckit-ext-script-fallback-plan" / "SKILL.md"
         assert skill_file.exists()
 
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "{SCRIPT}" not in content
         if platform.system().lower().startswith("win"):
             assert ".specify/scripts/powershell/setup-plan.ps1 -Json" in content
@@ -1530,7 +1530,7 @@ Run {SCRIPT}
         registrar = CommandRegistrar()
         registrar.register_commands_for_agent("codex", manifest, ext_dir, project_dir)
 
-        content = (skills_dir / "speckit-ext-script-list-init-plan" / "SKILL.md").read_text()
+        content = (skills_dir / "speckit-ext-script-list-init-plan" / "SKILL.md").read_text(encoding="utf-8")
         assert '.specify/scripts/bash/setup-plan.sh --json "$ARGUMENTS"' in content
 
     def test_codex_skill_registration_fallback_prefers_powershell_on_windows(
@@ -1588,7 +1588,7 @@ Run {SCRIPT}
         skill_file = skills_dir / "speckit-ext-script-windows-fallback-plan" / "SKILL.md"
         assert skill_file.exists()
 
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert ".specify/scripts/powershell/setup-plan.ps1 -Json" in content
         assert ".specify/scripts/bash/setup-plan.sh" not in content
 
@@ -1616,7 +1616,7 @@ Run {SCRIPT}
         plain_md_file = agents_dir / "speckit.test-ext.hello.md"
         assert not plain_md_file.exists()
 
-        content = cmd_file.read_text()
+        content = cmd_file.read_text(encoding="utf-8")
         assert "description: Test hello command" in content
         assert "test-ext" in content
 
@@ -1637,7 +1637,7 @@ Run {SCRIPT}
         assert prompt_file.exists()
 
         # Verify content has correct agent frontmatter
-        content = prompt_file.read_text()
+        content = prompt_file.read_text(encoding="utf-8")
         assert content == "---\nagent: speckit.test-ext.hello\n---\n"
 
     def test_copilot_aliases_get_companion_prompts(self, project_dir, temp_dir):
@@ -3332,7 +3332,7 @@ class TestExtensionUpdateCLI:
         original_installed_at = manager.registry.get("test-ext")["installed_at"]
         original_config_content = (
             project_dir / ".specify" / "extensions" / "test-ext" / "linear-config.yml"
-        ).read_text()
+        ).read_text(encoding="utf-8")
 
         zip_path = tmp_path / "test-ext-update.zip"
         self._create_catalog_zip(zip_path, "2.0.0")
@@ -3359,7 +3359,7 @@ class TestExtensionUpdateCLI:
         assert updated["installed_at"] == original_installed_at
         restored_config_content = (
             project_dir / ".specify" / "extensions" / "test-ext" / "linear-config.yml"
-        ).read_text()
+        ).read_text(encoding="utf-8")
         assert restored_config_content == original_config_content
 
     def test_update_failure_rolls_back_registry_hooks_and_commands(self, tmp_path):
@@ -3380,7 +3380,7 @@ class TestExtensionUpdateCLI:
         manager.install_from_directory(v1_dir, "0.1.0")
 
         backup_registry_entry = manager.registry.get("test-ext")
-        hooks_before = yaml.safe_load((project_dir / ".specify" / "extensions.yml").read_text())
+        hooks_before = yaml.safe_load((project_dir / ".specify" / "extensions.yml").read_text(encoding="utf-8"))
 
         registered_commands = backup_registry_entry.get("registered_commands", {})
         command_files = []
@@ -3419,7 +3419,7 @@ class TestExtensionUpdateCLI:
         restored_entry = ExtensionManager(project_dir).registry.get("test-ext")
         assert restored_entry == backup_registry_entry
 
-        hooks_after = yaml.safe_load((project_dir / ".specify" / "extensions.yml").read_text())
+        hooks_after = yaml.safe_load((project_dir / ".specify" / "extensions.yml").read_text(encoding="utf-8"))
         assert hooks_after == hooks_before
 
         for cmd_file in command_files:
@@ -3639,7 +3639,7 @@ class TestExtensionPriority:
         # Valid extension template should still resolve
         valid_resolved = resolver.resolve("other-template")
         assert valid_resolved is not None
-        assert "Valid" in valid_resolved.read_text()
+        assert "Valid" in valid_resolved.read_text(encoding="utf-8")
 
 
 class TestExtensionPriorityCLI:

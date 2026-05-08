@@ -1,67 +1,72 @@
 ---
-description: "Create a feature branch with sequential or timestamp numbering"
+description: "使用顺序号或时间戳创建功能分支"
 ---
 
-# Create Feature Branch
+# 创建功能分支
 
-Create and switch to a new git feature branch for the given specification. This command handles **branch creation only** — the spec directory and files are created by the core `/speckit.specify` workflow.
+为给定规格创建并切换到新的 Git 功能分支。此命令只负责创建分支，规格目录和文件由核心 `/speckit.specify` 工作流创建。
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+如果用户输入非空，你必须在继续前考虑这些输入。
 
-## Environment Variable Override
+## 环境变量覆盖
 
-If the user explicitly provided `GIT_BRANCH_NAME` (e.g., via environment variable, argument, or in their request), pass it through to the script by setting the `GIT_BRANCH_NAME` environment variable before invoking the script. When `GIT_BRANCH_NAME` is set:
-- The script uses the exact value as the branch name, bypassing all prefix/suffix generation
-- `--short-name`, `--number`, and `--timestamp` flags are ignored
-- `FEATURE_NUM` is extracted from the name if it starts with a numeric prefix, otherwise set to the full branch name
+如果用户明确提供了 `GIT_BRANCH_NAME`，例如通过环境变量、参数或请求文本提供，请在调用脚本前设置 `GIT_BRANCH_NAME` 环境变量并传递给脚本。设置 `GIT_BRANCH_NAME` 后：
 
-## Prerequisites
+- 脚本直接使用该值作为分支名，跳过全部前缀和后缀生成逻辑
+- 忽略 `--short-name`、`--number` 和 `--timestamp` 标志
+- 如果名称以数字前缀开头，从名称中提取 `FEATURE_NUM`；否则将完整分支名作为 `FEATURE_NUM`
 
-- Verify Git is available by running `git rev-parse --is-inside-work-tree 2>/dev/null`
-- If Git is not available, warn the user and skip branch creation
+## 前置条件
 
-## Branch Numbering Mode
+- 运行 `git rev-parse --is-inside-work-tree 2>/dev/null` 检查 Git 是否可用
+- 如果 Git 不可用，警告用户并跳过分支创建
 
-Determine the branch numbering strategy by checking configuration in this order:
+## 分支编号模式
 
-1. Check `.specify/extensions/git/git-config.yml` for `branch_numbering` value
-2. Check `.specify/init-options.json` for `branch_numbering` value (backward compatibility)
-3. Default to `sequential` if neither exists
+按以下顺序判断分支编号策略：
 
-## Execution
+1. 检查 `.specify/extensions/git/git-config.yml` 中的 `branch_numbering` 值
+2. 检查 `.specify/init-options.json` 中的 `branch_numbering` 值，以保持向后兼容
+3. 如果两处都不存在，默认使用 `sequential`
 
-Generate a concise short name (2-4 words) for the branch:
-- Analyze the feature description and extract the most meaningful keywords
-- Use action-noun format when possible (e.g., "add-user-auth", "fix-payment-bug")
-- Preserve technical terms and acronyms (OAuth2, API, JWT, etc.)
+## 执行
 
-Run the appropriate script based on your platform:
+为分支生成简短名称，长度为 2 到 4 个词：
 
-- **Bash**: `.specify/extensions/git/scripts/bash/create-new-feature.sh --json --short-name "<short-name>" "<feature description>"`
-- **Bash (timestamp)**: `.specify/extensions/git/scripts/bash/create-new-feature.sh --json --timestamp --short-name "<short-name>" "<feature description>"`
-- **PowerShell**: `.specify/extensions/git/scripts/powershell/create-new-feature.ps1 -Json -ShortName "<short-name>" "<feature description>"`
-- **PowerShell (timestamp)**: `.specify/extensions/git/scripts/powershell/create-new-feature.ps1 -Json -Timestamp -ShortName "<short-name>" "<feature description>"`
+- 分析功能描述，提取最有意义的关键词
+- 尽量使用动作加名词格式，例如 `add-user-auth`、`fix-payment-bug`
+- 保留技术术语和缩写，例如 OAuth2、API、JWT
 
-**IMPORTANT**:
-- Do NOT pass `--number` — the script determines the correct next number automatically
-- Always include the JSON flag (`--json` for Bash, `-Json` for PowerShell) so the output can be parsed reliably
-- You must only ever run this script once per feature
-- The JSON output will contain `BRANCH_NAME` and `FEATURE_NUM`
+根据当前平台运行对应脚本：
 
-## Graceful Degradation
+- **Bash**：`.specify/extensions/git/scripts/bash/create-new-feature.sh --json --short-name "<short-name>" "<feature description>"`
+- **Bash（时间戳）**：`.specify/extensions/git/scripts/bash/create-new-feature.sh --json --timestamp --short-name "<short-name>" "<feature description>"`
+- **PowerShell**：`.specify/extensions/git/scripts/powershell/create-new-feature.ps1 -Json -ShortName "<short-name>" "<feature description>"`
+- **PowerShell（时间戳）**：`.specify/extensions/git/scripts/powershell/create-new-feature.ps1 -Json -Timestamp -ShortName "<short-name>" "<feature description>"`
 
-If Git is not installed or the current directory is not a Git repository:
-- Branch creation is skipped with a warning: `[specify] Warning: Git repository not detected; skipped branch creation`
-- The script still outputs `BRANCH_NAME` and `FEATURE_NUM` so the caller can reference them
+**重要**：
 
-## Output
+- 不要传入 `--number`，脚本会自动判断下一个正确编号
+- 始终包含 JSON 标志，Bash 使用 `--json`，PowerShell 使用 `-Json`，以便可靠解析输出
+- 每个功能只能运行此脚本一次
+- JSON 输出会包含 `BRANCH_NAME` 和 `FEATURE_NUM`
 
-The script outputs JSON with:
-- `BRANCH_NAME`: The branch name (e.g., `003-user-auth` or `20260319-143022-user-auth`)
-- `FEATURE_NUM`: The numeric or timestamp prefix used
+## 优雅降级
+
+如果未安装 Git，或当前目录不是 Git 仓库：
+
+- 跳过分支创建并警告：`[specify] Warning: Git repository not detected; skipped branch creation`
+- 脚本仍输出 `BRANCH_NAME` 和 `FEATURE_NUM`，便于调用方引用
+
+## 输出
+
+脚本输出包含以下字段的 JSON：
+
+- `BRANCH_NAME`：分支名，例如 `003-user-auth` 或 `20260319-143022-user-auth`
+- `FEATURE_NUM`：使用的数字或时间戳前缀

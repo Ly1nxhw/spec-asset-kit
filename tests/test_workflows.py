@@ -1545,7 +1545,7 @@ class TestRunState:
 
         log_file = state.runs_dir / "log.jsonl"
         assert log_file.exists()
-        lines = log_file.read_text().strip().split("\n")
+        lines = log_file.read_text(encoding="utf-8").strip().split("\n")
         entry = json.loads(lines[0])
         assert entry["event"] == "test_event"
         assert "timestamp" in entry
@@ -1704,7 +1704,7 @@ class TestWorkflowCatalog:
 
         config_path = project_dir / ".specify" / "workflow-catalogs.yml"
         assert config_path.exists()
-        data = yaml.safe_load(config_path.read_text())
+        data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
         assert len(data["catalogs"]) == 1
         assert data["catalogs"][0]["url"] == "https://example.com/new-catalog.json"
 
@@ -1728,7 +1728,7 @@ class TestWorkflowCatalog:
         assert removed == "first"
 
         config_path = project_dir / ".specify" / "workflow-catalogs.yml"
-        data = yaml.safe_load(config_path.read_text())
+        data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
         assert len(data["catalogs"]) == 1
 
     def test_remove_catalog_invalid_index(self, project_dir):

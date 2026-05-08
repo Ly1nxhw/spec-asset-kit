@@ -1,99 +1,98 @@
 ---
-description: Convert existing tasks into actionable, dependency-ordered GitHub issues for the feature based on available design artifacts.
+description: 基于现有设计产物，将 tasks.md 转换为按依赖排序、可执行的 GitHub Issue。
 tools: ['github/github-mcp-server/issue_write']
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
   ps: scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
 ---
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+如果用户输入非空，你**必须**先纳入考虑再继续。
 
-## Pre-Execution Checks
+## 执行前检查
 
-**Check for extension hooks (before tasks-to-issues conversion)**:
-- Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.before_taskstoissues` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**检查扩展钩子（任务转 Issue 之前）**：
+
+- 检查项目根目录下是否存在 `.specify/extensions.yml`。
+- 如果存在，读取 `hooks.before_taskstoissues` 下的条目。
+- 如果 YAML 无法解析或无效，静默跳过钩子检查并正常继续。
+- 过滤 `enabled` 明确为 `false` 的钩子；未声明 `enabled` 视为启用。
+- 对其余钩子，不要解释或求值 `condition`。
+  - 没有 `condition`，或其值为 null/空字符串时，视为可执行。
+  - 若存在非空 `condition`，跳过该钩子，把条件判断交给 HookExecutor。
+- 对每个可执行钩子，按 `optional` 输出：
+  - **可选前置钩子**（`optional: true`）：
+    ```text
+    ## 扩展钩子
+
+    **可选前置钩子**：{extension}
+    命令：`/{command}`
+    说明：{description}
+
+    提示：{prompt}
+    执行方式：`/{command}`
     ```
-    ## Extension Hooks
+  - **强制前置钩子**（`optional: false`）：
+    ```text
+    ## 扩展钩子
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
-
-    Prompt: {prompt}
-    To execute: `/{command}`
-    ```
-  - **Mandatory hook** (`optional: false`):
-    ```
-    ## Extension Hooks
-
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自动前置钩子**：{extension}
+    正在执行：`/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Outline.
+    等待该钩子命令完成后，再进入执行纲要。
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过。
 
-## Outline
+## 执行纲要
 
-1. Run `{SCRIPT}` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
-1. From the executed script, extract the path to **tasks**.
-1. Get the Git remote by running:
+1. 在仓库根目录运行 `{SCRIPT}`，解析 `FEATURE_DIR` 与 `AVAILABLE_DOCS`。所有路径必须使用绝对路径。
+2. 从脚本输出中取得 `tasks.md` 路径。
+3. 运行以下命令读取 Git 远端：
 
 ```bash
 git config --get remote.origin.url
 ```
 
 > [!CAUTION]
-> ONLY PROCEED TO NEXT STEPS IF THE REMOTE IS A GITHUB URL
+> 只有当远端是 GitHub 仓库 URL 时，才能继续创建 Issue。
 
-1. For each task in the list, use the GitHub MCP server to create a new issue in the repository that is representative of the Git remote.
+4. 读取 `tasks.md`，按任务顺序和依赖关系为每个任务创建一个 GitHub Issue。Issue 必须创建在当前 Git 远端对应的仓库中。
 
 > [!CAUTION]
-> UNDER NO CIRCUMSTANCES EVER CREATE ISSUES IN REPOSITORIES THAT DO NOT MATCH THE REMOTE URL
+> 绝不能在与当前 Git 远端不匹配的仓库里创建 Issue。
 
-## Post-Execution Checks
+## 执行后检查
 
-**Check for extension hooks (after tasks-to-issues conversion)**:
-Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.after_taskstoissues` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**检查扩展钩子（任务转 Issue 之后）**：
+
+- 如果 `.specify/extensions.yml` 存在，读取 `hooks.after_taskstoissues`。
+- YAML 无法解析时静默跳过。
+- 过滤 `enabled: false`。
+- 不要解释或求值 `condition`。
+- 对每个可执行钩子，按 `optional` 输出：
+  - **可选钩子**：
+    ```text
+    ## 扩展钩子
+
+    **可选钩子**：{extension}
+    命令：`/{command}`
+    说明：{description}
+
+    提示：{prompt}
+    执行方式：`/{command}`
     ```
-    ## Extension Hooks
+  - **强制钩子**：
+    ```text
+    ## 扩展钩子
 
-    **Optional Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
-
-    Prompt: {prompt}
-    To execute: `/{command}`
-    ```
-  - **Mandatory hook** (`optional: false`):
-    ```
-    ## Extension Hooks
-
-    **Automatic Hook**: {extension}
-    Executing: `/{command}`
+    **自动钩子**：{extension}
+    正在执行：`/{command}`
     EXECUTE_COMMAND: {command}
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- 如果没有钩子或文件不存在，则静默跳过。

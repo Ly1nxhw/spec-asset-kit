@@ -26,24 +26,24 @@ $ARGUMENTS
 - 对每个可执行钩子，按 `optional` 输出：
   - **可选钩子**（`optional: true`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **可选前置钩子**: {extension}
+    命令： `/{command}`
+    说明： {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    提示： {prompt}
+    执行方式： `/{command}`
     ```
   - **强制钩子**（`optional: false`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自动前置钩子**: {extension}
+    正在执行： `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Outline.
+    等待该钩子命令完成后，再进入执行纲要。
     ```
 - 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过
 
@@ -60,15 +60,15 @@ $ARGUMENTS
    - 生成状态表：
 
      ```text
-     | Checklist | Total | Completed | Incomplete | Status |
+     | 清单 | 总数 | 已完成 | 未完成 | 状态 |
      |-----------|-------|-----------|------------|--------|
-     | ux.md     | 12    | 12        | 0          | PASS   |
-     | test.md   | 8     | 5         | 3          | FAIL   |
+     | ux.md     | 12    | 12        | 0          | 通过   |
+     | test.md   | 8     | 5         | 3          | 失败   |
      ```
 
    - 总体状态规则：
-     - **PASS**：所有 checklist 的未完成数都为 0
-     - **FAIL**：任意 checklist 存在未完成项
+     - **通过**：所有 checklist 的未完成数都为 0
+     - **失败**：任意 checklist 存在未完成项
 
    - **如果存在未完成项**：
      - 展示状态表
@@ -165,21 +165,21 @@ $ARGUMENTS
     - 对每个可执行钩子，按 `optional` 输出：
       - **可选钩子**：
         ```
-        ## Extension Hooks
+        ## 扩展钩子
 
-        **Optional Hook**: {extension}
-        Command: `/{command}`
-        Description: {description}
+        **可选钩子**: {extension}
+        命令： `/{command}`
+        说明： {description}
 
-        Prompt: {prompt}
-        To execute: `/{command}`
+        提示： {prompt}
+        执行方式： `/{command}`
         ```
       - **强制钩子**：
         ```
-        ## Extension Hooks
+        ## 扩展钩子
 
-        **Automatic Hook**: {extension}
-        Executing: `/{command}`
+        **自动钩子**: {extension}
+        正在执行： `/{command}`
         EXECUTE_COMMAND: {command}
         ```
     - 如果没有钩子或文件不存在，则静默跳过

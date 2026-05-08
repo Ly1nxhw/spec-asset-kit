@@ -1,23 +1,20 @@
 ---
-description: "Create a feature specification (preset override)"
+description: "创建功能规格说明（preset 覆盖）"
 scripts:
   sh: scripts/bash/create-new-feature.sh "{ARGS}"
   ps: scripts/powershell/create-new-feature.ps1 "{ARGS}"
 ---
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-Given the feature description above:
+基于上面的功能描述：
 
-1. **Create the feature branch** by running the script:
-   - Bash: `{SCRIPT} --json --short-name "<short-name>" "<description>"`
-   - The JSON output contains BRANCH_NAME and SPEC_FILE paths.
-
-2. **Read the spec-template** to see the sections you need to fill.
-
-3. **Write the specification** to SPEC_FILE, replacing the placeholders in each section
-   (Overview, Requirements, Acceptance Criteria) with details from the user's description.
+1. **创建功能分支**：运行脚本。
+   - Bash：`{SCRIPT} --json --short-name "<short-name>" "<description>"`
+   - JSON 输出包含 `BRANCH_NAME` 和 `SPEC_FILE` 路径。
+2. **读取规格模板**：查看需要填写的章节。
+3. **写入规格说明**：将用户描述中的信息写入 `SPEC_FILE`，替换模板中的概览、需求和验收标准占位内容。

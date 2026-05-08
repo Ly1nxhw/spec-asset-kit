@@ -1,93 +1,93 @@
 schema_version: "1.0"
 
 extension:
-  # CUSTOMIZE: Change 'my-extension' to your extension ID (lowercase, hyphen-separated)
+  # 自定义：将 'my-extension' 改为你的扩展 ID，使用小写和连字符
   id: "my-extension"
 
-  # CUSTOMIZE: Human-readable name for your extension
+  # 自定义：扩展的人类可读名称
   name: "My Extension"
 
-  # CUSTOMIZE: Update version when releasing (semantic versioning: X.Y.Z)
+  # 自定义：发布时更新版本号，遵循语义化版本 X.Y.Z
   version: "1.0.0"
 
-  # CUSTOMIZE: Brief description (under 200 characters)
-  description: "Brief description of what your extension does"
+  # 自定义：简短说明，少于 200 个字符
+  description: "简要说明你的扩展用途"
 
-  # CUSTOMIZE: Your name or organization name
-  author: "Your Name"
+  # 自定义：你的姓名或组织名称
+  author: "你的名称"
 
-  # CUSTOMIZE: GitHub repository URL (create before publishing)
+  # 自定义：GitHub 仓库 URL，发布前先创建
   repository: "https://github.com/your-org/spec-kit-my-extension"
 
-  # REVIEW: License (MIT is recommended for open source)
+  # 复查：许可证，开源项目推荐 MIT
   license: "MIT"
 
-  # CUSTOMIZE: Extension homepage (can be same as repository)
+  # 自定义：扩展主页，可与仓库相同
   homepage: "https://github.com/your-org/spec-kit-my-extension"
 
-# Requirements for this extension
+# 此扩展的要求
 requires:
-  # CUSTOMIZE: Minimum spec-kit version required
-  # Use >=X.Y.Z for minimum version
-  # Use >=X.Y.Z,<Y.0.0 for version range
+  # 自定义：所需的最低 spec-kit 版本
+  # 使用 >=X.Y.Z 表示最低版本
+  # 使用 >=X.Y.Z,<Y.0.0 表示版本范围
   speckit_version: ">=0.1.0"
 
-  # CUSTOMIZE: Add MCP tools or other dependencies
-  # Remove if no external tools required
+  # 自定义：添加 MCP 工具或其他依赖
+  # 如果不需要外部工具，可删除
   tools:
     - name: "example-mcp-server"
       version: ">=1.0.0"
       required: true
 
-# Commands provided by this extension
+# 此扩展提供的命令
 provides:
   commands:
-    # CUSTOMIZE: Define your commands
-    # Pattern: speckit.{extension-id}.{command-name}
+    # 自定义：定义你的命令
+    # 格式：speckit.{extension-id}.{command-name}
     - name: "speckit.my-extension.example"
       file: "commands/example.md"
-      description: "Example command that demonstrates functionality"
-      # Optional: Add aliases in the same namespaced format
+      description: "演示功能的示例命令"
+      # 可选：添加同一命名空间格式的别名
       aliases: ["speckit.my-extension.example-short"]
 
-    # ADD MORE COMMANDS: Copy this block for each command
+    # 添加更多命令：为每个命令复制此代码块
     # - name: "speckit.my-extension.another-command"
     #   file: "commands/another-command.md"
     #   description: "Another command"
 
-  # CUSTOMIZE: Define configuration files
+  # 自定义：定义配置文件
   config:
     - name: "my-extension-config.yml"
       template: "config-template.yml"
-      description: "Extension configuration"
-      required: true # Set to false if config is optional
+      description: "扩展配置"
+      required: true # 如果配置可选，则设为 false
 
-# CUSTOMIZE: Define hooks (optional)
-# Remove if no hooks needed
+# 自定义：定义钩子（可选）
+# 如果不需要钩子，可删除
 hooks:
-  # Hook that runs after /speckit.tasks
+  # 在 /speckit.tasks 后运行的钩子
   after_tasks:
     command: "speckit.my-extension.example"
-    optional: true # User will be prompted
-    prompt: "Run example command?"
-    description: "Demonstrates hook functionality"
-    condition: null # Future: conditional execution
+    optional: true # 会提示用户确认
+    prompt: "是否运行示例命令？"
+    description: "演示钩子功能"
+    condition: null # 未来支持：条件执行
 
-  # ADD MORE HOOKS: Copy this block for other events
+  # 添加更多钩子：为其他事件复制此代码块
   # after_implement:
   #   command: "speckit.my-extension.another"
-  #   optional: false  # Auto-execute without prompting
-  #   description: "Runs automatically after implementation"
+  #   optional: false  # 不提示，自动执行
+  #   description: "实现后自动运行"
 
-# CUSTOMIZE: Add relevant tags (2-5 recommended)
-# Used for discovery in catalog
+# 自定义：添加相关标签（推荐 2 到 5 个）
+# 用于目录发现
 tags:
   - "example"
   - "template"
-  # ADD MORE: "category", "tool-name", etc.
+  # 添加更多："category"、"tool-name" 等
 
-# CUSTOMIZE: Default configuration values (optional)
-# These are merged with user config
+# 自定义：默认配置值（可选）
+# 这些值会与用户配置合并
 defaults:
   # Example default values
   feature:

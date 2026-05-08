@@ -1,15 +1,15 @@
-# Constitution (Self-Test Preset)
+# 宪章（自检 Preset）
 
 <!-- preset:self-test -->
 
-> This template is provided by the self-test preset.
+> 此模板由 self-test preset 提供。
 
-## Principles
+## 原则
 
-1. Principle 1
-2. Principle 2
+1. 原则 1
+2. 原则 2
 
-## Guidelines
+## 准则
 
-- Guideline 1
-- Guideline 2
+- 准则 1
+- 准则 2

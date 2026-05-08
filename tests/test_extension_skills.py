@@ -239,7 +239,7 @@ class TestExtensionSkillRegistration:
 
         skill_file = skills_dir / "speckit-test-ext-hello" / "SKILL.md"
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
 
         # Check structure
         assert content.startswith("---\n")
@@ -260,7 +260,7 @@ class TestExtensionSkillRegistration:
         )
 
         skill_file = skills_dir / "speckit-test-ext-hello" / "SKILL.md"
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
 
         assert content.startswith("---\n")
         parts = content.split("---", 2)
@@ -308,7 +308,7 @@ class TestExtensionSkillRegistration:
         )
 
         # Custom skill should be untouched
-        assert (custom_dir / "SKILL.md").read_text() == custom_content
+        assert (custom_dir / "SKILL.md").read_text(encoding="utf-8") == custom_content
 
         # But the other skill should still be created
         metadata = manager.registry.get(manifest.id)
@@ -404,7 +404,7 @@ class TestExtensionSkillRegistration:
         manager = ExtensionManager(project_dir)
         manager.install_from_directory(ext_dir, "0.1.0", register_commands=False)
 
-        content = (skills_dir / "speckit-scripted-ext-plan" / "SKILL.md").read_text()
+        content = (skills_dir / "speckit-scripted-ext-plan" / "SKILL.md").read_text(encoding="utf-8")
         assert "{SCRIPT}" not in content
         assert "{ARGS}" not in content
         assert "__AGENT__" not in content
@@ -504,7 +504,7 @@ class TestExtensionSkillUnregistration:
 
         # Custom skill should still exist
         assert (custom_dir / "SKILL.md").exists()
-        assert (custom_dir / "SKILL.md").read_text() == "# My Custom Skill\n"
+        assert (custom_dir / "SKILL.md").read_text(encoding="utf-8") == "# My Custom Skill\n"
 
     def test_remove_handles_already_deleted_skills(self, skills_project, extension_dir):
         """Gracefully handle case where skill dirs were already deleted."""
@@ -594,7 +594,7 @@ class TestExtensionSkillEdgeCases:
 
         skill_file = skills_dir / "speckit-nofm-ext-plain" / "SKILL.md"
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "name: speckit-nofm-ext-plain" in content
         # Fallback description when no frontmatter description
         assert "Extension command: speckit.nofm-ext.plain" in content
@@ -690,7 +690,7 @@ class TestExtensionSkillEdgeCases:
 
         skill_file = skills_dir / "speckit-badfm-ext-broken" / "SKILL.md"
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         # Fallback description since frontmatter was invalid
         assert "Extension command: speckit.badfm-ext.broken" in content
         assert "This body should still be used." in content

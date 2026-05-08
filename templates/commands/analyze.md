@@ -26,24 +26,24 @@ $ARGUMENTS
 - 对每个可执行钩子，按 `optional` 输出：
   - **可选钩子**（`optional: true`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **可选前置钩子**: {extension}
+    命令： `/{command}`
+    说明： {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    提示： {prompt}
+    执行方式： `/{command}`
     ```
   - **强制钩子**（`optional: false`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自动前置钩子**: {extension}
+    正在执行： `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Goal.
+    等待钩子命令返回结果后，再继续执行目标。
     ```
 - 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过
 
@@ -53,7 +53,7 @@ $ARGUMENTS
 
 ## 运行约束
 
-**严格只读**：不要修改任何文件。只输出结构化分析报告。如需修复建议，可在最后提供可选的 remediation plan，但必须由用户显式批准后再人工执行后续命令。
+**严格只读**：不要修改任何文件。只输出结构化分析报告。如需修复建议，可在最后提供可选的修复计划，但必须由用户显式批准后再人工执行后续命令。
 
 **宪章优先**：项目宪章 `/memory/constitution.md` 在本分析中是不可协商的最高约束。任何与宪章冲突的内容都应直接视为 CRITICAL，并要求调整 spec、plan 或 tasks，而不是弱化宪章本身。
 
@@ -156,45 +156,45 @@ $ARGUMENTS
 
 输出 Markdown 报告，结构如下：
 
-## Specification Analysis Report
+## 规格分析报告
 
-| ID | Category | Severity | Location(s) | Summary | Recommendation |
+| ID | 类别 | 严重级别 | 位置 | 摘要 | 建议 |
 |----|----------|----------|-------------|---------|----------------|
-| A1 | Duplication | HIGH | spec.md:L120-134 | ... | ... |
+| A1 | 重复 | HIGH | spec.md:L120-134 | ... | ... |
 
 并附带：
 
-**Coverage Summary Table**
+**覆盖率摘要表**
 
-| Requirement Key | Has Task? | Task IDs | Notes |
+| 需求键 | 是否有任务 | 任务 ID | 备注 |
 |-----------------|-----------|----------|-------|
 
-**Constitution Alignment Issues**（如有）  
-**Unmapped Tasks**（如有）
+**宪章一致性问题**（如有）  
+**未映射任务**（如有）
 
-**Metrics**
+**指标**
 
-- Total Requirements
-- Total Tasks
-- Coverage %
-- Ambiguity Count
-- Duplication Count
-- Critical Issues Count
+- 需求总数
+- 任务总数
+- 覆盖率
+- 歧义数量
+- 重复数量
+- 严重问题数量
 
 ### 7. 给出下一步建议
 
-在报告末尾输出简洁的 Next Actions：
+在报告末尾输出简洁的后续行动：
 
 - 如存在 CRITICAL 问题：建议先修复，再运行 `/speckit.implement`
 - 若只有 LOW / MEDIUM：可继续，但应给出改进建议
 - 提供明确命令建议，如：
-  - `Run /speckit.specify with refinement`
-  - `Run /speckit.plan to adjust architecture`
-  - `Manually edit tasks.md to add coverage for ...`
+  - `运行 /speckit.specify 细化规格`
+  - `运行 /speckit.plan 调整架构`
+  - `手动编辑 tasks.md，为 ... 补充覆盖任务`
 
 ### 8. 提供修复协助
 
-询问用户：`Would you like me to suggest concrete remediation edits for the top N issues?`
+询问用户：`是否需要我为前 N 个问题提供具体修复建议？`
 不要自动修改任何文件。
 
 ### 9. 检查扩展钩子
@@ -207,21 +207,21 @@ $ARGUMENTS
 - 对每个可执行钩子，按 `optional` 输出：
   - **可选钩子**：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Optional Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **可选钩子**: {extension}
+    命令： `/{command}`
+    说明： {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    提示： {prompt}
+    执行方式： `/{command}`
     ```
   - **强制钩子**：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Automatic Hook**: {extension}
-    Executing: `/{command}`
+    **自动钩子**: {extension}
+    正在执行： `/{command}`
     EXECUTE_COMMAND: {command}
     ```
 - 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过

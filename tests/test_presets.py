@@ -772,7 +772,7 @@ class TestPresetResolver:
         result = resolver.resolve("spec-template")
         assert result is not None
         assert result.name == "spec-template.md"
-        assert "Core Spec Template" in result.read_text()
+        assert "Core Spec Template" in result.read_text(encoding="utf-8")
 
     def test_resolve_nonexistent(self, project_dir):
         """Test resolving a nonexistent template returns None."""
@@ -812,7 +812,7 @@ class TestPresetResolver:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("spec-template")
         assert result is not None
-        assert "From Pack B" in result.read_text()
+        assert "From Pack B" in result.read_text(encoding="utf-8")
 
     def test_resolve_override_takes_priority(self, project_dir):
         """Test that project overrides take priority over core."""
@@ -825,7 +825,7 @@ class TestPresetResolver:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("spec-template")
         assert result is not None
-        assert "Override Spec Template" in result.read_text()
+        assert "Override Spec Template" in result.read_text(encoding="utf-8")
 
     def test_resolve_pack_takes_priority_over_core(self, project_dir, pack_dir):
         """Test that installed packs take priority over core templates."""
@@ -836,7 +836,7 @@ class TestPresetResolver:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("spec-template")
         assert result is not None
-        assert "Custom Spec Template" in result.read_text()
+        assert "Custom Spec Template" in result.read_text(encoding="utf-8")
 
     def test_resolve_override_takes_priority_over_pack(self, project_dir, pack_dir):
         """Test that overrides take priority over installed packs."""
@@ -853,7 +853,7 @@ class TestPresetResolver:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("spec-template")
         assert result is not None
-        assert "Override Spec Template" in result.read_text()
+        assert "Override Spec Template" in result.read_text(encoding="utf-8")
 
     def test_resolve_extension_provided_templates(self, project_dir):
         """Test resolving templates provided by extensions."""
@@ -872,7 +872,7 @@ class TestPresetResolver:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("custom-template")
         assert result is not None
-        assert "Extension Custom Template" in result.read_text()
+        assert "Extension Custom Template" in result.read_text(encoding="utf-8")
 
     def test_resolve_disabled_extension_templates_skipped(self, project_dir):
         """Test that disabled extension templates are not resolved."""
@@ -929,7 +929,7 @@ class TestPresetResolver:
         result = resolver.resolve("spec-template")
         assert result is not None
         # Pack should win over extension
-        assert "Custom Spec Template" in result.read_text()
+        assert "Custom Spec Template" in result.read_text(encoding="utf-8")
 
     def test_resolve_with_source_core(self, project_dir):
         """Test resolve_with_source for core template."""
@@ -1112,7 +1112,7 @@ class TestExtensionPriorityResolution:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("test-template")
         assert result is not None
-        assert "From Unregistered" in result.read_text()
+        assert "From Unregistered" in result.read_text(encoding="utf-8")
 
     def test_registered_with_higher_precedence_beats_unregistered(self, project_dir):
         """Registered extension with priority 5 beats unregistered (implicit priority 10)."""
@@ -1136,7 +1136,7 @@ class TestExtensionPriorityResolution:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("test-template")
         assert result is not None
-        assert "From Registered" in result.read_text()
+        assert "From Registered" in result.read_text(encoding="utf-8")
 
     def test_unregistered_attribution_with_priority_ordering(self, project_dir):
         """Test resolve_with_source correctly attributes unregistered extension."""
@@ -1182,7 +1182,7 @@ class TestExtensionPriorityResolution:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("test-template")
         assert result is not None
-        assert "From AAA" in result.read_text()
+        assert "From AAA" in result.read_text(encoding="utf-8")
 
 
 # ===== PresetCatalog Tests =====
@@ -1381,7 +1381,7 @@ class TestIntegration:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("spec-template")
         assert result is not None
-        assert "Custom Spec Template" in result.read_text()
+        assert "Custom Spec Template" in result.read_text(encoding="utf-8")
 
         # Remove
         manager.remove("test-pack")
@@ -1389,7 +1389,7 @@ class TestIntegration:
         # Resolve — should fall back to core
         result = resolver.resolve("spec-template")
         assert result is not None
-        assert "Core Spec Template" in result.read_text()
+        assert "Core Spec Template" in result.read_text(encoding="utf-8")
 
     def test_override_beats_pack_beats_extension_beats_core(self, project_dir, pack_dir):
         """Test the full priority stack: override > pack > extension > core."""
@@ -1446,7 +1446,7 @@ class TestIntegration:
         resolver = PresetResolver(project_dir)
         result = resolver.resolve("spec-template")
         assert result is not None
-        assert "Custom Spec Template" in result.read_text()
+        assert "Custom Spec Template" in result.read_text(encoding="utf-8")
 
 
 # ===== PresetCatalogEntry Tests =====
@@ -1773,7 +1773,7 @@ class TestSelfTestPreset:
         """Verify each template contains the preset:self-test marker."""
         for name in CORE_TEMPLATE_NAMES:
             tmpl_path = SELF_TEST_PRESET_DIR / "templates" / f"{name}.md"
-            content = tmpl_path.read_text()
+            content = tmpl_path.read_text(encoding="utf-8")
             assert "preset:self-test" in content, f"{name}.md missing preset:self-test marker"
 
     def test_install_self_test_preset(self, project_dir):
@@ -1799,7 +1799,7 @@ class TestSelfTestPreset:
         for name in CORE_TEMPLATE_NAMES:
             result = resolver.resolve(name)
             assert result is not None, f"{name} did not resolve"
-            content = result.read_text()
+            content = result.read_text(encoding="utf-8")
             assert "preset:self-test" in content, (
                 f"{name} resolved but not from self-test preset"
             )
@@ -1840,7 +1840,7 @@ class TestSelfTestPreset:
     def test_self_test_not_in_catalog(self):
         """Verify the self-test preset is NOT in the catalog (it's local-only)."""
         catalog_path = Path(__file__).parent.parent / "presets" / "catalog.json"
-        catalog_data = json.loads(catalog_path.read_text())
+        catalog_data = json.loads(catalog_path.read_text(encoding="utf-8"))
         assert "self-test" not in catalog_data["presets"]
 
     def test_self_test_has_command(self):
@@ -1854,7 +1854,7 @@ class TestSelfTestPreset:
         """Verify the self-test command file exists on disk."""
         cmd_path = SELF_TEST_PRESET_DIR / "commands" / "speckit.specify.md"
         assert cmd_path.exists()
-        content = cmd_path.read_text()
+        content = cmd_path.read_text(encoding="utf-8")
         assert "preset:self-test" in content
 
     def test_self_test_registers_commands_for_claude(self, project_dir):
@@ -1869,7 +1869,7 @@ class TestSelfTestPreset:
         # Check the skill was registered
         cmd_file = claude_dir / "speckit-specify" / "SKILL.md"
         assert cmd_file.exists(), "Skill not registered in .claude/skills/"
-        content = cmd_file.read_text()
+        content = cmd_file.read_text(encoding="utf-8")
         assert "self-test" in content
         assert "source:" in content  # skill frontmatter includes metadata.source
 
@@ -1885,7 +1885,7 @@ class TestSelfTestPreset:
         # Check the command was registered in TOML format
         cmd_file = gemini_dir / "speckit.specify.toml"
         assert cmd_file.exists(), "Command not registered in .gemini/commands/"
-        content = cmd_file.read_text()
+        content = cmd_file.read_text(encoding="utf-8")
         assert "prompt" in content  # TOML format has a prompt field
         assert "{{args}}" in content  # Gemini uses {{args}} placeholder
 
@@ -2060,7 +2060,7 @@ class TestPresetSkills:
 
         skill_file = skills_dir / "speckit-specify" / "SKILL.md"
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "preset:self-test" in content, "Skill should reference preset source"
         assert "disable-model-invocation: false" in content
 
@@ -2079,7 +2079,7 @@ class TestPresetSkills:
         manager.install_from_directory(SELF_TEST_DIR, "0.1.5")
 
         skill_file = skills_dir / "speckit-specify" / "SKILL.md"
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "untouched" in content, "Skill should not be modified when ai_skills=False"
 
     def test_get_skills_dir_returns_none_for_non_string_ai(self, project_dir):
@@ -2112,7 +2112,7 @@ class TestPresetSkills:
         manager.install_from_directory(SELF_TEST_DIR, "0.1.5")
 
         skill_file = skills_dir / "speckit-specify" / "SKILL.md"
-        file_content = skill_file.read_text()
+        file_content = skill_file.read_text(encoding="utf-8")
         assert "untouched" in file_content
 
     def test_skill_restored_on_preset_remove(self, project_dir, temp_dir):
@@ -2134,14 +2134,14 @@ class TestPresetSkills:
 
         # Verify preset content is in the skill
         skill_file = skills_dir / "speckit-specify" / "SKILL.md"
-        assert "preset:self-test" in skill_file.read_text()
+        assert "preset:self-test" in skill_file.read_text(encoding="utf-8")
 
         # Remove the preset
         manager.remove("self-test")
 
         # Skill should be restored (core specify.md template exists)
         assert skill_file.exists(), "Skill should still exist after preset removal"
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "preset:self-test" not in content, "Preset content should be gone"
         assert "templates/commands/specify.md" in content, "Should reference core template"
         assert "disable-model-invocation: false" in content
@@ -2170,7 +2170,7 @@ class TestPresetSkills:
         manager.install_from_directory(SELF_TEST_DIR, "0.1.5")
         manager.remove("self-test")
 
-        content = (skills_dir / "speckit-specify" / "SKILL.md").read_text()
+        content = (skills_dir / "speckit-specify" / "SKILL.md").read_text(encoding="utf-8")
         assert "{SCRIPT}" not in content
         assert "{ARGS}" not in content
         assert ".specify/scripts/bash/create-new-feature.sh --json \"$ARGUMENTS\"" in content
@@ -2242,7 +2242,7 @@ class TestPresetSkills:
 
         skill_file = skills_dir / "speckit-fakeext-cmd" / "SKILL.md"
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "preset:ext-skill-override" in content
         assert "name: speckit-fakeext-cmd" in content
         assert "# Speckit Fakeext Cmd Skill" in content
@@ -2321,12 +2321,12 @@ class TestPresetSkills:
         manager.install_from_directory(preset_dir, "0.1.5")
 
         skill_file = skills_dir / "speckit-fakeext-cmd" / "SKILL.md"
-        assert "preset:ext-skill-restore" in skill_file.read_text()
+        assert "preset:ext-skill-restore" in skill_file.read_text(encoding="utf-8")
 
         manager.remove("ext-skill-restore")
 
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "preset:ext-skill-restore" not in content
         assert "source: extension:fakeext" in content
         assert "extension:fakeext" in content
@@ -2403,7 +2403,7 @@ class TestPresetSkills:
 
         skill_file = skills_dir / "speckit.specify" / "SKILL.md"
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "preset:self-test" in content
         assert "name: speckit.specify" in content
 
@@ -2424,7 +2424,7 @@ class TestPresetSkills:
 
         skill_file = skills_dir / "speckit-specify" / "SKILL.md"
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "preset:self-test" in content
         assert "name: speckit-specify" in content
 
@@ -2473,7 +2473,7 @@ class TestPresetSkills:
 
         skill_file = skills_dir / "speckit-research" / "SKILL.md"
         assert skill_file.exists()
-        content = skill_file.read_text()
+        content = skill_file.read_text(encoding="utf-8")
         assert "preset:kimi-new-skill" in content
         assert "name: speckit-research" in content
 
@@ -2524,7 +2524,7 @@ class TestPresetSkills:
         manager = PresetManager(project_dir)
         manager.install_from_directory(preset_dir, "0.1.5")
 
-        content = (skills_dir / "speckit-specify" / "SKILL.md").read_text()
+        content = (skills_dir / "speckit-specify" / "SKILL.md").read_text(encoding="utf-8")
         assert "{SCRIPT}" not in content
         assert "__AGENT__" not in content
         assert ".specify/scripts/bash/create-new-feature.sh --json \"$ARGUMENTS\"" in content
@@ -2581,11 +2581,11 @@ class TestPresetSkills:
         manager.install_from_directory(preset_dir, "0.1.5")
 
         skill_file = skills_dir / "speckit-specify" / "SKILL.md"
-        assert "preset agy body" in skill_file.read_text()
+        assert "preset agy body" in skill_file.read_text(encoding="utf-8")
 
         assert manager.remove("agy-override") is True
         assert skill_file.exists()
-        restored = skill_file.read_text()
+        restored = skill_file.read_text(encoding="utf-8")
         assert "restored core body" in restored
         assert "name: speckit-specify" in restored
 
@@ -2602,7 +2602,7 @@ class TestPresetSkills:
         self_test_dir = Path(__file__).parent.parent / "presets" / "self-test"
         manager.install_from_directory(self_test_dir, "0.1.5")
 
-        skill_content = (skills_dir / "speckit-specify" / "SKILL.md").read_text()
+        skill_content = (skills_dir / "speckit-specify" / "SKILL.md").read_text(encoding="utf-8")
         assert "untouched" in skill_content
 
 
@@ -3003,7 +3003,7 @@ class TestLeanPreset:
 
         for name in LEAN_COMMAND_NAMES:
             cmd_path = LEAN_PRESET_DIR / "commands" / f"speckit.{name.split('.')[-1]}.md"
-            content = cmd_path.read_text()
+            content = cmd_path.read_text(encoding="utf-8")
             frontmatter, _ = CommandRegistrar.parse_frontmatter(content)
             assert "scripts" not in frontmatter, f"{name} should not have scripts in frontmatter"
 
@@ -3011,7 +3011,7 @@ class TestLeanPreset:
         """Verify lean commands do not contain extension hook boilerplate."""
         for name in LEAN_COMMAND_NAMES:
             cmd_path = LEAN_PRESET_DIR / "commands" / f"speckit.{name.split('.')[-1]}.md"
-            content = cmd_path.read_text()
+            content = cmd_path.read_text(encoding="utf-8")
             assert "hooks." not in content, f"{name} should not reference extension hooks"
             assert "extensions.yml" not in content, f"{name} should not reference extensions.yml"
 
@@ -3080,7 +3080,7 @@ class TestBundledPresetLocator:
     def test_bundled_preset_in_catalog(self):
         """Verify the lean preset is listed in catalog.json with bundled marker."""
         catalog_path = Path(__file__).parent.parent / "presets" / "catalog.json"
-        catalog = json.loads(catalog_path.read_text())
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
         assert "lean" in catalog["presets"]
         assert catalog["presets"]["lean"]["bundled"] is True
         assert "download_url" not in catalog["presets"]["lean"]
@@ -3228,7 +3228,7 @@ class TestWrapStrategy:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         assert "{CORE_TEMPLATE}" not in written
         assert "# Core Specify" in written
         assert "## Pre" in written
@@ -3261,7 +3261,7 @@ class TestWrapStrategy:
         manager = PresetManager(project_dir)
         manager.install_from_directory(SELF_TEST_PRESET_DIR, "0.1.5")
 
-        written = (skill_subdir / "SKILL.md").read_text()
+        written = (skill_subdir / "SKILL.md").read_text(encoding="utf-8")
         assert "{CORE_TEMPLATE}" not in written
         assert "# Core Wrap-Test Body" in written
         assert "preset:self-test wrap-pre" in written
@@ -3313,7 +3313,7 @@ class TestWrapStrategy:
         manager = PresetManager(project_dir)
         manager.install_from_directory(SELF_TEST_PRESET_DIR, "0.1.5")
 
-        written = (skill_subdir / "SKILL.md").read_text()
+        written = (skill_subdir / "SKILL.md").read_text(encoding="utf-8")
         # {SCRIPT} should have been resolved (not left as a literal placeholder)
         assert "{SCRIPT}" not in written
 
@@ -3385,7 +3385,7 @@ class TestWrapStrategy:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         assert "{CORE_TEMPLATE}" not in written
         assert "Run:" in written
         assert "scripts:" in written
@@ -3434,7 +3434,7 @@ class TestWrapStrategy:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (toml_dir / "speckit.specify.toml").read_text()
+        written = (toml_dir / "speckit.specify.toml").read_text(encoding="utf-8")
         assert "{CORE_TEMPLATE}" not in written
         assert "{SCRIPT}" not in written
         assert "run.sh" in written
@@ -3485,7 +3485,7 @@ class TestWrapStrategy:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         assert "{CORE_TEMPLATE}" not in written
         assert "{SCRIPT}" not in written
         assert "run.sh" in written
@@ -3538,7 +3538,7 @@ class TestWrapStrategy:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         assert "{SCRIPT}" not in written
         assert "run.sh" in written
         # $ARGUMENTS injected by resolve_skill_placeholders must be re-converted
@@ -3750,7 +3750,7 @@ class TestReplayWrapsForCommand:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         assert "[pre-a]" in written
         assert "core body" in written
         assert "[post-a]" in written
@@ -3800,7 +3800,7 @@ class TestReplayWrapsForCommand:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         assert "[pre-a]" in written
         assert "CORE" in written
         assert "[post-a]" in written
@@ -3858,7 +3858,7 @@ class TestReplayWrapsForCommand:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.selftest.extension.md").read_text()
+        written = (agent_dir / "speckit.selftest.extension.md").read_text(encoding="utf-8")
         assert "[pre-a]" in written
         assert "EXTENSION-CORE" in written
         assert "[post-a]" in written
@@ -3902,7 +3902,7 @@ class TestReplayWrapsForCommand:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         # Outermost (preset-outer, p=1) wraps everything; innermost (preset-inner, p=10) is next
         outer_pre = written.index("[pre-preset-outer]")
         inner_pre = written.index("[pre-preset-inner]")
@@ -3950,7 +3950,7 @@ class TestReplayWrapsForCommand:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         a_pre = written.index("[pre-preset-a]")
         b_pre = written.index("[pre-preset-b]")
         core_pos = written.index("CORE")
@@ -3989,7 +3989,7 @@ class TestReplayWrapsForCommand:
 
         manager._replay_wraps_for_command("speckit.specify")
 
-        written = (skill_subdir / "SKILL.md").read_text()
+        written = (skill_subdir / "SKILL.md").read_text(encoding="utf-8")
         assert "[pre-a]" in written
         assert "CORE" in written
         assert "[post-a]" in written
@@ -4026,7 +4026,7 @@ class TestReplayWrapsForCommand:
 
         # ClaudeIntegration.post_process_skill_content injects these flags.
         # Their presence proves the integration hook ran during replay.
-        written = (skill_subdir / "SKILL.md").read_text()
+        written = (skill_subdir / "SKILL.md").read_text(encoding="utf-8")
         assert "disable-model-invocation: false" in written, (
             "_replay_skill_override must call post_process_skill_content "
             "(same as _register_skills)"
@@ -4108,7 +4108,7 @@ class TestInstallRemoveWrapLifecycle:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         outer_pre = written.index("OUTER-PRE")
         inner_pre = written.index("INNER-PRE")
         core_pos = written.index("CORE")
@@ -4145,7 +4145,7 @@ class TestInstallRemoveWrapLifecycle:
             CommandRegistrar.AGENT_CONFIGS.clear()
             CommandRegistrar.AGENT_CONFIGS.update(original)
 
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         # Only inner wrap remains — should be: INNER-PRE + CORE + INNER-POST, no OUTER
         assert "INNER-PRE" in written
         assert "CORE" in written
@@ -4188,14 +4188,14 @@ class TestInstallRemoveWrapLifecycle:
             manager.install_from_directory(inner_src, "0.1.0", priority=10)
 
             alias_file = agent_dir / "speckit.alias.md"
-            written = alias_file.read_text()
+            written = alias_file.read_text(encoding="utf-8")
             assert "OUTER-PRE" in written
             assert "INNER-PRE" in written
             assert "INNER-POST" in written
             assert "OUTER-POST" in written
 
             manager.remove("preset-inner")
-            written = alias_file.read_text()
+            written = alias_file.read_text(encoding="utf-8")
             assert "OUTER-PRE" in written
             assert "OUTER-POST" in written
             assert "INNER-PRE" not in written
@@ -4308,5 +4308,5 @@ class TestInstallRemoveWrapLifecycle:
 
         meta = manager.registry.get("non-wrap-preset")
         assert meta.get("wrap_commands", []) == []
-        written = (agent_dir / "speckit.specify.md").read_text()
+        written = (agent_dir / "speckit.specify.md").read_text(encoding="utf-8")
         assert "plain body" in written

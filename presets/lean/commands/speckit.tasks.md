@@ -1,19 +1,17 @@
 ---
-description: Create the tasks needed for implementation and store them in tasks.md.
+description: 创建实现所需任务并写入 tasks.md。
 ---
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-## Outline
+## 执行纲要
 
-1. Read `.specify/feature.json` to get the feature directory path.
-
-2. **Load context**: `.specify/memory/constitution.md` and `<feature_directory>/spec.md` and `<feature_directory>/plan.md`.
-
-3. Create dependency-ordered implementation tasks and store them in `<feature_directory>/tasks.md`.
-   - Every task uses checklist format: `- [ ] [TaskID] Description with file path`
-   - Organized by phase: setup, foundational, user stories in priority order, polish
+1. 读取 `.specify/feature.json`，取得功能目录路径。
+2. **加载上下文**：`.specify/memory/constitution.md`、`<feature_directory>/spec.md` 和 `<feature_directory>/plan.md`。
+3. 创建按依赖排序的实现任务，并保存到 `<feature_directory>/tasks.md`。
+   - 每个任务使用清单格式：`- [ ] [TaskID] 包含文件路径的任务描述`。
+   - 按阶段组织：初始化、基础能力、按优先级排列的用户故事、收尾打磨。

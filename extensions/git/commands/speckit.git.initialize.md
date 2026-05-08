@@ -1,49 +1,55 @@
 ---
-description: "Initialize a Git repository with an initial commit"
+description: "初始化 Git 仓库并创建初始提交"
 ---
 
-# Initialize Git Repository
+# 初始化 Git 仓库
 
-Initialize a Git repository in the current project directory if one does not already exist.
+如果当前项目目录还不是 Git 仓库，则初始化一个 Git 仓库。
 
-## Execution
+## 执行
 
-Run the appropriate script from the project root:
+从项目根目录运行对应脚本：
 
-- **Bash**: `.specify/extensions/git/scripts/bash/initialize-repo.sh`
-- **PowerShell**: `.specify/extensions/git/scripts/powershell/initialize-repo.ps1`
+- **Bash**：`.specify/extensions/git/scripts/bash/initialize-repo.sh`
+- **PowerShell**：`.specify/extensions/git/scripts/powershell/initialize-repo.ps1`
 
-If the extension scripts are not found, fall back to:
-- **Bash**: `git init && git add . && git commit -m "Initial commit from Specify template"`
-- **PowerShell**: `git init; git add .; git commit -m "Initial commit from Specify template"`
+如果找不到扩展脚本，回退到：
 
-The script handles all checks internally:
-- Skips if Git is not available
-- Skips if already inside a Git repository
-- Runs `git init`, `git add .`, and `git commit` with an initial commit message
+- **Bash**：`git init && git add . && git commit -m "Initial commit from Specify template"`
+- **PowerShell**：`git init; git add .; git commit -m "Initial commit from Specify template"`
 
-## Customization
+脚本内部会处理全部检查：
 
-Replace the script to add project-specific Git initialization steps:
-- Custom `.gitignore` templates
-- Default branch naming (`git config init.defaultBranch`)
-- Git LFS setup
-- Git hooks installation
-- Commit signing configuration
-- Git Flow initialization
+- Git 不可用时跳过
+- 已位于 Git 仓库内时跳过
+- 运行 `git init`、`git add .` 和 `git commit`，并使用初始提交消息
 
-## Output
+## 自定义
 
-On success:
-- `✓ Git repository initialized`
+可替换脚本以加入项目专用的 Git 初始化步骤：
 
-## Graceful Degradation
+- 自定义 `.gitignore` 模板
+- 默认分支命名，例如 `git config init.defaultBranch`
+- Git LFS 设置
+- Git hooks 安装
+- 提交签名配置
+- Git Flow 初始化
 
-If Git is not installed:
-- Warn the user
-- Skip repository initialization
-- The project continues to function without Git (specs can still be created under `specs/`)
+## 输出
 
-If Git is installed but `git init`, `git add .`, or `git commit` fails:
-- Surface the error to the user
-- Stop this command rather than continuing with a partially initialized repository
+成功时：
+
+- `Git repository initialized`
+
+## 优雅降级
+
+如果未安装 Git：
+
+- 警告用户
+- 跳过仓库初始化
+- 项目仍可在没有 Git 的情况下工作，规格仍可创建在 `specs/` 下
+
+如果已安装 Git，但 `git init`、`git add .` 或 `git commit` 失败：
+
+- 向用户展示错误
+- 停止此命令，避免继续使用部分初始化的仓库

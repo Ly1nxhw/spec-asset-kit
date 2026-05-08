@@ -555,7 +555,7 @@ class TestAllowExistingBranch:
             "--number", "8", "No overwrite feature",
         )
         assert result.returncode == 0, result.stderr
-        assert spec_file.read_text() == "# My custom spec content\n"
+        assert spec_file.read_text(encoding="utf-8") == "# My custom spec content\n"
 
     def test_allow_existing_creates_branch_if_not_exists(self, git_repo: Path):
         """T011: Verify normal creation when branch doesn't exist."""

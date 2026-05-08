@@ -31,24 +31,24 @@ $ARGUMENTS
 - 对每个可执行钩子，按 `optional` 输出：
   - **可选钩子**（`optional: true`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **可选前置钩子**: {extension}
+    命令： `/{command}`
+    说明： {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    提示： {prompt}
+    执行方式： `/{command}`
     ```
   - **强制钩子**（`optional: false`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自动前置钩子**: {extension}
+    正在执行： `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Outline.
+    等待该钩子命令完成后，再进入执行纲要。
     ```
 - 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过
 
@@ -140,40 +140,40 @@ $ARGUMENTS
    a. **创建质量检查清单**：在 `SPECIFY_FEATURE_DIRECTORY/checklists/requirements.md` 中生成如下清单：
 
       ```markdown
-      # Specification Quality Checklist: [FEATURE NAME]
+      # 规格质量检查清单：[FEATURE NAME]
 
-      **Purpose**: Validate specification completeness and quality before proceeding to planning
-      **Created**: [DATE]
-      **Feature**: [Link to spec.md]
+      **用途**：在进入规划前校验规格完整性与质量
+      **创建日期**：[DATE]
+      **功能**：[链接到 spec.md]
 
-      ## Content Quality
+      ## 内容质量
 
-      - [ ] No implementation details (languages, frameworks, APIs)
-      - [ ] Focused on user value and business needs
-      - [ ] Written for non-technical stakeholders
-      - [ ] All mandatory sections completed
+      - [ ] 不包含实现细节（语言、框架、API）
+      - [ ] 聚焦用户价值和业务需求
+      - [ ] 面向非技术干系人编写
+      - [ ] 所有必填章节已完成
 
-      ## Requirement Completeness
+      ## 需求完整性
 
-      - [ ] No [NEEDS CLARIFICATION] markers remain
-      - [ ] Requirements are testable and unambiguous
-      - [ ] Success criteria are measurable
-      - [ ] Success criteria are technology-agnostic (no implementation details)
-      - [ ] All acceptance scenarios are defined
-      - [ ] Edge cases are identified
-      - [ ] Scope is clearly bounded
-      - [ ] Dependencies and assumptions identified
+      - [ ] 不再保留 [NEEDS CLARIFICATION] 标记
+      - [ ] 需求可测试且无歧义
+      - [ ] 成功标准可衡量
+      - [ ] 成功标准与技术实现无关
+      - [ ] 所有验收场景已定义
+      - [ ] 边界情况已识别
+      - [ ] 范围边界清晰
+      - [ ] 依赖和假设已识别
 
-      ## Feature Readiness
+      ## 功能就绪度
 
-      - [ ] All functional requirements have clear acceptance criteria
-      - [ ] User scenarios cover primary flows
-      - [ ] Feature meets measurable outcomes defined in Success Criteria
-      - [ ] No implementation details leak into specification
+      - [ ] 所有功能需求都有清晰验收标准
+      - [ ] 用户场景覆盖主流程
+      - [ ] 功能满足成功标准中定义的可衡量结果
+      - [ ] 规格中没有泄漏实现细节
 
-      ## Notes
+      ## 备注
 
-      - Items marked incomplete require spec updates before `/speckit.clarify` or `/speckit.plan`
+      - 未完成项需要先更新规格，再运行 `/speckit.clarify` 或 `/speckit.plan`
       ```
 
    b. **运行校验**：
@@ -186,29 +186,29 @@ $ARGUMENTS
         1. 列出失败项与具体问题
         2. 更新规格
         3. 重新校验，最多 3 轮
-        4. 若 3 轮后仍失败，把剩余问题写入 Notes，并提醒用户
+        4. 若 3 轮后仍失败，把剩余问题写入 备注，并提醒用户
       - 如果仍存在 `[NEEDS CLARIFICATION]`：
         1. 提取全部标记
         2. 若超过 3 个，只保留最关键的 3 个，其余改为合理假设
         3. 对每个问题最多提供 3 个建议答案，并按如下格式向用户展示：
 
            ```markdown
-           ## Question [N]: [Topic]
+           ## 问题 [N]：[主题]
 
-           **Context**: [Quote relevant spec section]
+           **上下文**：[引用相关规格章节]
 
-           **What we need to know**: [Specific question from NEEDS CLARIFICATION marker]
+           **需要确认**：[来自 NEEDS CLARIFICATION 标记的具体问题]
 
-           **Suggested Answers**:
+           **建议答案**：
 
-           | Option | Answer | Implications |
-           |--------|--------|--------------|
-           | A      | [First suggested answer] | [What this means for the feature] |
-           | B      | [Second suggested answer] | [What this means for the feature] |
-           | C      | [Third suggested answer] | [What this means for the feature] |
-           | Custom | Provide your own answer | [Explain how to provide custom input] |
+           | 选项 | 答案 | 影响 |
+           |------|------|------|
+           | A | [第一个建议答案] | [对功能的影响] |
+           | B | [第二个建议答案] | [对功能的影响] |
+           | C | [第三个建议答案] | [对功能的影响] |
+           | 自定义 | 提供你自己的答案 | [说明如何提供自定义输入] |
 
-           **Your choice**: _[Wait for user response]_
+           **你的选择**：_[等待用户回复]_
            ```
 
         4. 确保 Markdown 表格格式正确
@@ -234,21 +234,21 @@ $ARGUMENTS
    - 对每个可执行钩子，按 `optional` 输出：
      - **可选钩子**：
        ```
-       ## Extension Hooks
+       ## 扩展钩子
 
-       **Optional Hook**: {extension}
-       Command: `/{command}`
-       Description: {description}
+       **可选钩子**: {extension}
+       命令： `/{command}`
+       说明： {description}
 
-       Prompt: {prompt}
-       To execute: `/{command}`
+       提示： {prompt}
+       执行方式： `/{command}`
        ```
      - **强制钩子**：
        ```
-       ## Extension Hooks
+       ## 扩展钩子
 
-       **Automatic Hook**: {extension}
-       Executing: `/{command}`
+       **自动钩子**: {extension}
+       正在执行： `/{command}`
        EXECUTE_COMMAND: {command}
        ```
    - 如果没有钩子或文件不存在，则静默跳过

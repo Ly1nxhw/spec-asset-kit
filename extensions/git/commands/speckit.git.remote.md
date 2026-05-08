@@ -1,45 +1,47 @@
 ---
-description: "Detect Git remote URL for GitHub integration"
+description: "检测 Git 远程 URL 以供 GitHub 集成使用"
 ---
 
-# Detect Git Remote URL
+# 检测 Git 远程 URL
 
-Detect the Git remote URL for integration with GitHub services (e.g., issue creation).
+检测 Git 远程 URL，以便与 GitHub 服务集成，例如创建 issue。
 
-## Prerequisites
+## 前置条件
 
-- Check if Git is available by running `git rev-parse --is-inside-work-tree 2>/dev/null`
-- If Git is not available, output a warning and return empty:
+- 运行 `git rev-parse --is-inside-work-tree 2>/dev/null` 检查 Git 是否可用
+- 如果 Git 不可用，输出警告并返回空结果：
   ```
   [specify] Warning: Git repository not detected; cannot determine remote URL
   ```
 
-## Execution
+## 执行
 
-Run the following command to get the remote URL:
+运行以下命令获取远程 URL：
 
 ```bash
 git config --get remote.origin.url
 ```
 
-## Output
+## 输出
 
-Parse the remote URL and determine:
+解析远程 URL 并判断：
 
-1. **Repository owner**: Extract from the URL (e.g., `Ly1nxhw` from `https://github.com/Ly1nxhw/spec-asset-kit.git`)
-2. **Repository name**: Extract from the URL (e.g., `spec-asset-kit` from `https://github.com/Ly1nxhw/spec-asset-kit.git`)
-3. **Is GitHub**: Whether the remote points to a GitHub repository
+1. **仓库 owner**：从 URL 中提取，例如从 `https://github.com/Ly1nxhw/spec-asset-kit.git` 提取 `Ly1nxhw`
+2. **仓库名称**：从 URL 中提取，例如从 `https://github.com/Ly1nxhw/spec-asset-kit.git` 提取 `spec-asset-kit`
+3. **是否为 GitHub**：判断远程是否指向 GitHub 仓库
 
-Supported URL formats:
-- HTTPS: `https://github.com/<owner>/<repo>.git`
-- SSH: `git@github.com:<owner>/<repo>.git`
+支持的 URL 格式：
+
+- HTTPS：`https://github.com/<owner>/<repo>.git`
+- SSH：`git@github.com:<owner>/<repo>.git`
 
 > [!CAUTION]
-> ONLY report a GitHub repository if the remote URL actually points to github.com.
-> Do NOT assume the remote is GitHub if the URL format doesn't match.
+> 只有当远程 URL 确实指向 github.com 时，才报告为 GitHub 仓库。
+> 如果 URL 格式不匹配，不要假设远程是 GitHub。
 
-## Graceful Degradation
+## 优雅降级
 
-If Git is not installed, the directory is not a Git repository, or no remote is configured:
-- Return an empty result
-- Do NOT error — other workflows should continue without Git remote information
+如果未安装 Git、目录不是 Git 仓库，或没有配置远程：
+
+- 返回空结果
+- 不要报错，其他工作流应能在没有 Git 远程信息的情况下继续

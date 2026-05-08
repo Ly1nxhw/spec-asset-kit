@@ -1,23 +1,21 @@
 ---
-description: Create a specification and store it in spec.md.
+description: 创建规格说明并写入 spec.md。
 ---
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-## Outline
+## 执行纲要
 
-1. **Ask the user** for the feature directory path (e.g., `specs/my-feature`). Do not proceed until provided.
-
-2. Create the directory and write `.specify/feature.json`:
+1. **询问用户**功能目录路径，例如 `specs/my-feature`。在用户提供之前不要继续。
+2. 创建目录并写入 `.specify/feature.json`：
    ```json
    { "feature_directory": "<feature_directory>" }
    ```
-
-3. Create a specification from the user input and store it in `<feature_directory>/spec.md`.
-   - Overview, functional requirements, user scenarios, success criteria
-   - Every requirement must be testable
-   - Make informed defaults for unspecified details
+3. 基于用户输入创建规格说明，并保存到 `<feature_directory>/spec.md`。
+   - 包含概览、功能需求、用户场景和成功标准。
+   - 每条需求都必须可测试。
+   - 对未明确说明的细节做合理默认，并记录假设。

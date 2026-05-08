@@ -1,15 +1,15 @@
 ---
-description: Create or update the project constitution.
+description: 创建或更新项目宪章。
 ---
 
-## User Input
+## 用户输入
 
 ```text
 $ARGUMENTS
 ```
 
-## Outline
+## 执行纲要
 
-1. Create or update the project constitution and store it in `.specify/memory/constitution.md`.
-   - Project name, guiding principles, non-negotiable rules
-   - Derive from user input and existing repo context (README, docs)
+1. 创建或更新项目宪章，并保存到 `.specify/memory/constitution.md`。
+   - 写清项目名称、指导原则和不可协商规则。
+   - 基于用户输入和现有仓库上下文推导，例如 README 与 docs。

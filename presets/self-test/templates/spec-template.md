@@ -1,23 +1,23 @@
-# Feature Specification (Self-Test Preset)
+# 功能规格（自检 Preset）
 
 <!-- preset:self-test -->
 
-> This template is provided by the self-test preset.
+> 此模板由 self-test preset 提供。
 
-## Overview
+## 概览
 
-Brief description of the feature.
+功能的简要描述。
 
-## Requirements
+## 需求
 
-- Requirement 1
-- Requirement 2
+- 需求 1
+- 需求 2
 
-## Design
+## 设计
 
-Describe the design approach.
+描述设计方法。
 
-## Acceptance Criteria
+## 验收标准
 
-- [ ] Criterion 1
-- [ ] Criterion 2
+- [ ] 标准 1
+- [ ] 标准 2

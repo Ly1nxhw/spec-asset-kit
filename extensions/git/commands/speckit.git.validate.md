@@ -1,49 +1,52 @@
 ---
-description: "Validate current branch follows feature branch naming conventions"
+description: "验证当前分支是否符合功能分支命名约定"
 ---
 
-# Validate Feature Branch
+# 验证功能分支
 
-Validate that the current Git branch follows the expected feature branch naming conventions.
+验证当前 Git 分支是否符合预期的功能分支命名约定。
 
-## Prerequisites
+## 前置条件
 
-- Check if Git is available by running `git rev-parse --is-inside-work-tree 2>/dev/null`
-- If Git is not available, output a warning and skip validation:
+- 运行 `git rev-parse --is-inside-work-tree 2>/dev/null` 检查 Git 是否可用
+- 如果 Git 不可用，输出警告并跳过验证：
   ```
   [specify] Warning: Git repository not detected; skipped branch validation
   ```
 
-## Validation Rules
+## 验证规则
 
-Get the current branch name:
+获取当前分支名：
 
 ```bash
 git rev-parse --abbrev-ref HEAD
 ```
 
-The branch name must match one of these patterns:
+分支名必须匹配以下任一模式：
 
-1. **Sequential**: `^[0-9]{3,}-` (e.g., `001-feature-name`, `042-fix-bug`, `1000-big-feature`)
-2. **Timestamp**: `^[0-9]{8}-[0-9]{6}-` (e.g., `20260319-143022-feature-name`)
+1. **顺序号**：`^[0-9]{3,}-`，例如 `001-feature-name`、`042-fix-bug`、`1000-big-feature`
+2. **时间戳**：`^[0-9]{8}-[0-9]{6}-`，例如 `20260319-143022-feature-name`
 
-## Execution
+## 执行
 
-If on a feature branch (matches either pattern):
-- Output: `✓ On feature branch: <branch-name>`
-- Check if the corresponding spec directory exists under `specs/`:
-  - For sequential branches, look for `specs/<prefix>-*` where prefix matches the numeric portion
-  - For timestamp branches, look for `specs/<prefix>-*` where prefix matches the `YYYYMMDD-HHMMSS` portion
-- If spec directory exists: `✓ Spec directory found: <path>`
-- If spec directory missing: `⚠ No spec directory found for prefix <prefix>`
+如果当前位于功能分支，即匹配任一模式：
 
-If NOT on a feature branch:
-- Output: `✗ Not on a feature branch. Current branch: <branch-name>`
-- Output: `Feature branches should be named like: 001-feature-name or 20260319-143022-feature-name`
+- 输出：`On feature branch: <branch-name>`
+- 检查 `specs/` 下是否存在对应的规格目录：
+  - 对顺序号分支，查找 `specs/<prefix>-*`，其中 prefix 匹配数字部分
+  - 对时间戳分支，查找 `specs/<prefix>-*`，其中 prefix 匹配 `YYYYMMDD-HHMMSS` 部分
+- 如果规格目录存在：`Spec directory found: <path>`
+- 如果规格目录缺失：`No spec directory found for prefix <prefix>`
 
-## Graceful Degradation
+如果当前不在功能分支：
 
-If Git is not installed or the directory is not a Git repository:
-- Check the `SPECIFY_FEATURE` environment variable as a fallback
-- If set, validate that value against the naming patterns
-- If not set, skip validation with a warning
+- 输出：`Not on a feature branch. Current branch: <branch-name>`
+- 输出：`Feature branches should be named like: 001-feature-name or 20260319-143022-feature-name`
+
+## 优雅降级
+
+如果未安装 Git，或目录不是 Git 仓库：
+
+- 检查 `SPECIFY_FEATURE` 环境变量作为回退
+- 如果已设置，则按命名模式验证该值
+- 如果未设置，则显示警告并跳过验证

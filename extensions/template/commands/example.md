@@ -1,104 +1,104 @@
 ---
-description: "Example command that demonstrates extension functionality"
-# CUSTOMIZE: List MCP tools this command uses
+description: "演示扩展功能的示例命令"
+# 自定义：列出此命令使用的 MCP 工具
 tools:
   - 'example-mcp-server/example_tool'
 ---
 
-# Example Command
+# 示例命令
 
-<!-- CUSTOMIZE: Replace this entire file with your command documentation -->
+<!-- 自定义：将整个文件替换为你的命令文档 -->
 
-This is an example command that demonstrates how to create commands for Spec Kit extensions.
+此示例命令用于演示如何为 Spec Kit 扩展创建命令。
 
-## Purpose
+## 用途
 
-Describe what this command does and when to use it.
+说明此命令执行什么操作，以及何时使用。
 
-## Prerequisites
+## 前置条件
 
-List requirements before using this command:
+列出使用此命令前需要满足的条件：
 
-1. Prerequisite 1 (e.g., "MCP server configured")
-2. Prerequisite 2 (e.g., "Configuration file exists")
-3. Prerequisite 3 (e.g., "Valid API credentials")
+1. 前置条件 1，例如已配置 MCP server
+2. 前置条件 2，例如配置文件已存在
+3. 前置条件 3，例如 API 凭据有效
 
-## User Input
+## 用户输入
 
 $ARGUMENTS
 
-## Steps
+## 步骤
 
-### Step 1: Load Configuration
+### 步骤 1：加载配置
 
-<!-- CUSTOMIZE: Replace with your actual steps -->
+<!-- 自定义：替换为你的实际步骤 -->
 
-Load extension configuration from the project:
+从项目中加载扩展配置：
 
-``bash
+```bash
 config_file=".specify/extensions/my-extension/my-extension-config.yml"
 
 if [ ! -f "$config_file" ]; then
-  echo "❌ Error: Configuration not found at $config_file"
-  echo "Run 'specify extension add my-extension' to install and configure"
+  echo "错误：未在 $config_file 找到配置"
+  echo "运行 'specify extension add my-extension' 以安装并配置扩展"
   exit 1
 fi
 
-# Read configuration values
+# 读取配置值
 
 setting_value=$(yq eval '.settings.key' "$config_file")
 
-# Apply environment variable overrides
+# 应用环境变量覆盖
 
 setting_value="${SPECKIT_MY_EXTENSION_KEY:-$setting_value}"
 
-# Validate configuration
+# 验证配置
 
 if [ -z "$setting_value" ]; then
-  echo "❌ Error: Configuration value not set"
-  echo "Edit $config_file and set 'settings.key'"
+  echo "错误：配置值未设置"
+  echo "编辑 $config_file 并设置 'settings.key'"
   exit 1
 fi
 
-echo "📋 Configuration loaded: $setting_value"
-``
+echo "配置已加载：$setting_value"
+```
 
-### Step 2: Perform Main Action
+### 步骤 2：执行主要动作
 
-<!-- CUSTOMIZE: Replace with your command logic -->
+<!-- 自定义：替换为你的命令逻辑 -->
 
-Describe what this step does:
+说明此步骤执行什么操作：
 
-``markdown
-Use MCP tools to perform the main action:
+```markdown
+使用 MCP 工具执行主要动作：
 
-- Tool: example-mcp-server example_tool
-- Parameters: { "key": "$setting_value" }
+- 工具：example-mcp-server example_tool
+- 参数：{ "key": "$setting_value" }
 
-This calls the MCP server tool to execute the operation.
-``
+这会调用 MCP server 工具来执行操作。
+```
 
-### Step 3: Process Results
+### 步骤 3：处理结果
 
-<!-- CUSTOMIZE: Add more steps as needed -->
+<!-- 自定义：按需添加更多步骤 -->
 
-Process the results and provide output:
+处理结果并提供输出：
 
-`` bash
+```bash
 echo ""
-echo "✅ Command completed successfully!"
+echo "命令已成功完成！"
 echo ""
-echo "Results:"
-echo "  • Item 1: Value"
-echo "  • Item 2: Value"
+echo "结果："
+echo "  - 项 1：值"
+echo "  - 项 2：值"
 echo ""
-``
+```
 
-### Step 4: Save Output (Optional)
+### 步骤 4：保存输出（可选）
 
-Save results to a file if needed:
+如有需要，将结果保存到文件：
 
-``bash
+```bash
 output_file=".specify/my-extension-output.json"
 
 cat > "$output_file" <<EOF
@@ -109,102 +109,98 @@ cat > "$output_file" <<EOF
 }
 EOF
 
-echo "💾 Output saved to $output_file"
-``
+echo "输出已保存到 $output_file"
+```
 
-## Configuration Reference
+## 配置参考
 
-<!-- CUSTOMIZE: Document configuration options -->
+<!-- 自定义：记录配置选项 -->
 
-This command uses the following configuration from `my-extension-config.yml`:
+此命令使用 `my-extension-config.yml` 中的以下配置：
 
-- **settings.key**: Description of what this setting does
-  - Type: string
-  - Required: Yes
-  - Example: `"example-value"`
+- **settings.key**：说明此设置的作用
+  - 类型：string
+  - 必填：是
+  - 示例：`"example-value"`
 
-- **settings.another_key**: Description of another setting
-  - Type: boolean
-  - Required: No
-  - Default: `false`
-  - Example: `true`
+- **settings.another_key**：说明另一个设置
+  - 类型：boolean
+  - 必填：否
+  - 默认值：`false`
+  - 示例：`true`
 
-## Environment Variables
+## 环境变量
 
-<!-- CUSTOMIZE: Document environment variable overrides -->
+<!-- 自定义：记录环境变量覆盖项 -->
 
-Configuration can be overridden with environment variables:
+可使用环境变量覆盖配置：
 
-- `SPECKIT_MY_EXTENSION_KEY` - Overrides `settings.key`
-- `SPECKIT_MY_EXTENSION_ANOTHER_KEY` - Overrides `settings.another_key`
+- `SPECKIT_MY_EXTENSION_KEY`：覆盖 `settings.key`
+- `SPECKIT_MY_EXTENSION_ANOTHER_KEY`：覆盖 `settings.another_key`
 
-Example:
-``bash
+示例：
+
+```bash
 export SPECKIT_MY_EXTENSION_KEY="override-value"
-``
+```
 
-## Troubleshooting
+## 故障排查
 
-<!-- CUSTOMIZE: Add common issues and solutions -->
+<!-- 自定义：添加常见问题和解决方案 -->
 
-### "Configuration not found"
+### “未找到配置”
 
-**Solution**: Install the extension and create configuration:
-``bash
+**解决方案**：安装扩展并创建配置：
+
+```bash
 specify extension add my-extension
 cp .specify/extensions/my-extension/config-template.yml \
    .specify/extensions/my-extension/my-extension-config.yml
-``
+```
 
-### "MCP tool not available"
+### “MCP 工具不可用”
 
-**Solution**: Ensure MCP server is configured in your AI agent settings.
+**解决方案**：确认已在 AI agent 设置中配置 MCP server。
 
-### "Permission denied"
+### “权限被拒绝”
 
-**Solution**: Check credentials and permissions in the external service.
+**解决方案**：检查外部服务中的凭据和权限。
 
-## Notes
+## 备注
 
-<!-- CUSTOMIZE: Add helpful notes and tips -->
+<!-- 自定义：添加有用说明和提示 -->
 
-- This command requires an active connection to the external service
-- Results are cached for performance
-- Re-run the command to refresh data
+- 此命令需要可用的外部服务连接
+- 结果会缓存以提升性能
+- 重新运行命令可刷新数据
 
-## Examples
+## 示例
 
-<!-- CUSTOMIZE: Add usage examples -->
+<!-- 自定义：添加使用示例 -->
 
-### Example 1: Basic Usage
+### 示例 1：基础用法
 
-``bash
-
-# Run with default configuration
->
+```bash
+# 使用默认配置运行
 > /speckit.my-extension.example
-``
+```
 
-### Example 2: With Environment Override
+### 示例 2：使用环境变量覆盖
 
-``bash
-
-# Override configuration with environment variable
-
+```bash
+# 使用环境变量覆盖配置
 export SPECKIT_MY_EXTENSION_KEY="custom-value"
 > /speckit.my-extension.example
-``
+```
 
-### Example 3: After Core Command
+### 示例 3：在核心命令之后使用
 
-``bash
-
-# Use as part of a workflow
->
+```bash
+# 作为工作流的一部分使用
 > /speckit.tasks
 > /speckit.my-extension.example
-``
+```
 
 ---
 
-*For more information, see the extension README or run `specify extension info my-extension`*
+*更多信息请参阅扩展 README，或运行 `specify extension info my-extension`*

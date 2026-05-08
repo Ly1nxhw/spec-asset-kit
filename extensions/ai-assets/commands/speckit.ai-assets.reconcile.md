@@ -42,23 +42,23 @@ $ARGUMENTS
 写入 `ai-assets/reconcile-report.md`：
 
 ```markdown
-# AI Assets Reconcile Report
+# AI Assets 对齐报告
 
-## Summary
+## 摘要
 
-## Inputs Reviewed
+## 已检查输入
 
-## Updates Applied
+## 已应用更新
 
-## Conflicts and Open Questions
+## 冲突与待确认问题
 
-## Recommended Next Actions
+## 建议下一步
 ```
 
 向 `open-questions.md` 追加问题时使用：
 
 ```markdown
-| ID | Question | Why It Matters | Evidence | Affected Assets |
+| ID | 问题 | 为什么重要 | 证据 | 影响资产 |
 |---|---|---|---|---|
 ```
 

@@ -20,14 +20,14 @@ class TestSaveBranchNumbering:
         opts = {"branch_numbering": "timestamp", "ai": "claude"}
         save_init_options(tmp_path, opts)
 
-        saved = json.loads((tmp_path / ".specify/init-options.json").read_text())
+        saved = json.loads((tmp_path / ".specify/init-options.json").read_text(encoding="utf-8"))
         assert saved["branch_numbering"] == "timestamp"
 
     def test_save_branch_numbering_sequential(self, tmp_path: Path):
         opts = {"branch_numbering": "sequential", "ai": "claude"}
         save_init_options(tmp_path, opts)
 
-        saved = json.loads((tmp_path / ".specify/init-options.json").read_text())
+        saved = json.loads((tmp_path / ".specify/init-options.json").read_text(encoding="utf-8"))
         assert saved["branch_numbering"] == "sequential"
 
     def test_branch_numbering_defaults_to_sequential(self, tmp_path: Path):
@@ -39,7 +39,7 @@ class TestSaveBranchNumbering:
         result = runner.invoke(app, ["init", str(project_dir), "--ai", "claude", "--ignore-agent-tools", "--no-git", "--script", "sh"])
         assert result.exit_code == 0
 
-        saved = json.loads((project_dir / ".specify/init-options.json").read_text())
+        saved = json.loads((project_dir / ".specify/init-options.json").read_text(encoding="utf-8"))
         assert saved["branch_numbering"] == "sequential"
 
 

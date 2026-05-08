@@ -248,7 +248,7 @@ class TestGenericIntegration:
         finally:
             os.chdir(old_cwd)
         assert result.exit_code == 0
-        opts = json.loads((project / ".specify" / "init-options.json").read_text())
+        opts = json.loads((project / ".specify" / "init-options.json").read_text(encoding="utf-8"))
         assert opts.get("context_file") == "AGENTS.md"
 
     def test_init_installs_ai_assets_and_overrides_plan(self, tmp_path):

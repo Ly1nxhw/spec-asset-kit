@@ -577,7 +577,7 @@ class TestIntegrationUpgrade:
         # Modify a tracked file so the manifest hash won't match
         manifest_path = project / ".specify" / "integrations" / "copilot.manifest.json"
         assert manifest_path.exists(), "Manifest should exist after init"
-        manifest_data = json.loads(manifest_path.read_text())
+        manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
         tracked_files = manifest_data.get("files", {})
         assert tracked_files, "Manifest should track at least one file"
         first_rel = next(iter(tracked_files))
@@ -602,7 +602,7 @@ class TestIntegrationUpgrade:
 
         # Modify a tracked file
         manifest_path = project / ".specify" / "integrations" / "copilot.manifest.json"
-        manifest_data = json.loads(manifest_path.read_text())
+        manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
         tracked_files = manifest_data.get("files", {})
         assert tracked_files, "Manifest should track at least one file"
         first_rel = next(iter(tracked_files))

@@ -758,7 +758,7 @@ class ExtensionManager:
         if not ignore_file.exists():
             return None
 
-        lines: List[str] = ignore_file.read_text().splitlines()
+        lines: List[str] = ignore_file.read_text(encoding="utf-8").splitlines()
 
         # Normalise backslashes in patterns so Windows-authored files work
         normalised: List[str] = []
@@ -1710,7 +1710,7 @@ class ExtensionCatalog:
             is_valid = False
             if not force_refresh and cache_file.exists() and cache_meta_file.exists():
                 try:
-                    metadata = json.loads(cache_meta_file.read_text())
+                    metadata = json.loads(cache_meta_file.read_text(encoding="utf-8"))
                     cached_at = datetime.fromisoformat(metadata.get("cached_at", ""))
                     if cached_at.tzinfo is None:
                         cached_at = cached_at.replace(tzinfo=timezone.utc)
@@ -1723,7 +1723,7 @@ class ExtensionCatalog:
         # Use cache if valid
         if is_valid:
             try:
-                return json.loads(cache_file.read_text())
+                return json.loads(cache_file.read_text(encoding="utf-8"))
             except json.JSONDecodeError:
                 pass
 
@@ -1811,7 +1811,7 @@ class ExtensionCatalog:
             return False
 
         try:
-            metadata = json.loads(self.cache_metadata_file.read_text())
+            metadata = json.loads(self.cache_metadata_file.read_text(encoding="utf-8"))
             cached_at = datetime.fromisoformat(metadata.get("cached_at", ""))
             if cached_at.tzinfo is None:
                 cached_at = cached_at.replace(tzinfo=timezone.utc)
@@ -1835,7 +1835,7 @@ class ExtensionCatalog:
         # Check cache first unless force refresh
         if not force_refresh and self.is_cache_valid():
             try:
-                return json.loads(self.cache_file.read_text())
+                return json.loads(self.cache_file.read_text(encoding="utf-8"))
             except json.JSONDecodeError:
                 pass  # Fall through to network fetch
 

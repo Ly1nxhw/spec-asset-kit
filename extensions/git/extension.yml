@@ -43,91 +43,91 @@ hooks:
   before_constitution:
     command: speckit.git.initialize
     optional: false
-    description: "Initialize Git repository before constitution setup"
+    description: "在宪章设置前初始化 Git 仓库"
   before_specify:
     command: speckit.git.feature
     optional: false
-    description: "Create feature branch before specification"
+    description: "在编写规格前创建功能分支"
   before_clarify:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit outstanding changes before clarification?"
-    description: "Auto-commit before spec clarification"
+    prompt: "是否在澄清前提交未提交变更？"
+    description: "在规格澄清前自动提交"
   before_plan:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit outstanding changes before planning?"
-    description: "Auto-commit before implementation planning"
+    prompt: "是否在规划前提交未提交变更？"
+    description: "在实现规划前自动提交"
   before_tasks:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit outstanding changes before task generation?"
-    description: "Auto-commit before task generation"
+    prompt: "是否在生成任务前提交未提交变更？"
+    description: "在生成任务前自动提交"
   before_implement:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit outstanding changes before implementation?"
-    description: "Auto-commit before implementation"
+    prompt: "是否在实现前提交未提交变更？"
+    description: "在实现前自动提交"
   before_checklist:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit outstanding changes before checklist?"
-    description: "Auto-commit before checklist generation"
+    prompt: "是否在生成检查清单前提交未提交变更？"
+    description: "在生成检查清单前自动提交"
   before_analyze:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit outstanding changes before analysis?"
-    description: "Auto-commit before analysis"
+    prompt: "是否在分析前提交未提交变更？"
+    description: "在分析前自动提交"
   before_taskstoissues:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit outstanding changes before issue sync?"
-    description: "Auto-commit before tasks-to-issues conversion"
+    prompt: "是否在同步 issue 前提交未提交变更？"
+    description: "在任务转 issue 前自动提交"
   after_constitution:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit constitution changes?"
-    description: "Auto-commit after constitution update"
+    prompt: "是否提交宪章变更？"
+    description: "在宪章更新后自动提交"
   after_specify:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit specification changes?"
-    description: "Auto-commit after specification"
+    prompt: "是否提交规格变更？"
+    description: "在规格生成后自动提交"
   after_clarify:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit clarification changes?"
-    description: "Auto-commit after spec clarification"
+    prompt: "是否提交澄清变更？"
+    description: "在规格澄清后自动提交"
   after_plan:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit plan changes?"
-    description: "Auto-commit after implementation planning"
+    prompt: "是否提交计划变更？"
+    description: "在实现规划后自动提交"
   after_tasks:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit task changes?"
-    description: "Auto-commit after task generation"
+    prompt: "是否提交任务变更？"
+    description: "在任务生成后自动提交"
   after_implement:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit implementation changes?"
-    description: "Auto-commit after implementation"
+    prompt: "是否提交实现变更？"
+    description: "在实现后自动提交"
   after_checklist:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit checklist changes?"
-    description: "Auto-commit after checklist generation"
+    prompt: "是否提交检查清单变更？"
+    description: "在检查清单生成后自动提交"
   after_analyze:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit analysis results?"
-    description: "Auto-commit after analysis"
+    prompt: "是否提交分析结果？"
+    description: "在分析后自动提交"
   after_taskstoissues:
     command: speckit.git.commit
     optional: true
-    prompt: "Commit after syncing issues?"
-    description: "Auto-commit after tasks-to-issues conversion"
+    prompt: "是否在同步 issue 后提交？"
+    description: "在任务转 issue 后自动提交"
 
 tags:
   - "git"

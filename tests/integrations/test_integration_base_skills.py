@@ -369,7 +369,7 @@ class SkillsIntegrationTests:
         finally:
             os.chdir(old_cwd)
         assert result.exit_code == 0
-        opts = json.loads((project / ".specify" / "init-options.json").read_text())
+        opts = json.loads((project / ".specify" / "init-options.json").read_text(encoding="utf-8"))
         i = get_integration(self.KEY)
         assert opts.get("context_file") == i.context_file, (
             f"Expected context_file={i.context_file!r}, got {opts.get('context_file')!r}"

@@ -1,69 +1,70 @@
 ---
-description: "Validate the lifecycle of an extension from the catalog."
+description: "验证扩展从目录到安装的生命周期"
 ---
 
-# Extension Self-Test: `$ARGUMENTS`
+# 扩展自检：`$ARGUMENTS`
 
-This command drives a self-test simulating the developer experience with the `$ARGUMENTS` extension.
+此命令会驱动一次自检，模拟开发者使用 `$ARGUMENTS` 扩展的体验。
 
-## Goal
+## 目标
 
-Validate the end-to-end lifecycle (discovery, installation, registration) for the extension: `$ARGUMENTS`.
-If `$ARGUMENTS` is empty, you must tell the user to provide an extension name, for example: `/speckit.selftest.extension linear`.
+验证扩展 `$ARGUMENTS` 的端到端生命周期，包括发现、安装和注册。
+如果 `$ARGUMENTS` 为空，必须提示用户提供扩展名称，例如：`/speckit.selftest.extension linear`。
 
-## Steps
+## 步骤
 
-### Step 1: Catalog Discovery Validation
+### 步骤 1：目录发现验证
 
-Check if the extension exists in the Spec Kit catalog.
-Execute this command and verify that it completes successfully and that the returned extension ID exactly matches `$ARGUMENTS`. If the command fails or the ID does not match `$ARGUMENTS`, fail the test.
+检查该扩展是否存在于 Spec Kit 目录中。
+执行以下命令，并确认命令成功完成且返回的扩展 ID 与 `$ARGUMENTS` 完全一致。如果命令失败或 ID 不匹配，则判定测试失败。
 
 ```bash
 specify extension info "$ARGUMENTS"
 ```
 
-### Step 2: Simulate Installation
+### 步骤 2：模拟安装
 
-First, try to add the extension to the current workspace configuration directly. If the catalog provides the extension as `install_allowed: false` (discovery-only), this step is *expected* to fail.
+首先尝试直接将扩展添加到当前工作区配置中。如果目录将该扩展标记为 `install_allowed: false`，即仅允许发现，则此步骤预期会失败。
 
 ```bash
 specify extension add "$ARGUMENTS"
 ```
 
-Then, simulate adding the extension by installing it from its catalog download URL, which should bypass the restriction.
-Obtain the extension's `download_url` from the catalog metadata (for example, via a catalog info command or UI), then run:
+然后，通过目录中的下载 URL 模拟安装扩展；这种方式应绕过上述限制。
+从目录元数据中获取扩展的 `download_url`，例如通过目录信息命令或界面获取，然后运行：
 
 ```bash
 specify extension add "$ARGUMENTS" --from "<download_url>"
 ```
 
-### Step 3: Registration Verification
+### 步骤 3：注册验证
 
-Once the `add` command completes, verify the installation by checking the project configuration.
-Use terminal tools (like `cat`) to verify that the following file contains a record for `$ARGUMENTS`.
+`add` 命令完成后，通过检查项目配置来验证安装。
+使用终端工具，例如 `cat`，确认以下文件包含 `$ARGUMENTS` 的记录。
 
 ```bash
 cat .specify/extensions/.registry/$ARGUMENTS.json
 ```
 
-### Step 4: Verification Report
+### 步骤 4：验证报告
 
-Analyze the standard output of the three steps. 
-Generate a terminal-style test output format detailing the results of discovery, installation, and registration. Return this directly to the user.
+分析三个步骤的标准输出。
+生成终端风格的测试输出，详细说明发现、安装和注册结果，并直接返回给用户。
 
-Example output format:
+示例输出格式：
+
 ```text
 ============================= test session starts ==============================
 collected 3 items
 
 test_selftest_discovery.py::test_catalog_search [PASS/FAIL]
-  Details: [Provide execution result of specify extension search]
+  详情：[提供 specify extension search 的执行结果]
 
 test_selftest_installation.py::test_extension_add [PASS/FAIL]
-  Details: [Provide execution result of specify extension add]
+  详情：[提供 specify extension add 的执行结果]
 
 test_selftest_registration.py::test_config_verification [PASS/FAIL]
-  Details: [Provide execution result of registry record verification]
+  详情：[提供注册记录验证结果]
 
 ============================== [X] passed in ... ==============================
 ```

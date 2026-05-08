@@ -35,24 +35,24 @@ $ARGUMENTS
 - 对每个可执行钩子，按 `optional` 输出：
   - **可选钩子**（`optional: true`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **可选前置钩子**: {extension}
+    命令： `/{command}`
+    说明： {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    提示： {prompt}
+    执行方式： `/{command}`
     ```
   - **强制钩子**（`optional: false`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自动前置钩子**: {extension}
+    正在执行： `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Outline.
+    等待该钩子命令完成后，再进入执行纲要。
     ```
 - 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过
 
@@ -102,21 +102,21 @@ $ARGUMENTS
    - 对每个可执行钩子，按 `optional` 输出：
      - **可选钩子**：
        ```
-       ## Extension Hooks
+       ## 扩展钩子
 
-       **Optional Hook**: {extension}
-       Command: `/{command}`
-       Description: {description}
+       **可选钩子**: {extension}
+       命令： `/{command}`
+       说明： {description}
 
-       Prompt: {prompt}
-       To execute: `/{command}`
+       提示： {prompt}
+       执行方式： `/{command}`
        ```
      - **强制钩子**：
        ```
-       ## Extension Hooks
+       ## 扩展钩子
 
-       **Automatic Hook**: {extension}
-       Executing: `/{command}`
+       **自动钩子**: {extension}
+       正在执行： `/{command}`
        EXECUTE_COMMAND: {command}
        ```
    - 如果没有钩子或文件不存在，则静默跳过
@@ -136,7 +136,7 @@ $ARGUMENTS
 每条任务都必须严格遵循：
 
 ```text
-- [ ] [TaskID] [P?] [Story?] Description with file path
+- [ ] [TaskID] [P?] [Story?] 包含文件路径的任务描述
 ```
 
 组成说明：
@@ -149,14 +149,14 @@ $ARGUMENTS
 
 **示例**：
 
-- 正确：`- [ ] T001 Create project structure per implementation plan`
-- 正确：`- [ ] T005 [P] Implement authentication middleware in src/middleware/auth.py`
-- 正确：`- [ ] T012 [P] [US1] Create User model in src/models/user.py`
-- 正确：`- [ ] T014 [US1] Implement UserService in src/services/user_service.py`
-- 错误：`- [ ] Create User model`
-- 错误：`T001 [US1] Create model`
-- 错误：`- [ ] [US1] Create User model`
-- 错误：`- [ ] T001 [US1] Create model`
+- 正确：`- [ ] T001 按实施计划创建项目结构`
+- 正确：`- [ ] T005 [P] 在 src/middleware/auth.py 中实现认证中间件`
+- 正确：`- [ ] T012 [P] [US1] 在 src/models/user.py 中创建 User 模型`
+- 正确：`- [ ] T014 [US1] 在 src/services/user_service.py 中实现 UserService`
+- 错误：`- [ ] 创建 User 模型`
+- 错误：`T001 [US1] 创建模型`
+- 错误：`- [ ] [US1] 创建 User 模型`
+- 错误：`- [ ] T001 [US1] 创建模型`
 
 ### 任务组织原则
 

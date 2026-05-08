@@ -34,24 +34,24 @@ $ARGUMENTS
 - 对每个可执行钩子，按 `optional` 输出：
   - **可选钩子**（`optional: true`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **可选前置钩子**: {extension}
+    命令： `/{command}`
+    说明： {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    提示： {prompt}
+    执行方式： `/{command}`
     ```
   - **强制钩子**（`optional: false`）：
     ```
-    ## Extension Hooks
+    ## 扩展钩子
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自动前置钩子**: {extension}
+    正在执行： `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Outline.
+    等待该钩子命令完成后，再进入执行纲要。
     ```
 - 如果未注册任何钩子，或 `.specify/extensions.yml` 不存在，则静默跳过
 
@@ -80,21 +80,21 @@ $ARGUMENTS
    - 对每个可执行钩子，按 `optional` 输出：
      - **可选钩子**：
        ```
-       ## Extension Hooks
+       ## 扩展钩子
 
-       **Optional Hook**: {extension}
-       Command: `/{command}`
-       Description: {description}
+       **可选钩子**: {extension}
+       命令： `/{command}`
+       说明： {description}
 
-       Prompt: {prompt}
-       To execute: `/{command}`
+       提示： {prompt}
+       执行方式： `/{command}`
        ```
      - **强制钩子**：
        ```
-       ## Extension Hooks
+       ## 扩展钩子
 
-       **Automatic Hook**: {extension}
-       Executing: `/{command}`
+       **自动钩子**: {extension}
+       正在执行： `/{command}`
        EXECUTE_COMMAND: {command}
        ```
    - 如果没有钩子或文件不存在，则静默跳过
@@ -111,16 +111,16 @@ $ARGUMENTS
 2. **生成并派发研究任务**：
 
    ```text
-   For each unknown in Technical Context:
-     Task: "Research {unknown} for {feature context}"
-   For each technology choice:
-     Task: "Find best practices for {tech} in {domain}"
+   对“技术上下文”中的每个未知项：
+     任务："研究 {unknown} 在 {feature context} 中的处理方式"
+   对每个技术选择：
+     任务："查找 {tech} 在 {domain} 中的最佳实践"
    ```
 
 3. 将研究结论汇总到 `research.md`，格式为：
-   - Decision: [选择了什么]
-   - Rationale: [为什么这样选]
-   - Alternatives considered: [评估过哪些方案]
+   - 决策：[选择了什么]
+   - 理由：[为什么这样选]
+   - 备选方案：[评估过哪些方案]
 
 **输出**：`research.md`，并且所有 `NEEDS CLARIFICATION` 都应得到解决
 

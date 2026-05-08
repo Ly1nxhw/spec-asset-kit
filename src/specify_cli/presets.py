@@ -1691,7 +1691,7 @@ class PresetCatalog:
         if not cache_file.exists() or not metadata_file.exists():
             return False
         try:
-            metadata = json.loads(metadata_file.read_text())
+            metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
             cached_at = datetime.fromisoformat(metadata.get("cached_at", ""))
             if cached_at.tzinfo is None:
                 cached_at = cached_at.replace(tzinfo=timezone.utc)
@@ -1719,7 +1719,7 @@ class PresetCatalog:
 
         if not force_refresh and self._is_url_cache_valid(entry.url):
             try:
-                return json.loads(cache_file.read_text())
+                return json.loads(cache_file.read_text(encoding="utf-8"))
             except json.JSONDecodeError:
                 pass
 
@@ -1785,7 +1785,7 @@ class PresetCatalog:
             return False
 
         try:
-            metadata = json.loads(self.cache_metadata_file.read_text())
+            metadata = json.loads(self.cache_metadata_file.read_text(encoding="utf-8"))
             cached_at = datetime.fromisoformat(metadata.get("cached_at", ""))
             if cached_at.tzinfo is None:
                 cached_at = cached_at.replace(tzinfo=timezone.utc)
@@ -1812,9 +1812,9 @@ class PresetCatalog:
 
         if not force_refresh and self.is_cache_valid():
             try:
-                metadata = json.loads(self.cache_metadata_file.read_text())
+                metadata = json.loads(self.cache_metadata_file.read_text(encoding="utf-8"))
                 if metadata.get("catalog_url") == catalog_url:
-                    return json.loads(self.cache_file.read_text())
+                    return json.loads(self.cache_file.read_text(encoding="utf-8"))
             except (json.JSONDecodeError, OSError):
                 # Cache is corrupt or unreadable; fall through to network fetch
                 pass
