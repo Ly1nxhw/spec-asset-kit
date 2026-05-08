@@ -55,6 +55,8 @@ class TestClaudeIntegration:
         assert "{SCRIPT}" not in content
         assert "{ARGS}" not in content
         assert "__AGENT__" not in content
+        assert "__SPECKIT_COMMAND_" not in content, "unprocessed __SPECKIT_COMMAND_*__"
+        assert "/speckit." not in content, "skills agent must use /speckit-<name> not /speckit.<name>"
 
         parts = content.split("---", 2)
         parsed = yaml.safe_load(parts[1])
@@ -194,7 +196,10 @@ class TestClaudeIntegration:
         try:
             os.chdir(project)
             runner = CliRunner()
-            with patch("specify_cli.select_with_arrows", return_value="claude"):
+            with (
+                patch("specify_cli._stdin_is_interactive", return_value=True),
+                patch("specify_cli.select_with_arrows", return_value="claude"),
+            ):
                 result = runner.invoke(
                     app,
                     [

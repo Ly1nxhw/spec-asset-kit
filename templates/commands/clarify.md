@@ -55,7 +55,7 @@ $ARGUMENTS
 
 目标：发现当前功能规格中的关键歧义或缺失决策点，并把澄清结果直接写回规格文件。
 
-说明：该澄清流程默认应在 `/speckit.plan` 之前完成。如果用户明确表示跳过，你可以继续，但必须提醒后续返工风险会上升。
+说明：该澄清流程默认应在 `__SPECKIT_COMMAND_PLAN__` 之前完成。如果用户明确表示跳过，你可以继续，但必须提醒后续返工风险会上升。
 
 执行步骤：
 
@@ -63,7 +63,7 @@ $ARGUMENTS
    - `FEATURE_DIR`
    - `FEATURE_SPEC`
    - 可选：`IMPL_PLAN`、`TASKS`
-   - 若 JSON 解析失败，终止并提示用户重新运行 `/speckit.specify`
+   - 若 JSON 解析失败，终止并提示用户重新运行 `__SPECKIT_COMMAND_SPECIFY__`
 
 2. 读取当前规格文件，按以下分类执行结构化扫描，并为每类标记：Clear / Partial / Missing：
 
@@ -172,13 +172,13 @@ $ARGUMENTS
    - 更新后的规格路径
    - 被修改的章节列表
    - 覆盖总结：Resolved / Deferred / Clear / Outstanding
-   - 若仍有 Outstanding 或 Deferred，建议是否进入 `/speckit.plan`
+   - 若仍有 Outstanding 或 Deferred，建议是否进入 `__SPECKIT_COMMAND_PLAN__`
    - 建议下一条命令
 
 行为规则：
 
 - 若未发现值得正式澄清的关键问题，直接回复：`No critical ambiguities detected worth formal clarification.`
-- 若规格文件缺失，提示用户先运行 `/speckit.specify`
+- 若规格文件缺失，提示用户先运行 `__SPECKIT_COMMAND_SPECIFY__`
 - 绝不能超过 5 个问题
 - 除非阻塞正确性，不要追问偏技术栈的问题
 - 尊重用户的提前结束指令

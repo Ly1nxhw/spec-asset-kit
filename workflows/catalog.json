@@ -6,7 +6,7 @@
     "speckit": {
       "id": "speckit",
       "name": "完整 SDD 工作流",
-      "description": "以中文引导运行 constitution -> specify -> plan -> tasks -> implement，并在关键节点设置人工审阅门禁",
+      "description": "以中文引导运行 constitution -> specify -> plan -> tasks -> implement，并在关键节点设置人工审阅门禁。",
       "author": "GitHub",
       "version": "1.1.0",
       "url": "https://raw.githubusercontent.com/Ly1nxhw/spec-asset-kit/main/workflows/speckit/workflow.yml",

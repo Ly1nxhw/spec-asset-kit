@@ -101,6 +101,7 @@ class TestGenericIntegration:
             assert "{SCRIPT}" not in content, f"{f.name} has unprocessed {{SCRIPT}}"
             assert "__AGENT__" not in content, f"{f.name} has unprocessed __AGENT__"
             assert "{ARGS}" not in content, f"{f.name} has unprocessed {{ARGS}}"
+            assert "__SPECKIT_COMMAND_" not in content, f"{f.name} has unprocessed __SPECKIT_COMMAND_*__"
 
     def test_all_files_tracked_in_manifest(self, tmp_path):
         i = get_integration("generic")
@@ -184,35 +185,15 @@ class TestGenericIntegration:
         )
         assert "__CONTEXT_FILE__" not in content
 
-    def test_init_writes_chinese_phase1_runtime_assets(self, tmp_path):
-        from typer.testing import CliRunner
-        from specify_cli import app
-
-        project = tmp_path / "phase1-zh-assets"
-        project.mkdir()
-        old_cwd = os.getcwd()
-        try:
-            os.chdir(project)
-            result = CliRunner().invoke(app, [
-                "init", "--here", "--integration", "generic",
-                "--ai-commands-dir", ".myagent/commands",
-                "--script", "sh", "--no-git",
-            ], catch_exceptions=False)
-        finally:
-            os.chdir(old_cwd)
-
-        assert result.exit_code == 0, f"init failed: {result.output}"
-
-        workflow = (project / ".specify" / "workflows" / "speckit" / "workflow.yml").read_text(encoding="utf-8")
-        spec_template = (project / ".specify" / "templates" / "spec-template.md").read_text(encoding="utf-8")
-        specify_command = (project / ".myagent" / "commands" / "speckit.specify.md").read_text(encoding="utf-8")
-
-        assert "constitution" in workflow
-        assert "完整 SDD 工作流" in workflow
-        assert "请先审阅更新后的项目宪章，再继续生成功能规格。" in workflow
-        assert "# 功能规格说明：" in spec_template
-        assert "## 用户场景与测试（必填）" in spec_template
-        assert "如果用户输入非空，你**必须**先纳入考虑再继续。" in specify_command
+    def test_implement_loads_constitution_context(self, tmp_path):
+        """The generated implement command should load constitution governance context."""
+        i = get_integration("generic")
+        m = IntegrationManifest("generic", tmp_path)
+        i.setup(tmp_path, m, parsed_options={"commands_dir": ".custom/cmds"})
+        implement_file = tmp_path / ".custom" / "cmds" / "speckit.implement.md"
+        assert implement_file.exists()
+        content = implement_file.read_text(encoding="utf-8")
+        assert ".specify/memory/constitution.md" in content
 
     # -- CLI --------------------------------------------------------------
 
@@ -248,35 +229,8 @@ class TestGenericIntegration:
         finally:
             os.chdir(old_cwd)
         assert result.exit_code == 0
-        opts = json.loads((project / ".specify" / "init-options.json").read_text(encoding="utf-8"))
+        opts = json.loads((project / ".specify" / "init-options.json").read_text())
         assert opts.get("context_file") == "AGENTS.md"
-
-    def test_init_installs_ai_assets_and_overrides_plan(self, tmp_path):
-        from typer.testing import CliRunner
-        from specify_cli import app
-
-        project = tmp_path / "generic-ai-assets"
-        project.mkdir()
-        old_cwd = os.getcwd()
-        try:
-            os.chdir(project)
-            result = CliRunner().invoke(app, [
-                "init", "--here", "--integration", "generic",
-                "--ai-commands-dir", ".myagent/commands",
-                "--script", "sh", "--no-git",
-            ], catch_exceptions=False)
-        finally:
-            os.chdir(old_cwd)
-
-        assert result.exit_code == 0, f"init failed: {result.output}"
-
-        plan_command = (project / ".myagent" / "commands" / "speckit.plan.md").read_text(encoding="utf-8")
-        plan_template = (project / ".specify" / "templates" / "plan-template.md").read_text(encoding="utf-8")
-        hooks = (project / ".specify" / "extensions.yml").read_text(encoding="utf-8")
-
-        assert "ai-assets/business-context.md" in plan_command
-        assert "AI Assets 输入" in plan_template
-        assert "speckit.ai-assets.extract" in hooks
 
     def test_complete_file_inventory_sh(self, tmp_path):
         """Every file produced by specify init --integration generic --ai-commands-dir ... --script sh."""
@@ -311,22 +265,6 @@ class TestGenericIntegration:
             ".myagent/commands/speckit.specify.md",
             ".myagent/commands/speckit.tasks.md",
             ".myagent/commands/speckit.taskstoissues.md",
-            ".specify/extensions/.registry",
-            ".specify/extensions/ai-assets/README.md",
-            ".specify/extensions/ai-assets/commands/speckit.ai-assets.check.md",
-            ".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md",
-            ".specify/extensions/ai-assets/commands/speckit.ai-assets.reconcile.md",
-            ".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md",
-            ".specify/extensions/ai-assets/extension.yml",
-            ".specify/extensions/ai-assets/scripts/bash/check-ai-assets.sh",
-            ".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh",
-            ".specify/extensions/ai-assets/scripts/check_ai_assets.py",
-            ".specify/extensions/ai-assets/scripts/powershell/check-ai-assets.ps1",
-            ".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1",
-            ".specify/extensions/ai-assets/scripts/scan_repo.py",
-            ".specify/extensions/ai-assets/templates/commands/plan.md",
-            ".specify/extensions/ai-assets/templates/plan-template.md",
-            ".specify/extensions.yml",
             ".specify/init-options.json",
             ".specify/integration.json",
             ".specify/integrations/generic.manifest.json",
@@ -336,6 +274,7 @@ class TestGenericIntegration:
             ".specify/scripts/bash/common.sh",
             ".specify/scripts/bash/create-new-feature.sh",
             ".specify/scripts/bash/setup-plan.sh",
+            ".specify/scripts/bash/setup-tasks.sh",
             ".specify/templates/checklist-template.md",
             ".specify/templates/constitution-template.md",
             ".specify/templates/plan-template.md",
@@ -382,22 +321,6 @@ class TestGenericIntegration:
             ".myagent/commands/speckit.specify.md",
             ".myagent/commands/speckit.tasks.md",
             ".myagent/commands/speckit.taskstoissues.md",
-            ".specify/extensions/.registry",
-            ".specify/extensions/ai-assets/README.md",
-            ".specify/extensions/ai-assets/commands/speckit.ai-assets.check.md",
-            ".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md",
-            ".specify/extensions/ai-assets/commands/speckit.ai-assets.reconcile.md",
-            ".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md",
-            ".specify/extensions/ai-assets/extension.yml",
-            ".specify/extensions/ai-assets/scripts/bash/check-ai-assets.sh",
-            ".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh",
-            ".specify/extensions/ai-assets/scripts/check_ai_assets.py",
-            ".specify/extensions/ai-assets/scripts/powershell/check-ai-assets.ps1",
-            ".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1",
-            ".specify/extensions/ai-assets/scripts/scan_repo.py",
-            ".specify/extensions/ai-assets/templates/commands/plan.md",
-            ".specify/extensions/ai-assets/templates/plan-template.md",
-            ".specify/extensions.yml",
             ".specify/init-options.json",
             ".specify/integration.json",
             ".specify/integrations/generic.manifest.json",
@@ -407,6 +330,7 @@ class TestGenericIntegration:
             ".specify/scripts/powershell/common.ps1",
             ".specify/scripts/powershell/create-new-feature.ps1",
             ".specify/scripts/powershell/setup-plan.ps1",
+            ".specify/scripts/powershell/setup-tasks.ps1",
             ".specify/templates/checklist-template.md",
             ".specify/templates/constitution-template.md",
             ".specify/templates/plan-template.md",

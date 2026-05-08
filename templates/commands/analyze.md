@@ -49,7 +49,7 @@ $ARGUMENTS
 
 ## 目标
 
-在实现之前，识别三份核心产物 `spec.md`、`plan.md`、`tasks.md` 之间的一致性问题、重复、歧义和漏项。该命令只能在 `/speckit.tasks` 成功生成完整 `tasks.md` 之后运行。
+在实现之前，识别三份核心产物 `spec.md`、`plan.md`、`tasks.md` 之间的一致性问题、重复、歧义和漏项。该命令只能在 `__SPECKIT_COMMAND_TASKS__` 成功生成完整 `tasks.md` 之后运行。
 
 ## 运行约束
 
@@ -185,11 +185,11 @@ $ARGUMENTS
 
 在报告末尾输出简洁的后续行动：
 
-- 如存在 CRITICAL 问题：建议先修复，再运行 `/speckit.implement`
+- 如存在 CRITICAL 问题：建议先修复，再运行 `__SPECKIT_COMMAND_IMPLEMENT__`
 - 若只有 LOW / MEDIUM：可继续，但应给出改进建议
 - 提供明确命令建议，如：
-  - `运行 /speckit.specify 细化规格`
-  - `运行 /speckit.plan 调整架构`
+  - `运行 __SPECKIT_COMMAND_SPECIFY__ 细化规格`
+  - `运行 __SPECKIT_COMMAND_PLAN__ 调整架构`
   - `手动编辑 tasks.md，为 ... 补充覆盖任务`
 
 ### 8. 提供修复协助

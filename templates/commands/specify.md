@@ -54,7 +54,7 @@ $ARGUMENTS
 
 ## 执行纲要
 
-用户在触发消息里写在 `/speckit.specify` 后面的文本，就是功能描述。即使下文出现字面量 `{ARGS}`，也要视为当前对话中已提供了该描述。除非用户传入空命令，否则不要要求用户重复输入。
+用户在触发消息里写在 `__SPECKIT_COMMAND_SPECIFY__` 后面的文本，就是功能描述。即使下文出现字面量 `{ARGS}`，也要视为当前对话中已提供了该描述。除非用户传入空命令，否则不要要求用户重复输入。
 
 给定该功能描述后，按以下步骤执行：
 
@@ -102,7 +102,7 @@ $ARGUMENTS
      必须写入真实目录值，例如 `specs/003-user-auth`，而不是字面量 `SPECIFY_FEATURE_DIRECTORY`
 
    **重要**：
-   - 每次 `/speckit.specify` 只允许创建一个功能
+   - 每次 `__SPECKIT_COMMAND_SPECIFY__` 只允许创建一个功能
    - 规格目录名和 git 分支名彼此独立
    - 规格目录与规格文件始终由当前命令创建，而不是由钩子创建
 
@@ -173,7 +173,7 @@ $ARGUMENTS
 
       ## 备注
 
-      - 未完成项需要先更新规格，再运行 `/speckit.clarify` 或 `/speckit.plan`
+      - 未完成项需要先更新规格，再运行 `__SPECKIT_COMMAND_CLARIFY__` 或 `__SPECKIT_COMMAND_PLAN__`
       ```
 
    b. **运行校验**：
@@ -224,7 +224,7 @@ $ARGUMENTS
    - `SPECIFY_FEATURE_DIRECTORY`：功能目录路径
    - `SPEC_FILE`：规格文件路径
    - 清单校验结果摘要
-   - 下一阶段建议：`/speckit.clarify` 或 `/speckit.plan`
+   - 下一阶段建议：`__SPECKIT_COMMAND_CLARIFY__` 或 `__SPECKIT_COMMAND_PLAN__`
 
 9. **检查扩展钩子（生成规格之后）**：
    - 如果 `.specify/extensions.yml` 存在，读取 `hooks.after_specify`

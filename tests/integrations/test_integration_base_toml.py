@@ -106,6 +106,7 @@ class TomlIntegrationTests:
             assert "{SCRIPT}" not in content, f"{f.name} has unprocessed {{SCRIPT}}"
             assert "__AGENT__" not in content, f"{f.name} has unprocessed __AGENT__"
             assert "{ARGS}" not in content, f"{f.name} has unprocessed {{ARGS}}"
+            assert "__SPECKIT_COMMAND_" not in content, f"{f.name} has unprocessed __SPECKIT_COMMAND_*__"
 
     def test_toml_has_description(self, tmp_path):
         """Every TOML command file should have a description key."""
@@ -580,6 +581,7 @@ class TomlIntegrationTests:
                 "common.sh",
                 "create-new-feature.sh",
                 "setup-plan.sh",
+                "setup-tasks.sh",
             ]:
                 files.append(f".specify/scripts/bash/{name}")
         else:
@@ -588,6 +590,7 @@ class TomlIntegrationTests:
                 "common.ps1",
                 "create-new-feature.ps1",
                 "setup-plan.ps1",
+                "setup-tasks.ps1",
             ]:
                 files.append(f".specify/scripts/powershell/{name}")
 

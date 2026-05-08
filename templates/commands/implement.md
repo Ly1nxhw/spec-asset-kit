@@ -87,6 +87,7 @@ $ARGUMENTS
    - **如存在**：`data-model.md`
    - **如存在**：`contracts/`
    - **如存在**：`research.md`
+   - **如存在**：`/memory/constitution.md`
    - **如存在**：`quickstart.md`
 
 4. **项目设置校验**：
@@ -155,7 +156,7 @@ $ARGUMENTS
    - 若仍有未提交改动，说明原因并列出文件
    - 输出最终完成报告
 
-说明：如果 `tasks.md` 缺失或不完整，应提示用户先运行 `/speckit.tasks`。
+说明：如果 `tasks.md` 缺失或不完整，应提示用户先运行 `__SPECKIT_COMMAND_TASKS__`。
 
 11. **检查扩展钩子（实现之后）**：
     - 如果 `.specify/extensions.yml` 存在，读取 `hooks.after_implement`

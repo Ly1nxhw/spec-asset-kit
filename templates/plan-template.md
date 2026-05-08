@@ -3,7 +3,7 @@
 **分支**：`[###-feature-name]` | **日期**：[DATE] | **规格**：[link]  
 **输入**：来自 `/specs/[###-feature-name]/spec.md` 的功能规格说明
 
-**说明**：此模板由 `/speckit.plan` 命令填写。执行流程请参考 `.specify/templates/plan-template.md`。
+**说明**：此模板由 `__SPECKIT_COMMAND_PLAN__` 命令填写。执行流程请参考 `.specify/templates/plan-template.md`。
 
 ## 摘要
 
@@ -38,12 +38,12 @@
 
 ```text
 specs/[###-feature]/
-|- plan.md              # 本文件（/speckit.plan 输出）
-|- research.md          # Phase 0 输出
-|- data-model.md        # Phase 1 输出
-|- quickstart.md        # Phase 1 输出
-|- contracts/           # Phase 1 输出
-`- tasks.md             # Phase 2 输出（由 /speckit.tasks 生成）
+|- plan.md              # 本文件（__SPECKIT_COMMAND_PLAN__ 输出）
+|- research.md          # Phase 0 输出（__SPECKIT_COMMAND_PLAN__）
+|- data-model.md        # Phase 1 输出（__SPECKIT_COMMAND_PLAN__）
+|- quickstart.md        # Phase 1 输出（__SPECKIT_COMMAND_PLAN__）
+|- contracts/           # Phase 1 输出（__SPECKIT_COMMAND_PLAN__）
+`- tasks.md             # Phase 2 输出（由 __SPECKIT_COMMAND_TASKS__ 生成，不由 __SPECKIT_COMMAND_PLAN__ 创建）
 ```
 
 ### 源码结构（仓库根目录）

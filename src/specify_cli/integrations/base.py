@@ -20,6 +20,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import yaml
+
 if TYPE_CHECKING:
     from .manifest import IntegrationManifest
 
@@ -84,6 +86,17 @@ class IntegrationBase(ABC):
     context_file: str | None = None
     """Relative path to the agent context file (e.g. ``CLAUDE.md``)."""
 
+    invoke_separator: str = "."
+    """Separator used in slash-command invocations (``"."`` → ``/speckit.plan``)."""
+
+    multi_install_safe: bool = False
+    """Whether this integration is declared safe to install alongside others.
+
+    Safe integrations must use a static, unique agent root, command directory,
+    and context file. Registry tests enforce those invariants for every
+    integration that sets this flag.
+    """
+
     # -- Markers for managed context section ------------------------------
 
     CONTEXT_MARKER_START = "<!-- SPECKIT START -->"
@@ -95,6 +108,18 @@ class IntegrationBase(ABC):
     def options(cls) -> list[IntegrationOption]:
         """Return options this integration accepts. Default: none."""
         return []
+
+    def effective_invoke_separator(
+        self, parsed_options: dict[str, Any] | None = None
+    ) -> str:
+        """Return the invoke separator for the given options.
+
+        Subclasses whose separator depends on runtime options (e.g.
+        Copilot in ``--skills`` mode) should override this method.
+        The default implementation ignores *parsed_options* and returns
+        the class-level ``invoke_separator``.
+        """
+        return self.invoke_separator
 
     def build_exec_args(
         self,
@@ -122,11 +147,12 @@ class IntegrationBase(ABC):
         agents or ``"/speckit-specify my-feature"`` for skills agents.
 
         *command_name* may be a full dotted name like
-        ``"speckit.specify"`` or a bare stem like ``"specify"``.
+        ``"speckit.specify"``, an extension command like
+        ``"speckit.git.commit"``, or a bare stem like ``"specify"``.
         """
         stem = command_name
-        if "." in stem:
-            stem = stem.rsplit(".", 1)[-1]
+        if stem.startswith("speckit."):
+            stem = stem[len("speckit."):]
 
         invocation = f"/speckit.{stem}"
         if args:
@@ -607,6 +633,7 @@ class IntegrationBase(ABC):
         # For .mdc files, treat Speckit-generated frontmatter-only content as empty
         if ctx_path.suffix == ".mdc":
             import re
+
             # Delete the file if only YAML frontmatter remains (no body content)
             frontmatter_only = re.match(
                 r"^---\n.*?\n---\s*$", normalized, re.DOTALL
@@ -623,12 +650,31 @@ class IntegrationBase(ABC):
         return True
 
     @staticmethod
+    def resolve_command_refs(content: str, separator: str = ".") -> str:
+        """Replace ``__SPECKIT_COMMAND_<NAME>__`` placeholders with invocations.
+
+        Each placeholder encodes a command name in upper-case with
+        underscores (e.g. ``__SPECKIT_COMMAND_PLAN__``,
+        ``__SPECKIT_COMMAND_GIT_COMMIT__``).  The replacement uses
+        *separator* to join the segments:
+
+        * ``separator="."`` → ``/speckit.plan``, ``/speckit.git.commit``
+        * ``separator="-"`` → ``/speckit-plan``, ``/speckit-git-commit``
+        """
+        return re.sub(
+            r"__SPECKIT_COMMAND_([A-Z][A-Z0-9_]*)__",
+            lambda m: "/speckit" + separator + m.group(1).lower().replace("_", separator),
+            content,
+        )
+
+    @staticmethod
     def process_template(
         content: str,
         agent_name: str,
         script_type: str,
         arg_placeholder: str = "$ARGUMENTS",
         context_file: str = "",
+        invoke_separator: str = ".",
     ) -> str:
         """Process a raw command template into agent-ready content.
 
@@ -640,6 +686,7 @@ class IntegrationBase(ABC):
         5. Replace ``__AGENT__`` with *agent_name*
         6. Replace ``__CONTEXT_FILE__`` with *context_file*
         7. Rewrite paths: ``scripts/`` → ``.specify/scripts/`` etc.
+        8. Replace ``__SPECKIT_COMMAND_<NAME>__`` with invocation strings
         """
         # 1. Extract script command from frontmatter
         script_command = ""
@@ -708,6 +755,9 @@ class IntegrationBase(ABC):
         from specify_cli.agents import CommandRegistrar
 
         content = CommandRegistrar.rewrite_project_relative_paths(content)
+
+        # 8. Replace __SPECKIT_COMMAND_<NAME>__ with invocation strings
+        content = IntegrationBase.resolve_command_refs(content, invoke_separator)
 
         return content
 
@@ -931,7 +981,6 @@ class TomlIntegration(IntegrationBase):
         and ``>``) keep their YAML semantics instead of being treated as
         raw text.
         """
-        import yaml
 
         frontmatter_text, _ = TomlIntegration._split_frontmatter(content)
         if not frontmatter_text:
@@ -1118,7 +1167,6 @@ class YamlIntegration(IntegrationBase):
     @staticmethod
     def _extract_frontmatter(content: str) -> dict[str, Any]:
         """Extract frontmatter as a dict from YAML frontmatter block."""
-        import yaml
 
         if not content.startswith("---"):
             return {}
@@ -1179,24 +1227,38 @@ class YamlIntegration(IntegrationBase):
             text = text[len("speckit.") :]
         return text.replace(".", " ").replace("-", " ").replace("_", " ").title()
 
-    @staticmethod
-    def _render_yaml(title: str, description: str, body: str, source_id: str) -> str:
+
+    @classmethod
+    def _build_yaml_header(cls, title: str, description: str) -> dict[str, Any]:
+        """Build the base YAML header."""
+        header = {
+            "version": "1.0.0",
+            "title": title,
+            "description": description,
+            "author": {"contact": "spec-kit"},
+            "parameters": [
+                {
+                    "key": "args",
+                    "input_type": "string",
+                    "requirement": "optional",
+                    "default": "",
+                    "description": "User input passed to the command.",
+                }
+            ],
+            "extensions": [{"type": "builtin", "name": "developer"}],
+            "activities": ["Spec-Driven Development"],
+        }
+        return header
+
+    @classmethod
+    def _render_yaml(cls, title: str, description: str, body: str, source_id: str) -> str:
         """Render a YAML recipe file from title, description, and body.
 
         Produces a Goose-compatible recipe with a literal block scalar
         for the prompt content.  Uses ``yaml.safe_dump()`` for the
         header fields to ensure proper escaping.
         """
-        import yaml
-
-        header = {
-            "version": "1.0.0",
-            "title": title,
-            "description": description,
-            "author": {"contact": "spec-kit"},
-            "extensions": [{"type": "builtin", "name": "developer"}],
-            "activities": ["Spec-Driven Development"],
-        }
+        header = cls._build_yaml_header(title, description)
 
         header_yaml = yaml.safe_dump(
             header,
@@ -1205,11 +1267,19 @@ class YamlIntegration(IntegrationBase):
             default_flow_style=False,
         ).strip()
 
-        # Indent each line for YAML block scalar
+        # Indent the body for YAML block scalar
         indented = "\n".join(f"  {line}" for line in body.split("\n"))
 
-        lines = [header_yaml, "prompt: |", indented, "", f"# Source: {source_id}"]
+        lines = [
+            header_yaml,
+            "prompt: |",
+            indented,
+            "",
+            f"# Source: {source_id}",
+        ]
+
         return "\n".join(lines) + "\n"
+
 
     def setup(
         self,
@@ -1299,6 +1369,8 @@ class SkillsIntegration(IntegrationBase):
     ``speckit-<name>/SKILL.md`` file with skills-oriented frontmatter.
     """
 
+    invoke_separator = "-"
+
     def build_exec_args(
         self,
         prompt: str,
@@ -1336,10 +1408,10 @@ class SkillsIntegration(IntegrationBase):
     def build_command_invocation(self, command_name: str, args: str = "") -> str:
         """Skills use ``/speckit-<stem>`` (hyphenated directory name)."""
         stem = command_name
-        if "." in stem:
-            stem = stem.rsplit(".", 1)[-1]
+        if stem.startswith("speckit."):
+            stem = stem[len("speckit."):]
 
-        invocation = f"/speckit-{stem}"
+        invocation = "/speckit-" + stem.replace(".", "-")
         if args:
             invocation = f"{invocation} {args}"
         return invocation
@@ -1367,7 +1439,6 @@ class SkillsIntegration(IntegrationBase):
         template.  Each SKILL.md has normalised frontmatter containing
         ``name``, ``description``, ``compatibility``, and ``metadata``.
         """
-        import yaml
 
         templates = self._list_command_templates_for_project(project_root)
         if not templates:
@@ -1420,6 +1491,7 @@ class SkillsIntegration(IntegrationBase):
             processed_body = self.process_template(
                 raw, self.key, script_type, arg_placeholder,
                 context_file=self.context_file or "",
+                invoke_separator=self.invoke_separator,
             )
             # Strip the processed frontmatter — we rebuild it for skills.
             # Preserve leading whitespace in the body to match release ZIP

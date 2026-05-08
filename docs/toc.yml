@@ -15,6 +15,8 @@
       href: evaluation.zh-CN.md
     - name: Upgrade
       href: upgrade.md
+    - name: Install uv
+      href: install/uv.md
 
 # Reference
 - name: Reference
@@ -41,5 +43,9 @@
 # Community
 - name: Community
   items:
+    - name: Presets
+      href: community/presets.md
+    - name: Walkthroughs
+      href: community/walkthroughs.md
     - name: Friends
       href: community/friends.md
