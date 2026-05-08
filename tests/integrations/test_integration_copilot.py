@@ -668,8 +668,33 @@ class TestCopilotSkillsMode:
         expected = sorted([
             # Skill files
             *[f".github/skills/speckit-{cmd}/SKILL.md" for cmd in self._SKILL_COMMANDS],
+            ".github/skills/speckit-ai-assets-check/SKILL.md",
+            ".github/skills/speckit-ai-assets-extract/SKILL.md",
+            ".github/skills/speckit-ai-assets-reconcile/SKILL.md",
+            ".github/skills/speckit-ai-assets-refine/SKILL.md",
+            ".github/skills/speckit-assets-check/SKILL.md",
+            ".github/skills/speckit-assets-extract/SKILL.md",
+            ".github/skills/speckit-assets-reconcile/SKILL.md",
+            ".github/skills/speckit-assets-refine/SKILL.md",
             # Context file
             ".github/copilot-instructions.md",
+            # Bundled ai-assets extension
+            ".specify/extensions.yml",
+            ".specify/extensions/.registry",
+            ".specify/extensions/ai-assets/README.md",
+            ".specify/extensions/ai-assets/commands/speckit.ai-assets.check.md",
+            ".specify/extensions/ai-assets/commands/speckit.ai-assets.extract.md",
+            ".specify/extensions/ai-assets/commands/speckit.ai-assets.reconcile.md",
+            ".specify/extensions/ai-assets/commands/speckit.ai-assets.refine.md",
+            ".specify/extensions/ai-assets/extension.yml",
+            ".specify/extensions/ai-assets/scripts/bash/check-ai-assets.sh",
+            ".specify/extensions/ai-assets/scripts/bash/extract-ai-assets.sh",
+            ".specify/extensions/ai-assets/scripts/check_ai_assets.py",
+            ".specify/extensions/ai-assets/scripts/powershell/check-ai-assets.ps1",
+            ".specify/extensions/ai-assets/scripts/powershell/extract-ai-assets.ps1",
+            ".specify/extensions/ai-assets/scripts/scan_repo.py",
+            ".specify/extensions/ai-assets/templates/commands/plan.md",
+            ".specify/extensions/ai-assets/templates/plan-template.md",
             # Integration metadata
             ".specify/init-options.json",
             ".specify/integration.json",

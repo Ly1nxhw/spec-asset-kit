@@ -1264,6 +1264,7 @@ def init(
     tracker.complete("script-select", selected_script)
 
     tracker.add("integration", "Install integration")
+    tracker.add("ai-assets", "Install ai-assets extension")
     tracker.add("shared-infra", "Install shared infrastructure")
 
     for key, label in [
@@ -1302,14 +1303,6 @@ def init(
                 if extra:
                     integration_parsed_options.update(extra)
 
-            resolved_integration.setup(
-                project_path, manifest,
-                parsed_options=integration_parsed_options or None,
-                script_type=selected_script,
-                raw_options=integration_options,
-            )
-            manifest.save()
-
             integration_settings = _with_integration_setting(
                 {},
                 resolved_integration.key,
@@ -1324,6 +1317,67 @@ def init(
                 [resolved_integration.key],
                 integration_settings,
             )
+
+            # Persist options before installing bundled extensions so extension
+            # registration can detect skills mode and the active integration.
+            init_opts = {
+                "ai": selected_ai,
+                "integration": resolved_integration.key,
+                "branch_numbering": branch_numbering or "sequential",
+                "context_file": resolved_integration.context_file,
+                "here": here,
+                "script": selected_script,
+                "speckit_version": get_speckit_version(),
+            }
+            from .integrations.base import SkillsIntegration as _SkillsPersist
+            if (
+                isinstance(resolved_integration, _SkillsPersist)
+                or bool(integration_parsed_options.get("skills"))
+                or getattr(resolved_integration, "_skills_mode", False)
+            ):
+                init_opts["ai_skills"] = True
+            save_init_options(project_path, init_opts)
+
+            # Install bundled ai-assets before integration setup so its
+            # template overrides participate in command rendering. Command
+            # registration happens after setup, once target directories exist.
+            tracker.start("ai-assets")
+            ai_assets_installed = False
+            try:
+                from .extensions import ExtensionManager
+                bundled_assets = _locate_bundled_extension("ai-assets")
+                if bundled_assets:
+                    manager = ExtensionManager(project_path)
+                    if manager.registry.is_installed("ai-assets"):
+                        ai_assets_installed = True
+                        tracker.complete("ai-assets", "extension already installed")
+                    else:
+                        manager.install_from_directory(
+                            bundled_assets, get_speckit_version(),
+                            register_commands=False,
+                        )
+                        ai_assets_installed = True
+                        tracker.complete("ai-assets", "extension installed")
+                else:
+                    tracker.skip("ai-assets", "bundled extension not found")
+            except Exception as assets_err:
+                sanitized_assets = str(assets_err).replace('\n', ' ').strip()
+                tracker.error("ai-assets", f"install failed: {sanitized_assets[:120]}")
+
+            resolved_integration.setup(
+                project_path, manifest,
+                parsed_options=integration_parsed_options or None,
+                script_type=selected_script,
+                raw_options=integration_options,
+            )
+            manifest.save()
+
+            if ai_assets_installed:
+                try:
+                    manager.register_enabled_extensions_for_agent(resolved_integration.key)
+                except Exception as assets_register_err:
+                    sanitized_register = str(assets_register_err).replace('\n', ' ').strip()
+                    tracker.error("ai-assets", f"register failed: {sanitized_register[:120]}")
 
             tracker.complete("integration", resolved_integration.config.get("name", resolved_integration.key))
 
@@ -1425,27 +1479,6 @@ def init(
 
             # Fix permissions after all installs (scripts + extensions)
             ensure_executable_scripts(project_path, tracker=tracker)
-
-            # Persist the CLI options so later operations (e.g. preset add)
-            # can adapt their behaviour without re-scanning the filesystem.
-            # Must be saved BEFORE preset install so _get_skills_dir() works.
-            init_opts = {
-                "ai": selected_ai,
-                "integration": resolved_integration.key,
-                "branch_numbering": branch_numbering or "sequential",
-                "context_file": resolved_integration.context_file,
-                "here": here,
-                "script": selected_script,
-                "speckit_version": get_speckit_version(),
-            }
-            # Ensure ai_skills is set for SkillsIntegration so downstream
-            # tools (extensions, presets) emit SKILL.md overrides correctly.
-            # Also set for integrations running in skills mode (e.g. Copilot
-            # with --skills).
-            from .integrations.base import SkillsIntegration as _SkillsPersist
-            if isinstance(resolved_integration, _SkillsPersist) or getattr(resolved_integration, "_skills_mode", False):
-                init_opts["ai_skills"] = True
-            save_init_options(project_path, init_opts)
 
             # Install preset if specified
             if preset:

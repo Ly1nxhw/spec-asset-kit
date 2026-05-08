@@ -2,6 +2,15 @@
 
 <!-- insert new changelog below this comment -->
 
+## [0.8.8] - 2026-05-08
+
+### Changed
+
+- 同步上游 `github/spec-kit` 到 `abb5fe7`，保留 fork 的中文化、ai-assets、evaluation 和 Git checkpoint 增强。
+- 重写 README，明确 Spec Asset Kit 的中文 fork 定位、安装方式、ai-assets 工作流和 release 流程。
+- 修复 prerelease 版本兼容性判断，确保 `0.8.8.dev0` 可正确满足 extension/preset 的最低版本约束。
+- 修复 `workflows/catalog.json` 的 UTF-8 JSON 内容，避免 catalog 解析失败。
+
 ## [0.8.7] - 2026-05-07
 
 ### Changed
@@ -1455,4 +1464,3 @@
 ### Changed
 
 - Update release.yml
-

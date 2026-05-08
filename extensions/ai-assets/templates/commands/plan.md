@@ -70,7 +70,7 @@ $ARGUMENTS
    - 可选补充：`ai-assets/external-systems.md`、`ai-assets/decision-log.md`、`ai-assets/extraction-report.md`
    - 读取后必须执行以下约束：
      - 只把标记为 `confirmed` 的业务知识当作规划事实
-     - 遇到 `candidate` 内容，必须记录为风险、待确认项，或先建议运行 `/speckit.ai-assets.refine`
+     - 遇到 `candidate` 内容，必须记录为风险、待确认项，或先建议运行 `speckit.ai-assets.refine`
      - 遇到 `deprecated` 内容，只能用于兼容、迁移或历史解释，不能作为新方案依据
      - 用 `business-context.md` 理解业务域、角色、目标和非技术背景
      - 用 `domain-glossary.md` 稳定业务私有术语，不要在 plan 中随意改写内部名词
@@ -169,4 +169,4 @@ $ARGUMENTS
 - 所有文件系统操作使用绝对路径；文档引用使用项目相对路径
 - 任何门禁失败或未解决澄清都必须报错，不得静默跳过
 - `ai-assets/` 是 AI 辅助理解层，不是事实源本身；如与代码或正式文档冲突，必须以正式事实源为准
-- `candidate` 只能作为线索，不能作为最终设计依据；需要进入 plan 风险或通过 `/speckit.ai-assets.refine` 获得人工确认
+- `candidate` 只能作为线索，不能作为最终设计依据；需要进入 plan 风险或通过 `speckit.ai-assets.refine` 获得人工确认

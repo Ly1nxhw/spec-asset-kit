@@ -130,7 +130,7 @@ $ARGUMENTS
 
 - 汇总所有需要人工确认的业务问题
 - 每个问题都必须说明“为什么重要”和“影响哪些资产/规划决策”
-- `/speckit.ai-assets.refine` 会消费这里的问题和用户回答，把候选知识升级为已确认知识
+- `speckit.ai-assets.refine` 会消费这里的问题和用户回答，把候选知识升级为已确认知识
 
 ### `extraction-report.md`
 
@@ -146,4 +146,4 @@ $ARGUMENTS
 - 6 类核心资产都包含 `已确认知识 / 候选线索 / 实现锚点 / 待确认问题`
 - `open-questions.md` 汇总了所有 candidate 知识对应的人工确认问题
 - `extraction-report.md` 说明了来源范围、主要结论和未决问题
-- 输出结果明确提醒：后续 `speckit.plan` 只能把 `confirmed` 当事实；遇到 `candidate` 必须标记风险或先运行 `/speckit.ai-assets.refine`
+- 输出结果明确提醒：后续 `speckit.plan` 只能把 `confirmed` 当事实；遇到 `candidate` 必须标记风险或先运行 `speckit.ai-assets.refine`

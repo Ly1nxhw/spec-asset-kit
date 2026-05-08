@@ -893,34 +893,10 @@ class ExtensionManager:
             if not source_file.is_file():
                 continue
 
-            # Derive skill name from command name using the same hyphenated
-            # convention as hook rendering and preset skill registration.
-            short_name_raw = cmd_name
-            if short_name_raw.startswith("speckit."):
-                short_name_raw = short_name_raw[len("speckit."):]
-            skill_name = f"speckit-{short_name_raw.replace('.', '-')}"
-
-            # Check if skill already exists before creating the directory
-            skill_subdir = skills_dir / skill_name
-            skill_file = skill_subdir / "SKILL.md"
-            if skill_file.exists():
-                # Do not overwrite user-customized skills
-                continue
-
-            # Create skill directory; track whether we created it so we can clean
-            # up safely if reading the source file subsequently fails.
-            created_now = not skill_subdir.exists()
-            skill_subdir.mkdir(parents=True, exist_ok=True)
-
             # Parse the command file — guard against IsADirectoryError / decode errors
             try:
                 content = source_file.read_text(encoding="utf-8")
             except (OSError, UnicodeDecodeError):
-                if created_now:
-                    try:
-                        skill_subdir.rmdir()  # undo the mkdir; dir is empty at this point
-                    except OSError:
-                        pass  # best-effort cleanup
                 continue
             frontmatter, body = registrar.parse_frontmatter(content)
             frontmatter = registrar._adjust_script_paths(frontmatter)
@@ -931,34 +907,65 @@ class ExtensionManager:
             original_desc = frontmatter.get("description", "")
             description = original_desc or f"Extension command: {cmd_name}"
 
-            frontmatter_data = registrar.build_skill_frontmatter(
-                selected_ai,
-                skill_name,
-                description,
-                f"extension:{manifest.id}",
-            )
-            frontmatter_text = yaml.safe_dump(frontmatter_data, sort_keys=False).strip()
+            skill_command_names = [cmd_name]
+            for alias in cmd_info.get("aliases", []):
+                if isinstance(alias, str) and alias not in skill_command_names:
+                    skill_command_names.append(alias)
 
-            # Derive a human-friendly title from the command name
-            short_name = cmd_name
-            if short_name.startswith("speckit."):
-                short_name = short_name[len("speckit."):]
-            title_name = short_name.replace(".", " ").replace("-", " ").title()
+            for skill_command_name in skill_command_names:
+                # Derive skill name from command name using the same hyphenated
+                # convention as hook rendering and preset skill registration.
+                short_name_raw = skill_command_name
+                if short_name_raw.startswith("speckit."):
+                    short_name_raw = short_name_raw[len("speckit."):]
+                skill_name = f"speckit-{short_name_raw.replace('.', '-')}"
 
-            skill_content = (
-                f"---\n"
-                f"{frontmatter_text}\n"
-                f"---\n\n"
-                f"# {title_name} Skill\n\n"
-                f"{body}\n"
-            )
-            if integration is not None and hasattr(integration, "post_process_skill_content"):
-                skill_content = integration.post_process_skill_content(
-                    skill_content
+                # Check if skill already exists before creating the directory
+                skill_subdir = skills_dir / skill_name
+                skill_file = skill_subdir / "SKILL.md"
+                if skill_file.exists():
+                    # Do not overwrite user-customized skills
+                    continue
+
+                created_now = not skill_subdir.exists()
+                skill_subdir.mkdir(parents=True, exist_ok=True)
+
+                frontmatter_data = registrar.build_skill_frontmatter(
+                    selected_ai,
+                    skill_name,
+                    description,
+                    f"extension:{manifest.id}",
                 )
+                frontmatter_text = yaml.safe_dump(frontmatter_data, sort_keys=False).strip()
 
-            skill_file.write_text(skill_content, encoding="utf-8")
-            written.append(skill_name)
+                # Derive a human-friendly title from the command name
+                short_name = skill_command_name
+                if short_name.startswith("speckit."):
+                    short_name = short_name[len("speckit."):]
+                title_name = short_name.replace(".", " ").replace("-", " ").title()
+
+                skill_content = (
+                    f"---\n"
+                    f"{frontmatter_text}\n"
+                    f"---\n\n"
+                    f"# {title_name} Skill\n\n"
+                    f"{body}\n"
+                )
+                if integration is not None and hasattr(integration, "post_process_skill_content"):
+                    skill_content = integration.post_process_skill_content(
+                        skill_content
+                    )
+
+                try:
+                    skill_file.write_text(skill_content, encoding="utf-8")
+                except OSError:
+                    if created_now:
+                        try:
+                            skill_subdir.rmdir()
+                        except OSError:
+                            pass
+                    continue
+                written.append(skill_name)
 
         return written
 
