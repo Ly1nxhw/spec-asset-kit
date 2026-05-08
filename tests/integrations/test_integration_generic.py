@@ -274,7 +274,7 @@ class TestGenericIntegration:
         plan_template = (project / ".specify" / "templates" / "plan-template.md").read_text(encoding="utf-8")
         hooks = (project / ".specify" / "extensions.yml").read_text(encoding="utf-8")
 
-        assert "ai-assets/glossary.md" in plan_command
+        assert "ai-assets/business-context.md" in plan_command
         assert "AI Assets 输入" in plan_template
         assert "speckit.ai-assets.extract" in hooks
 

@@ -86,6 +86,16 @@ class TestAIAssetsManifest:
         assert (EXT_DIR / "templates" / "plan-template.md").is_file()
         assert (EXT_DIR / "scripts" / "scan_repo.py").is_file()
 
+    def test_extract_command_targets_business_assets(self):
+        command = (EXT_DIR / "commands" / "speckit.ai-assets.extract.md").read_text(encoding="utf-8")
+
+        assert "business-context.md" in command
+        assert "domain-glossary.md" in command
+        assert "business-rules.md" in command
+        assert "user-journeys.md" in command
+        assert "技术栈、目录结构、模块边界、运行命令只在“实现锚点”中简要列出" in command
+        assert "不再使用 `[high]`、`[medium]`、`[low]` 平铺列表" in command
+
 
 class TestAIAssetsInstall:
     def test_install_from_directory(self, tmp_path: Path):

@@ -48,12 +48,12 @@ Result: `60 passed, 1 skipped in 1.21s`.
 
 Assets evaluated from `evaluation/runs/sim-cli-dry-run-001-b-01/ai-assets/`:
 
-- `project-overview.md`
-- `glossary.md`
-- `architecture.md`
-- `repo-map.md`
-- `conventions.md`
-- `evolution-log.md`
+- `business-context.md`
+- `domain-glossary.md`
+- `business-rules.md`
+- `user-journeys.md`
+- `external-systems.md`
+- `decision-log.md`
 - `extraction-report.md`
 
 Result:
@@ -79,7 +79,7 @@ B group output:
 L2 finding:
 
 - A group hallucinated `src/commands/dry_run.py`.
-- B group referenced `repo-map.md`, `architecture.md`, `conventions.md`, and `glossary.md`, then planned against the real files.
+- B group referenced `business-context.md`, `domain-glossary.md`, `business-rules.md`, and `user-journeys.md`, then planned against the real files.
 
 ## L3 Evidence
 

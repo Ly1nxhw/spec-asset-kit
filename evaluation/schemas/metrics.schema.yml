@@ -17,7 +17,7 @@ negative_metrics:
   out_of_scope_file_count: Files changed outside the feature scope.
   review_blocker_count: Blocking review issues.
   manual_fix_minutes: Estimated minutes to repair output to a mergeable state.
-  unsupported_observed_count: Observed asset claims without evidence.
+  unsupported_observed_count: Core explanation asset claims without evidence.
   wrong_fact_count: Asset facts conflicting with source or authoritative docs.
 thresholds:
   minimum_real_cases: 8

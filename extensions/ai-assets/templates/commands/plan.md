@@ -62,15 +62,17 @@ $ARGUMENTS
 2. **加载上下文**：读取 `FEATURE_SPEC` 与 `.specify/memory/constitution.md`，并加载已经复制好的 `IMPL_PLAN` 模板。
 
 3. **显式消费 ai-assets**：在开始规划前，优先读取以下资产文件（若存在）：
-   - `ai-assets/glossary.md`
-   - `ai-assets/repo-map.md`
-   - `ai-assets/architecture.md`
-   - `ai-assets/conventions.md`
-   - 可选补充：`ai-assets/project-overview.md`、`ai-assets/evolution-log.md`、`ai-assets/extraction-report.md`
+   - `ai-assets/business-context.md`
+   - `ai-assets/domain-glossary.md`
+   - `ai-assets/business-rules.md`
+   - `ai-assets/user-journeys.md`
+   - 可选补充：`ai-assets/external-systems.md`、`ai-assets/decision-log.md`、`ai-assets/extraction-report.md`
    - 读取后必须执行以下约束：
-     - 用 `glossary.md` 稳定术语，不要在 plan 中随意改写项目专用名词
-     - 用 `repo-map.md` 和 `architecture.md` 校正目录结构、模块边界、入口假设
-     - 用 `conventions.md` 补充代码风格、流程规则、测试约定和隐性规定
+     - 用 `business-context.md` 理解业务域、角色、目标和非技术背景
+     - 用 `domain-glossary.md` 稳定业务私有术语，不要在 plan 中随意改写内部名词
+     - 用 `business-rules.md` 和 `user-journeys.md` 约束功能行为、状态流转、权限边界和异常流程
+     - 用 `external-systems.md` 与 `decision-log.md` 识别上下游依赖、历史包袱和人工运营边界
+     - 技术栈、目录结构、模块边界只作为实现锚点，不要把 ai-assets 当成架构文档复述
      - 如果 ai-assets 与代码、配置、宪章、规格冲突，始终以后者为准，并在计划中显式记录冲突
 
 4. **执行规划流程**：严格按照 `IMPL_PLAN` 模板结构完成：

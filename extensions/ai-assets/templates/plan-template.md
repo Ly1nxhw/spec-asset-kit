@@ -11,13 +11,15 @@
 
 ## AI Assets 输入
 
-**必读资产**：`ai-assets/glossary.md`、`ai-assets/repo-map.md`、`ai-assets/architecture.md`、`ai-assets/conventions.md`  
-**可选补充**：`ai-assets/project-overview.md`、`ai-assets/evolution-log.md`、`ai-assets/extraction-report.md`  
+**必读资产**：`ai-assets/business-context.md`、`ai-assets/domain-glossary.md`、`ai-assets/business-rules.md`、`ai-assets/user-journeys.md`
+**可选补充**：`ai-assets/external-systems.md`、`ai-assets/decision-log.md`、`ai-assets/extraction-report.md`
 **使用要求**：
 - 先记录本次实际读取了哪些资产
-- 用术语表稳定专用名词
-- 用仓库地图和架构资产校正目录结构与模块边界
-- 用约定资产补充隐性规则、流程规则、测试约定
+- 用业务上下文解释本功能为什么存在、影响哪些角色和场景
+- 用领域术语表稳定业务私有名词，不要随意改写内部黑话
+- 用业务规则和用户旅程约束方案，不要只按技术可行性设计
+- 用上下游系统和决策日志识别外部依赖、历史包袱和人工运营边界
+- 技术栈、目录结构、模块边界只能作为实现锚点引用；不要把 ai-assets 当成架构文档复述
 - 如资产内容与代码/配置/宪章/规格冲突，必须记录冲突并以正式事实源为准
 
 ## 技术上下文

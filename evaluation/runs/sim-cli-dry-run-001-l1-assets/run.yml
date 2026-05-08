@@ -20,5 +20,5 @@ review:
   blocker_count: 0
   notes:
     - "All 7 required asset files are present."
-    - "The 6 core assets include Observed, Inferred, and Open Questions."
-    - "Observed statements cite sample_cli.py, tests/test_sample_cli.py, fixture tree, or the case input."
+    - "The 6 core assets include core explanation, implementation anchors, and open questions."
+    - "Core explanation statements cite sample_cli.py, tests/test_sample_cli.py, fixture tree, or the case input."

@@ -248,7 +248,7 @@ class MarkdownIntegrationTests:
 
         assert (cmd_dir / "speckit.ai-assets.extract.md").exists()
         assert (cmd_dir / "speckit.assets.extract.md").exists()
-        assert "ai-assets/glossary.md" in plan_command
+        assert "ai-assets/business-context.md" in plan_command
 
     def test_init_options_includes_context_file(self, tmp_path):
         """init-options.json must include context_file for the active integration."""

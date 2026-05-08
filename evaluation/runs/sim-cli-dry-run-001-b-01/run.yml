@@ -38,5 +38,5 @@ review:
   blocker_count: 0
   correction_count: 0
   notes:
-    - "Plan consumed repo-map, architecture, conventions, and glossary assets."
+    - "Plan consumed business-context, domain-glossary, business-rules, and user-journeys assets."
     - "Implementation matches gold behavior and changed only gold key files."

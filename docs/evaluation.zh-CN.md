@@ -98,12 +98,12 @@ pytest tests/integrations/test_integration_codex.py -v
 
 评估对象：
 
-- `ai-assets/project-overview.md`
-- `ai-assets/glossary.md`
-- `ai-assets/architecture.md`
-- `ai-assets/repo-map.md`
-- `ai-assets/conventions.md`
-- `ai-assets/evolution-log.md`
+- `ai-assets/business-context.md`
+- `ai-assets/domain-glossary.md`
+- `ai-assets/business-rules.md`
+- `ai-assets/user-journeys.md`
+- `ai-assets/external-systems.md`
+- `ai-assets/decision-log.md`
 - `ai-assets/extraction-report.md`
 
 核心指标：
@@ -111,9 +111,9 @@ pytest tests/integrations/test_integration_codex.py -v
 | 指标 | 定义 |
 |---|---|
 | `asset_file_completeness` | 7 个资产文件是否全部存在 |
-| `section_completeness` | 6 个核心资产是否包含 `Observed / Inferred / Open Questions` |
+| `section_completeness` | 6 个核心资产是否包含 `核心解释 / 实现锚点 / 待确认问题` |
 | `grounded_rate` | 有明确来源路径的结论数 / 总结论数 |
-| `unsupported_observed_count` | 写在 `Observed` 但找不到来源的结论数 |
+| `unsupported_observed_count` | 写在 `核心解释` 但找不到来源的结论数 |
 | `wrong_fact_count` | 与源码、配置、正式文档冲突的结论数 |
 | `useful_asset_score` | 人工评估资产对理解项目是否有帮助，1-5 分 |
 

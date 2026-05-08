@@ -50,35 +50,38 @@
 
 ```text
 ai-assets/
-|- project-overview.md
-|- glossary.md
-|- architecture.md
-|- repo-map.md
-|- conventions.md
-|- evolution-log.md
+|- business-context.md
+|- domain-glossary.md
+|- business-rules.md
+|- user-journeys.md
+|- external-systems.md
+|- decision-log.md
 `- extraction-report.md
 ```
 
 每类核心资产都要求明确区分：
 
-- `Observed`
-- `Inferred`
-- `Open Questions`
+- `核心解释`
+- `实现锚点`
+- `待确认问题`
+
+`ai-assets` 的重点是解释业务私有知识、领域术语、业务规则、用户旅程和上下游语义。技术栈、目录结构和模块边界只作为实现锚点简要引用，不再重新生成一份架构说明。
 
 ### 3. `plan` 显式消费 `ai-assets`
 
 规划阶段会优先读取：
 
-- `ai-assets/glossary.md`
-- `ai-assets/repo-map.md`
-- `ai-assets/architecture.md`
-- `ai-assets/conventions.md`
+- `ai-assets/business-context.md`
+- `ai-assets/domain-glossary.md`
+- `ai-assets/business-rules.md`
+- `ai-assets/user-journeys.md`
 
 这样做的目标是：
 
-- 稳定项目术语
-- 校正目录结构和模块边界假设
-- 把项目隐性规则带进技术规划
+- 稳定业务私有术语
+- 让技术规划先理解业务规则、状态流转和用户旅程
+- 把上下游系统、人工运营边界和历史决策带进规划
+- 避免 agent 只按技术目录猜实现方向
 
 ### 4. 可迁移评测工具包
 

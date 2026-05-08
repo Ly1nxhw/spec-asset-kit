@@ -4,7 +4,7 @@ extension:
   id: ai-assets
   name: "AI Assets Extractor"
   version: "1.0.0"
-  description: "Extracts repository understanding into ai-assets/ and injects those assets into planning."
+  description: "Extracts business private knowledge into ai-assets/ and injects those assets into planning."
   author: spec-kit-core
   repository: https://github.com/Ly1nxhw/spec-asset-kit
   license: MIT
@@ -21,13 +21,13 @@ provides:
       aliases:
         - speckit.assets.extract
       file: commands/speckit.ai-assets.extract.md
-      description: "Initialize or refresh ai-assets/ from repository facts."
+      description: "Initialize or refresh ai-assets/ from business and repository facts."
 
 hooks:
   before_plan:
     command: speckit.ai-assets.extract
     optional: false
-    description: "Refresh ai-assets before implementation planning."
+    description: "Refresh business knowledge assets before implementation planning."
 
 tags:
   - "ai-assets"

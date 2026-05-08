@@ -18,4 +18,4 @@
 
 ## Planning Guidance
 
-- `speckit.plan` should consume `glossary.md`, `repo-map.md`, `architecture.md`, and `conventions.md` before planning.
+- `speckit.plan` should consume `business-context.md`, `domain-glossary.md`, `business-rules.md`, and `user-journeys.md` before planning.

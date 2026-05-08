@@ -2,14 +2,14 @@
 
 ## AI Assets 输入
 
-- `ai-assets/repo-map.md`: CLI entrypoint is `sample_cli.py`; tests live in `tests/test_sample_cli.py`.
-- `ai-assets/architecture.md`: behavior is currently concentrated in `build_parser`, `write_message`, and `main`.
-- `ai-assets/conventions.md`: use argparse in the existing file and pytest for behavior tests.
-- `ai-assets/glossary.md`: `dry-run` means preview without writing the output file.
+- `ai-assets/business-context.md`: the CLI is a small file-writing workflow where users need a safe preview path.
+- `ai-assets/domain-glossary.md`: `dry-run` means previewing the write without creating the output file.
+- `ai-assets/business-rules.md`: normal mode must keep writing the message, while dry-run mode must not create or modify the target file.
+- `ai-assets/user-journeys.md`: the dry-run journey should parse the same inputs, print preview feedback, and stop before filesystem writes.
 
 ## Technical Context
 
-- Modify `sample_cli.py`; do not add a new command package.
+- Modify `sample_cli.py`; do not add a new command package. This path is an implementation anchor, not an architecture decision.
 - Preserve the existing write behavior when `--dry-run` is absent.
 - Add a behavior test that proves the output file is not created.
 

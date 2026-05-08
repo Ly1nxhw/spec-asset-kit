@@ -212,12 +212,12 @@ specs/003-user-auth/
 
 ```text
 ai-assets/
-|- project-overview.md
-|- glossary.md
-|- architecture.md
-|- repo-map.md
-|- conventions.md
-|- evolution-log.md
+|- business-context.md
+|- domain-glossary.md
+|- business-rules.md
+|- user-journeys.md
+|- external-systems.md
+|- decision-log.md
 `- extraction-report.md
 ```
 
@@ -290,8 +290,9 @@ ai-assets/
 
 原因：
 
-- 先把项目结构、术语和约定抽出来
-- 让后续 `plan` 和 `tasks` 阶段更稳定
+- 先把业务私有知识、领域术语、业务规则和用户旅程抽出来
+- 让后续 `plan` 和 `tasks` 阶段先理解业务，再选择实现路径
+- 避免 agent 只重新罗列技术栈、架构和目录结构
 
 ### 5.4 第四步：生成技术规划
 
@@ -309,9 +310,10 @@ ai-assets/
 
 最小消费要求是：
 
-- 用 `glossary.md` 稳定术语
-- 用 `repo-map.md` 和 `architecture.md` 校正结构假设
-- 用 `conventions.md` 补充项目隐性规定
+- 用 `business-context.md` 理解业务域、角色和目标
+- 用 `domain-glossary.md` 稳定业务私有术语
+- 用 `business-rules.md` 和 `user-journeys.md` 约束行为、状态和流程
+- 用 `external-systems.md`、`decision-log.md` 补充上下游语义和历史决策
 
 ### 5.5 第五步：拆任务
 
@@ -348,88 +350,91 @@ ai-assets/
 
 ## 6. `ai-assets` 详解
 
-### 6.1 `project-overview.md`
+### 6.1 `business-context.md`
 
 用途：
 
-- 解释项目目标和仓库角色
-- 说明系统在业务或组织中的定位
+- 解释业务域、目标用户、核心业务对象和系统存在的原因
+- 说明系统在业务或组织中的定位，不展开技术架构
 
 适合写入：
 
-- 项目目标
-- 核心能力
-- 用户或维护者类型
-- 仓库在整体系统中的角色
+- 业务目标
+- 用户/运营/维护者角色
+- 核心业务对象
+- 业务价值和非技术背景
 
-### 6.2 `glossary.md`
+### 6.2 `domain-glossary.md`
 
 用途：
 
-- 稳定项目术语
+- 稳定业务私有术语
 - 减少中英混用和词汇漂移
 
 适合写入：
 
-- 项目术语
+- 业务术语
 - 缩写
 - 中英映射
 - 别名
 - 过时术语
+- 容易混淆的近义词和反例
 
-### 6.3 `architecture.md`
-
-用途：
-
-- 归纳主要模块、边界、调用关系
-
-适合写入：
-
-- 核心模块
-- 分层关系
-- 关键入口
-- 数据流和调用流
-
-### 6.4 `repo-map.md`
+### 6.3 `business-rules.md`
 
 用途：
 
-- 帮助 AI 快速理解仓库结构
+- 解释业务规则、状态流转、权限边界和例外处理
 
 适合写入：
 
-- 顶层目录职责
-- 关键源码路径
-- 关键脚本
-- 工作流与模板位置
-- 构建、测试、运行入口
+- 规则描述
+- 适用场景
+- 例外和边界
+- 来源文件
+- 简短实现锚点
 
-### 6.5 `conventions.md`
+### 6.4 `user-journeys.md`
 
 用途：
 
-- 把隐性规则显性化
+- 帮助 AI 理解主要用户旅程和业务流程
 
 适合写入：
 
-- 命名偏好
-- 测试约定
-- 代码组织习惯
-- 文档风格
-- 不鼓励的模式
+- 参与者
+- 触发条件
+- 关键步骤
+- 成功结果
+- 异常/回滚路径
+- 相关实现锚点
 
-### 6.6 `evolution-log.md`
+### 6.5 `external-systems.md`
 
 用途：
 
-- 记录仓库演进线索
+- 解释上下游系统、外部平台、第三方服务、消息通道和人工运营环节
 
 适合写入：
 
-- 历史迁移
-- 大型重构
-- 遗留包袱
-- 当前演进方向
+- 系统职责
+- 交互语义
+- 失败影响
+- 数据边界
+- 接口或配置来源
+
+### 6.6 `decision-log.md`
+
+用途：
+
+- 记录业务决策、历史包袱和演进原因
+
+适合写入：
+
+- 历史决策
+- 需求变化
+- 产品/运营约束变化
+- 仍影响新需求的历史包袱
 
 ### 6.7 `extraction-report.md`
 
@@ -471,31 +476,25 @@ ai-assets/
 - `README*`
 - `AGENTS.md`
 - `docs/**`
+- `specs/**`
 - `CHANGELOG*`
 - `CONTRIBUTING*`
-- 顶层配置文件
-- 顶层目录结构
-- 关键入口文件
-- 关键脚本
-- 工作流和模板文件
+- 接口契约、领域测试、产品说明和业务流程文档
+- 顶层配置文件、入口文件、脚本、工作流只作为实现锚点补充
 
 ### 7.4 资产结构约束
 
 除 `extraction-report.md` 外，每个核心资产都应区分：
 
 ```markdown
-## Observed
+## 核心解释
 
-## Inferred
+## 实现锚点
 
-## Open Questions
+## 待确认问题
 ```
 
-并建议使用置信度标签：
-
-- `[high]`
-- `[medium]`
-- `[low]`
+不再建议使用 `[high]`、`[medium]`、`[low]` 平铺列表。更推荐使用知识卡片、表格和明确标题，把“含义、规则、场景、来源、实现锚点”分开写清楚。
 
 ## 8. `plan` 如何消费 `ai-assets`
 
@@ -505,17 +504,18 @@ ai-assets/
 
 1. 看 `spec.md`
 2. 看 `constitution.md`
-3. 看 `ai-assets/glossary.md`
-4. 看 `ai-assets/repo-map.md`
-5. 看 `ai-assets/architecture.md`
-6. 看 `ai-assets/conventions.md`
+3. 看 `ai-assets/business-context.md`
+4. 看 `ai-assets/domain-glossary.md`
+5. 看 `ai-assets/business-rules.md`
+6. 看 `ai-assets/user-journeys.md`
+7. 必要时看 `ai-assets/external-systems.md` 和 `ai-assets/decision-log.md`
 
 这样做的好处：
 
-- 术语不会乱
-- 目录假设更稳
-- 技术规划更贴近真实仓库
-- 能显式记录项目约束
+- 业务术语不会乱
+- 业务规则、状态流转和用户旅程更稳
+- 技术规划不只围绕目录结构展开
+- 能显式记录上下游约束和待确认业务问题
 
 ## 9. 扩展机制
 
@@ -643,7 +643,7 @@ ai-assets/
 
 检查：
 
-- 生成的 `speckit.plan` 命令文件中是否包含 `ai-assets/glossary.md`
+- 生成的 `speckit.plan` 命令文件中是否包含 `ai-assets/business-context.md`
 - `.specify/templates/plan-template.md` 是否包含 `AI Assets 输入` 章节
 - 扩展模板覆盖是否被正确安装
 
@@ -659,8 +659,8 @@ ai-assets/
 建议做法：
 
 - 先保留高价值结论
-- 用 `Open Questions` 记录不确定项
-- 不要把低置信度内容当事实源
+- 用 `待确认问题` 记录不确定项
+- 不要把推断内容当事实源
 
 ### 12.4 中文环境下会不会影响效果
 
@@ -678,16 +678,16 @@ ai-assets/
 
 尤其在 brownfield 项目里，`ai-assets` 第一版的目标是“先有可用初稿”，而不是一次完成全部知识治理。
 
-### 13.2 优先稳定术语和结构
+### 13.2 优先稳定业务知识
 
 如果资源有限，最优先维护：
 
-1. `glossary.md`
-2. `repo-map.md`
-3. `architecture.md`
-4. `conventions.md`
+1. `business-context.md`
+2. `domain-glossary.md`
+3. `business-rules.md`
+4. `user-journeys.md`
 
-因为这四类最直接影响后续规划和实施质量。
+因为这四类最直接影响后续规划是否理解业务意图，而不是只猜技术实现。
 
 ### 13.3 文档越像索引越有价值
 

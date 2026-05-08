@@ -13,24 +13,25 @@ It provides:
 - a mandatory `before_plan` hook
 - template overrides for `plan` and `plan-template`
 
-Its responsibility is to initialize and refresh the root-level `ai-assets/` directory so planning can consume project-level understanding before implementation design starts.
+Its responsibility is to initialize and refresh the root-level `ai-assets/` directory so planning can consume business private knowledge before implementation design starts. It should explain domain concepts, business rules, user journeys, and upstream/downstream semantics rather than regenerate a full architecture or tech-stack document.
 
 Default generated assets:
 
 ```text
 ai-assets/
-|- project-overview.md
-|- glossary.md
-|- architecture.md
-|- repo-map.md
-|- conventions.md
-|- evolution-log.md
+|- business-context.md
+|- domain-glossary.md
+|- business-rules.md
+|- user-journeys.md
+|- external-systems.md
+|- decision-log.md
 `- extraction-report.md
 ```
 
 Important rule:
 
 - `ai-assets` is an AI-facing summary layer
+- business knowledge is the main content; technical facts are only implementation anchors
 - it does not replace code, configuration, contracts, or formal documentation as the source of truth
 
 ## Search Available Extensions
