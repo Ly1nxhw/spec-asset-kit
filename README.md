@@ -166,8 +166,8 @@ python -m pytest
 当前 release 通过 Git tag 触发：
 
 ```bash
-git tag -a v0.8.8 -m "Release v0.8.8"
-git push origin v0.8.8
+git tag -a v0.8.9 -m "Release v0.8.9"
+git push origin v0.8.9
 ```
 
 GitHub Actions 会在 tag push 后构建 wheel，并创建 GitHub Release。发布前必须先通过全量测试。

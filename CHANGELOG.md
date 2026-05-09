@@ -2,6 +2,13 @@
 
 <!-- insert new changelog below this comment -->
 
+## [0.8.9] - 2026-05-09
+
+### Fixed
+
+- 修复 `speckit.ai-assets.check` 对中文标准章节、glob 实现锚点、资产相对引用和代码符号的误报。
+- 修复 workflow prompt 单测在本机安装 `claude` 时可能真实拉起 CLI 并阻塞的问题。
+
 ## [0.8.8] - 2026-05-08
 
 ### Changed
