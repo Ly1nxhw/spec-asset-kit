@@ -22,16 +22,60 @@ ASSET_FILES = [
 ]
 
 CORE_ASSET_FILES = ASSET_FILES[:6]
-CORE_SECTIONS = [
-    "## Confirmed Knowledge",
-    "## Candidate Signals",
-    "## Implementation Anchors",
-    "## Open Questions",
+CORE_SECTION_ALIASES = [
+    ("## 已确认知识", "## Confirmed Knowledge"),
+    ("## 候选线索", "## Candidate Signals"),
+    ("## 实现锚点", "## Implementation Anchors"),
+    ("## 待确认问题", "## Open Questions"),
 ]
 
 PATH_RE = re.compile(r"`([^`\n]+)`")
 STATUS_RE = re.compile(r"\b(confirmed|candidate|deprecated)\b", re.IGNORECASE)
 TASK_PATH_RE = re.compile(r"\b(?:src|tests|test|docs|app|apps|packages|backend|frontend|scripts|templates|contracts|specs)/[A-Za-z0-9_./\-\[\]]+")
+GLOB_CHARS = set("*?[")
+SOURCE_MARKERS = (
+    "source",
+    "evidence",
+    "anchor",
+    "来源",
+    "线索来源",
+    "证据",
+    "锚点",
+    "实现锚点",
+    "人工确认",
+    "user confirmed",
+)
+STATUS_FIELD_RE = re.compile(r"^\|\s*(?:状态|status)\s*\|\s*(?:confirmed|candidate|deprecated)\s*\|", re.IGNORECASE)
+COUNT_RE = re.compile(r"\b(?:confirmed|candidate|deprecated)\s*[:：]\s*\d+\b", re.IGNORECASE)
+KNOWN_FILE_SUFFIXES = {
+    ".c",
+    ".cc",
+    ".cpp",
+    ".csv",
+    ".env",
+    ".go",
+    ".h",
+    ".java",
+    ".js",
+    ".json",
+    ".jsx",
+    ".md",
+    ".php",
+    ".proto",
+    ".ps1",
+    ".py",
+    ".rb",
+    ".rs",
+    ".sh",
+    ".sql",
+    ".toml",
+    ".ts",
+    ".tsx",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml",
+}
 
 
 def rel(path: Path, root: Path) -> str:
@@ -45,16 +89,80 @@ def looks_like_path(value: str) -> bool:
         return False
     if any(ch.isspace() for ch in value):
         return False
-    return "/" in value or "\\" in value or Path(value).suffix != ""
+    if "(" in value or ")" in value:
+        return False
+    if "/" in value or "\\" in value:
+        return True
+    if value in ASSET_FILES:
+        return True
+    return Path(value).suffix.lower() in KNOWN_FILE_SUFFIXES
 
 
 def existing_path(root: Path, token: str) -> bool:
-    candidate = (root / token.replace("\\", "/")).resolve()
+    normalized = token.replace("\\", "/").strip()
+    if normalized.startswith("/"):
+        return False
+    if normalized in ASSET_FILES:
+        return (root / "ai-assets" / normalized).is_file()
+
+    if any(char in normalized for char in GLOB_CHARS):
+        try:
+            for match in root.glob(normalized):
+                resolved_match = match.resolve()
+                try:
+                    resolved_match.relative_to(root.resolve())
+                except ValueError:
+                    continue
+                return True
+        except ValueError:
+            return False
+        return False
+
+    candidate = (root / normalized).resolve()
     try:
         candidate.relative_to(root.resolve())
     except ValueError:
         return False
     return candidate.exists()
+
+
+def has_any_section(content: str, aliases: tuple[str, ...]) -> bool:
+    return any(section in content for section in aliases)
+
+
+def visible_source_for_line(lines: list[str], index: int) -> bool:
+    """Return true when a status line has a nearby source/anchor in its logical block."""
+    line = lines[index]
+    lower = line.lower()
+    if "`" in line or any(marker in lower for marker in SOURCE_MARKERS):
+        return True
+    if STATUS_FIELD_RE.match(line) or COUNT_RE.search(line):
+        return True
+
+    start = index
+    while start > 0 and lines[start - 1].strip():
+        start -= 1
+    end = index + 1
+    while end < len(lines) and lines[end].strip():
+        end += 1
+
+    block = "\n".join(lines[start:end])
+    block_lower = block.lower()
+    return "`" in block and any(marker in block_lower for marker in SOURCE_MARKERS)
+
+
+def status_values_in_line(line: str) -> list[str]:
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#") or COUNT_RE.search(stripped):
+        return []
+    if not STATUS_RE.search(stripped):
+        return []
+    lower = stripped.lower()
+    is_table_row = stripped.startswith("|") and stripped.endswith("|")
+    mentions_status_field = "status" in lower or "状态" in stripped
+    if not is_table_row and not mentions_status_field:
+        return []
+    return [status.lower() for status in STATUS_RE.findall(stripped)]
 
 
 def line_number(content: str, needle: str) -> int:
@@ -109,21 +217,21 @@ def check_assets(root: Path, feature_dir: Path | None = None) -> dict[str, Any]:
 
         content = path.read_text(encoding="utf-8", errors="replace")
         if asset_name in CORE_ASSET_FILES:
-            for section in CORE_SECTIONS:
-                if section not in content:
-                    asset_info["missing_sections"].append(section)
+            for aliases in CORE_SECTION_ALIASES:
+                if not has_any_section(content, aliases):
+                    asset_info["missing_sections"].append(aliases[0])
                     result["summary"]["missing_section_count"] += 1
                     findings.append({
-                        "id": f"MISSING_SECTION:{asset_name}:{section}",
+                        "id": f"MISSING_SECTION:{asset_name}:{aliases[0]}",
                         "severity": "MEDIUM",
                         "file": f"ai-assets/{asset_name}",
-                        "message": f"Missing required section {section}.",
+                        "message": f"Missing required section {aliases[0]} / {aliases[1]}.",
                     })
 
-        for status in STATUS_RE.findall(content):
-            normalized = status.lower()
-            asset_info["status_counts"][normalized] += 1
-            result["metrics"][normalized] += 1
+        for line in content.splitlines():
+            for normalized in status_values_in_line(line):
+                asset_info["status_counts"][normalized] += 1
+                result["metrics"][normalized] += 1
 
         for token in PATH_RE.findall(content):
             if not looks_like_path(token):
@@ -140,9 +248,15 @@ def check_assets(root: Path, feature_dir: Path | None = None) -> dict[str, Any]:
                     "message": f"Referenced path does not exist: {token}",
                 })
 
-        for line_no, line in enumerate(content.splitlines(), start=1):
+        lines = content.splitlines()
+        for line_no, line in enumerate(lines, start=1):
             lower = line.lower()
-            if "confirmed" in lower and "source" not in lower and "user confirmed" not in lower and "`" not in line:
+            if (
+                asset_name != "extraction-report.md"
+                and not line.lstrip().startswith("#")
+                and "confirmed" in lower
+                and not visible_source_for_line(lines, line_no - 1)
+            ):
                 result["summary"]["confirmed_without_source_count"] += 1
                 findings.append({
                     "id": f"CONFIRMED_WITHOUT_SOURCE:{asset_name}:{line_no}",
@@ -158,7 +272,7 @@ def check_assets(root: Path, feature_dir: Path | None = None) -> dict[str, Any]:
         open_questions_text = open_questions.read_text(encoding="utf-8", errors="replace").lower()
 
     for asset_name, asset_info in result["assets"].items():
-        if asset_name == "open-questions.md":
+        if asset_name in {"open-questions.md", "extraction-report.md"}:
             continue
         if asset_info["status_counts"]["candidate"] and asset_name.replace(".md", "") not in open_questions_text:
             result["summary"]["candidate_without_question_count"] += 1

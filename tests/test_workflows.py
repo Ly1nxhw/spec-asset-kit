@@ -641,6 +641,7 @@ class TestPromptStep:
         assert result.output["integration"] == "gemini"
 
     def test_execute_with_model(self):
+        from unittest.mock import patch
         from specify_cli.workflows.steps.prompt import PromptStep
         from specify_cli.workflows.base import StepContext
 
@@ -652,7 +653,8 @@ class TestPromptStep:
             "prompt": "hello",
             "model": "opus-4",
         }
-        result = step.execute(config, ctx)
+        with patch("specify_cli.workflows.steps.prompt.shutil.which", return_value=None):
+            result = step.execute(config, ctx)
         assert result.output["model"] == "opus-4"
 
     def test_dispatch_with_mock_cli(self, tmp_path):

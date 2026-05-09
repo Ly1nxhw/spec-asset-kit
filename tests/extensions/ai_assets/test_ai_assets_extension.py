@@ -285,6 +285,154 @@ class TestAIAssetsCheckBash:
         assert payload["summary"]["stale_anchor_count"] >= 1
         assert any(f["id"].startswith("STALE_ANCHOR") for f in payload["findings"])
 
+    def test_checker_accepts_chinese_sections_and_glob_anchors(self, tmp_path: Path):
+        repo = _build_repo_fixture(tmp_path)
+        (repo / "services").mkdir()
+        (repo / "services" / "taskservice").write_text("package services\n", encoding="utf-8")
+        assets = repo / "ai-assets"
+        assets.mkdir()
+        core = """## 已确认知识
+
+### 业务概念：任务
+
+| 项 | 内容 |
+|---|---|
+| 含义 | 任务处理能力。 |
+| 状态 | confirmed |
+| 来源 | `README.md` |
+| 实现锚点 | `services/*service` |
+
+## 候选线索
+
+无。
+
+## 实现锚点
+
+- `services/*service`
+
+## 待确认问题
+
+无。
+"""
+        for name in [
+            "business-context.md",
+            "domain-glossary.md",
+            "business-rules.md",
+            "user-journeys.md",
+            "external-systems.md",
+            "decision-log.md",
+        ]:
+            (assets / name).write_text(core, encoding="utf-8")
+        (assets / "open-questions.md").write_text("## 待人工确认\n\n无。\n", encoding="utf-8")
+        (assets / "extraction-report.md").write_text(
+            "# Extraction Report\n\n- confirmed: 6; candidate: 0; deprecated: 0.\n",
+            encoding="utf-8",
+        )
+
+        result = _run_check_bash(repo)
+
+        assert result.returncode == 0, result.stderr
+        payload = json.loads(result.stdout)
+        assert payload["summary"]["missing_section_count"] == 0
+        assert payload["summary"]["stale_anchor_count"] == 0
+        assert payload["summary"]["confirmed_without_source_count"] == 0
+        assert payload["summary"]["candidate_without_question_count"] == 0
+        assert payload["summary"]["status"] == "PASS"
+
+    def test_checker_does_not_require_questions_for_extraction_report_counts(self, tmp_path: Path):
+        repo = _build_repo_fixture(tmp_path)
+        assets = repo / "ai-assets"
+        assets.mkdir()
+        core = """## Confirmed Knowledge
+
+| Field | Value |
+|---|---|
+| Status | confirmed |
+| Source | `README.md` |
+
+## Candidate Signals
+
+None.
+
+## Implementation Anchors
+
+- `src/main.py`
+
+## Open Questions
+
+None.
+"""
+        for name in [
+            "business-context.md",
+            "domain-glossary.md",
+            "business-rules.md",
+            "user-journeys.md",
+            "external-systems.md",
+            "decision-log.md",
+        ]:
+            (assets / name).write_text(core, encoding="utf-8")
+        (assets / "open-questions.md").write_text("## Needs Human Confirmation\n\nNone.\n", encoding="utf-8")
+        (assets / "extraction-report.md").write_text(
+            "# Extraction Report\n\n- confirmed: 6; candidate: 1; deprecated: 0.\n",
+            encoding="utf-8",
+        )
+
+        result = _run_check_bash(repo)
+
+        assert result.returncode == 0, result.stderr
+        payload = json.loads(result.stdout)
+        assert payload["summary"]["candidate_without_question_count"] == 0
+
+    def test_checker_ignores_code_symbols_and_accepts_asset_file_refs(self, tmp_path: Path):
+        repo = _build_repo_fixture(tmp_path)
+        assets = repo / "ai-assets"
+        assets.mkdir()
+        core = """## Confirmed Knowledge
+
+| Field | Value |
+|---|---|
+| Status | confirmed |
+| Source | `README.md` |
+| Related Asset | `domain-glossary.md` |
+| Code Symbol | `main([...])`, `print(...)`, `speckit.plan` |
+
+## Candidate Signals
+
+None.
+
+## Implementation Anchors
+
+- `src/main.py`
+
+## Open Questions
+
+None.
+"""
+        for name in [
+            "business-context.md",
+            "domain-glossary.md",
+            "business-rules.md",
+            "user-journeys.md",
+            "external-systems.md",
+            "decision-log.md",
+        ]:
+            (assets / name).write_text(core, encoding="utf-8")
+        (assets / "open-questions.md").write_text(
+            "## Needs Human Confirmation\n\nSee `business-context.md`.\n",
+            encoding="utf-8",
+        )
+        (assets / "extraction-report.md").write_text(
+            "# Extraction Report\n\nSee `speckit.plan` and `print(...)`.\n",
+            encoding="utf-8",
+        )
+
+        result = _run_check_bash(repo)
+
+        assert result.returncode == 0, result.stderr
+        payload = json.loads(result.stdout)
+        assert payload["summary"]["stale_anchor_count"] == 0
+        assert payload["summary"]["status"] == "PASS"
+
 
 @pytest.mark.skipif(not HAS_PWSH, reason="pwsh not available")
 class TestAIAssetsScannerPowerShell:
